@@ -170,6 +170,7 @@ static void fire_projectiles(World *w, int idx, const SkillRT *s, const Monster 
         pj->explode = (s->flags & RF_EXPLODE) != 0;
         pj->wander = (s->flags & RF_WANDER) != 0;
         pj->vfx = s->vfx;
+        sig_spear_cast(w, pj);
     }
 }
 
@@ -327,7 +328,7 @@ bool cast_skill(World *w, Profile *p, int i, const SkillRT *s, const Monster *tg
 {
     bool ok;
     switch (s->behavior) {
-    case SB_ARC:    ok = cast_area(w, p, i, s, false); break;
+    case SB_ARC:    ok = cast_area(w, p, i, s, false) || sig_lunge(w, i, tgt); break;
     case SB_NOVA:   ok = cast_area(w, p, i, s, true); break;
     case SB_PROJ:
         ok = tgt && dist_px(w->h.x, w->h.y, tgt->x, tgt->y) <= s->range

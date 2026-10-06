@@ -3,7 +3,7 @@
  *
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
- *               [--lang 0-4] [--record START:COUNT:EVERY:PREFIX]
+ *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
@@ -19,6 +19,9 @@
 #include "../../src/game/build.h"
 #include "../../src/gfx/sprites.h"
 #include "../../src/gfx/gfx.h"
+#include "../../src/game/aspects.h"
+#include "../../src/game/world_int.h"
+#include "../../src/game/items.h"
 #include "../../src/i18n/i18n.h"
 #include "png.h"
 #include <stdio.h>
@@ -126,6 +129,17 @@ static void record_frame(const Record *r, int tick)
     png_write_rgb565(path, g_fb, FB_W, FB_H);
 }
 
+/* --sig: wear the class's build-defining unique (demo clips). */
+static void equip_signature(Profile *p)
+{
+    int uid = sig_unique_for(p->cls);
+    Rng r;
+    if (!uid)
+        return;
+    rng_seed(&r, 99);
+    item_make_unique(&p->equip[unique_def(uid)->slot], &r, MAX(p->best_floor, 1), uid, true, p->cls);
+}
+
 static void fast_forward(double hours, uint32_t now)
 {
     long t;
@@ -149,7 +163,7 @@ int main(int argc, char **argv)
     double fast = 0;
     int preset = 0, lang = -1;
     const char *save = NULL;
-    bool fresh = false;
+    bool fresh = false, sig = false;
     uint32_t now = 2000000000u;
     Input in;
 
@@ -159,6 +173,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--trace") && i + 1 < argc) trace = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--fast") && i + 1 < argc) fast = atof(argv[++i]);
         else if (!strcmp(argv[i], "--new")) fresh = true;
+        else if (!strcmp(argv[i], "--sig")) sig = true;
         else if (!strcmp(argv[i], "--class") && i + 1 < argc) cls = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--record") && i + 1 < argc) parse_record(argv[++i], &rec);
@@ -184,6 +199,10 @@ int main(int argc, char **argv)
     }
     if (fast > 0)
         fast_forward(fast, now);
+    if (sig) {
+        equip_signature(&g_game.p);
+        session_profile_changed(&g_game.s, &g_game.p);
+    }
     input_init(&in);
     for (s = 0; s <= nsteps; s++) {
         int n = s < nsteps ? steps[s].ticks : 1;

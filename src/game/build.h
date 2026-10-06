@@ -12,6 +12,7 @@
 
 #include "defs.h"
 #include "skills.h"
+#include "sig.h"
 
 typedef enum {
     MOD_NONE,
@@ -35,6 +36,8 @@ typedef enum {
     MOD_SK_RANKS, MOD_ALL_RANKS,
     /* summons */
     MOD_MINION_COUNT,
+    /* signature builds (sig.h): arg = Signature / SigFacet */
+    MOD_SIGNATURE, MOD_SIG_FACET,
     MOD_COUNT
 } ModKind;
 
@@ -104,6 +107,10 @@ typedef struct {
     uint16_t sk_flags[CLASS_SKILLS];
     uint8_t sk_status[CLASS_SKILLS], sk_elem[CLASS_SKILLS];   /* 0 / 0xFF = keep */
     uint8_t key;                      /* KeyPassive */
+    uint8_t sig;                      /* Signature from the build-defining unique */
+    double  sig_power;                /* its % weapon damage */
+    double  facet[SF_COUNT];          /* aspect facets feeding it */
+    double  x_life;                   /* [x] maximum life (1 = none) */
 } BuildRT;
 
 void build_clear(BuildRT *b);

@@ -31,6 +31,13 @@ void fx_draw_proj(const Proj *pj, int x, int y);
 void fx_draw_weapon(int kind, int mat, int x, int y, int face, int attack_t, uint16_t accent, int tick);
 void fx_draw_offhand(int kind, int mat, int x, int y, int face, int tick);
 
+/* render_sig.c: signature builds (effects, aura, giant spear, shake). */
+void fx_draw_sig(const Effect *e, int x, int y);
+void render_sig_aura(const World *w, int x, int y);
+void render_sig_giant(const Proj *pj, int x, int y);
+int  render_sig_shake(const World *w, int axis);
+void render_sig_flash(const World *w, int view_h);
+
 /* render_event.c: floor event objects, goblin sack, champion plates. */
 void render_event_object(const World *w, int cam_x, int cam_y);
 void render_monster_extras(const World *w, const Monster *m, int x, int top);

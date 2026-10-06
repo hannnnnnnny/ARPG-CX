@@ -107,6 +107,19 @@ const AspectDef aspect_defs[] = {
     { "ASPECT OF THE PROWLING JAGUAR", "JAGUAR SKILLS DEAL [x]#% DAMAGE", CLASS_SPIRITBORN, OFF, MOD_X_TAG,
       TAG_JAGUAR, 20, 40, 0, 0, 0 },
     { "ASPECT OF THE SKYBORNE", "SOAR COOLDOWN -#%", CLASS_SPIRITBORN, MOB, MOD_SK_CD, 7, -30, -50, 0, 0, 0 },
+    /* ---- signature facets (sig.h): each feeds one build-defining unique */
+    { "ASPECT OF THE STORMCLAW", "SKY BOLTS CHAIN TO # MORE FOES, SHRED DEALS [x]20%", CLASS_DRUID, OFF,
+      MOD_SIG_FACET, SF_CHAIN, 2, 4, MOD_X_SKILL, SIG_SKILL_SHRED, 20 },
+    { "ASPECT OF THE MOONLIT HUNT", "SKY BOLTS GRANT #% LIFE AS BARRIER, +15% MOVEMENT SPEED", CLASS_DRUID, MOB,
+      MOD_SIG_FACET, SF_LUNGE, 1, 3, MOD_MOVE, 0, 15 },
+    { "ASPECT OF SPLINTERED BONE", "BONE SPEAR BURSTS INTO +# SHARDS THAT PIERCE, [x]20% DAMAGE", CLASS_NECRO, OFF,
+      MOD_SIG_FACET, SF_SHARDS, 2, 4, MOD_X_SKILL, SIG_SKILL_BONESPEAR, 20 },
+    { "ASPECT OF THE MARROW WELL", "BONE NOVAS RESTORE # ESSENCE AND 2% LIFE, +10% MAXIMUM LIFE", CLASS_NECRO, RES,
+      MOD_SIG_FACET, SF_MARROW, 4, 8, MOD_LIFE_PCT, 0, 10 },
+    { "ASPECT OF THE FIRESTORM", "METEORS FALL IN SHOWERS OF #, FIREBALL DEALS [x]20%", CLASS_SORCERER, OFF,
+      MOD_SIG_FACET, SF_SHOWER, 2, 4, MOD_X_SKILL, SIG_SKILL_FIREBALL, 20 },
+    { "ASPECT OF THE PHOENIX", "BURNING FOES EXPLODE ON DEATH FOR #%, 10% DAMAGE REDUCTION", CLASS_SORCERER, DEF,
+      MOD_SIG_FACET, SF_PHOENIX, 300, 600, MOD_DR, 0, 10 },
 };
 const int aspect_count = (int)(sizeof aspect_defs / sizeof aspect_defs[0]) - 1;
 
@@ -149,12 +162,29 @@ const UniqueDef unique_defs[] = {
       { AF_LIFE, AF_CDR, AF_RES_ALL, AF_MAX_RES }, MOD_ALL_RANKS, 0, 2, 4, MOD_DR, 0, 15 },
     { "THE SHATTERED STAR", "[x]#% DAMAGE, +10% CRITICAL STRIKE CHANCE", SLOT_RING1, 3, ANY, 1,
       { AF_CRIT_DMG, AF_VULN_DMG, AF_OP_DMG, AF_ATK_SPD }, MOD_X_ALL, 0, 40, 70, MOD_CRIT, 0, 10 },
+    /* build-defining uniques: each switches on a signature build (sig.h) */
+    { "STORMHOWL PELT", "SHRED IS LIGHTNING: EVERY HIT CALLS A SKY BOLT FOR #% THAT HEALS YOU", SLOT_CHEST, 3,
+      CLASS_DRUID, 0, { AF_LIFE, AF_ATK_SPD, AF_CRIT, AF_LIGHT }, MOD_SIGNATURE, SIG_STORMWOLF, 900, 1300,
+      MOD_ATK_SPD, 0, 15 },
+    { "SPINE OF THE FIRST KEEPER", "BONE SPEAR BURSTS INTO SHARDS, CRITS ERUPT IN A BONE NOVA FOR #%", SLOT_WEAPON, 2,
+      CLASS_NECRO, 0, { AF_MAINSTAT, AF_CRIT, AF_CRIT_DMG, AF_VULN_DMG }, MOD_SIGNATURE, SIG_BONESPEAR, 1200, 1700,
+      MOD_CRIT, 0, 10 },
+    { "HEART OF THE INFERNO", "FIREBALLS EXPLODE TWICE AND CALL METEORS FOR #%", SLOT_AMULET, 2, CLASS_SORCERER, 0,
+      { AF_CRIT_DMG, AF_CDR, AF_MAINSTAT, AF_FIRE }, MOD_SIGNATURE, SIG_INFERNO, 1100, 1600, MOD_X_ELEM, EL_FIRE, 25 },
 };
 const int unique_count = (int)(sizeof unique_defs / sizeof unique_defs[0]) - 1;
 
 const AspectDef *aspect_def(int id)
 {
     return id >= 1 && id <= aspect_count ? &aspect_defs[id] : NULL;
+}
+
+bool item_is_signature(const Item *it)
+{
+    const UniqueDef *u;
+    if (!it->used || it->rarity != RAR_UNIQUE || !(u = unique_def(it->power)))
+        return false;
+    return u->kind == MOD_SIGNATURE;
 }
 
 const UniqueDef *unique_def(int id)

@@ -15,8 +15,8 @@ const ClassDef class_defs[CLASS_COUNT] = {
           { 3, 0, 4, 5, 1, 2 }, 1, EL_PHYS, { 23, 24, 3, 1 }, 0 } } },
     [CLASS_SORCERER] = { "SORCERER", "WIELDS FIRE, FROST AND LIGHTNING FROM AFAR.", "RANGED - FRAGILE",
         RES_MANA, STAT_INT, 0.85, 100, RGB565(60, 110, 255), {
-        { "PYROMANCER", "FIREBALLS, METEORS AND BURNING GROUND.", { 1, 2, 5, 6, 7, 9 }, { 1, 1, 1, 1, 2, 1 },
-          { 0, 2, 4, 3, 1, 5 }, 1, EL_FIRE, { 25, 26, 1, 9 }, 1 },
+        { "PYROMANCER", "FIREBALLS THAT EXPLODE TWICE AND RAIN METEORS.", { 1, 2, 5, 6, 7, 9 },
+          { 1, 1, 1, 1, 2, 1 }, { 0, 2, 4, 3, 1, 5 }, 1, EL_FIRE, { 59, 60, 25, 26 }, 1 },
         { "CRYOMANCER", "FREEZE EVERYTHING, THEN SHATTER IT.", { 1, 4, 5, 6, 7, 9 }, { 1, 1, 1, 2, 1, 2 },
           { 4, 2, 0, 3, 5, 1 }, 2, EL_COLD, { 28, 27, 5, 10 }, 0 },
         { "STORMCALLER", "CHAIN LIGHTNING THAT NEVER STOPS.", { 0, 3, 8, 5, 6, 9 }, { 2, 1, 1, 1, 1, 0 },
@@ -31,8 +31,8 @@ const ClassDef class_defs[CLASS_COUNT] = {
           { 1, 0, 3, 4, 5, 2 }, 3, EL_PHYS, { 34, 35, 1, 7 }, 1 } } },
     [CLASS_NECRO] = { "NECROMANCER", "COMMANDS BONE, BLOOD AND AN ARMY OF THE DEAD.", "RANGED - MINIONS",
         RES_ESSENCE, STAT_INT, 0.95, 90, RGB565(80, 220, 180), {
-        { "BONE SPEAR", "LANCES OF BONE THAT PIERCE ROWS OF FOES.", { 1, 2, 5, 8, 6, 9 }, { 1, 2, 1, 2, 1, 2 },
-          { 4, 5, 0, 1, 2, 3 }, 1, EL_PHYS, { 37, 3, 2, 9 }, 1 },
+        { "BONE SPEAR", "LANCES OF BONE THAT BURST INTO STORMS OF SHARDS.", { 1, 2, 5, 8, 6, 9 },
+          { 1, 2, 1, 2, 1, 2 }, { 4, 5, 0, 1, 2, 3 }, 1, EL_PHYS, { 57, 58, 37, 3 }, 1 },
         { "SUMMONER", "AN ARMY OF SKELETONS AND ROTTING BLIGHT.", { 0, 3, 7, 8, 6, 9 }, { 1, 1, 1, 1, 2, 1 },
           { 3, 1, 0, 2, 5, 4 }, 2, EL_SHADOW, { 40, 41, 38, 10 }, 0 },
         { "BLOOD SURGE", "DRAIN THE HORDE TO FEED YOUR OWN LIFE.", { 0, 4, 5, 6, 8, 9 }, { 2, 1, 1, 1, 2, 1 },
@@ -43,8 +43,8 @@ const ClassDef class_defs[CLASS_COUNT] = {
           { 4, 0, 2, 1, 5, 3 }, 2, EL_LIGHT, { 43, 46, 1, 9 }, 1 },
         { "EARTH", "LANDSLIDES AND BOULDERS THAT OVERPOWER.", { 1, 3, 8, 5, 6, 9 }, { 1, 1, 2, 1, 1, 1 },
           { 3, 0, 1, 5, 2, 4 }, 1, EL_PHYS, { 44, 46, 4, 9 }, 0 },
-        { "WEREWOLF", "SHRED WITH THE PACK AT YOUR SIDE.", { 1, 4, 7, 5, 6, 9 }, { 1, 1, 1, 1, 1, 1 },
-          { 0, 2, 3, 1, 5, 4 }, 3, EL_PHYS, { 47, 45, 3, 10 }, 0 } } },
+        { "STORM WEREWOLF", "SHRED CALLS DOWN THE SKY. NEVER STOPS, NEVER FALLS.", { 0, 4, 6, 7, 5, 9 },
+          { 1, 1, 1, 2, 2, 1 }, { 0, 2, 3, 1, 5, 4 }, 3, EL_LIGHT, { 55, 56, 47, 3 }, 0 } } },
     [CLASS_SPIRITBORN] = { "SPIRITBORN", "A JUNGLE WARRIOR BOUND TO FOUR SPIRIT GUARDIANS.", "MELEE - QUICK",
         RES_VIGOR, STAT_DEX, 1.10, 22, RGB565(230, 200, 90), {
         { "EAGLE QUILLS", "VOLLEYS OF QUILLS FROM THE SKY.", { 0, 2, 7, 6, 8, 9 }, { 1, 1, 1, 2, 1, 1 },
@@ -73,13 +73,48 @@ void build_clear(BuildRT *b)
 {
     int i;
     memset(b, 0, sizeof *b);
-    b->x_all = b->x_vuln = b->x_crit = b->x_op = b->x_cc = b->x_dot = b->x_core = b->x_minion = 1.0;
+    b->x_all = b->x_vuln = b->x_crit = b->x_op = b->x_cc = b->x_dot = b->x_core = b->x_minion = b->x_life = 1.0;
     for (i = 0; i < EL_COUNT; i++) b->x_elem[i] = 1.0;
     for (i = 0; i < CLASS_SKILLS; i++) b->x_skill[i] = 1.0;
     for (i = 0; i < TAG_COUNT; i++) b->x_tag[i] = 1.0;
 }
 
 static void mult(double *x, double pct) { *x *= 1.0 + pct / 100.0; }
+
+/* A build-defining unique: remember the strongest; resolve_build decides
+ * whether the build actually uses it. */
+static void signature_mod(BuildRT *b, int sig, double power)
+{
+    if (sig <= SIG_NONE || sig >= SIG_COUNT || power <= b->sig_power)
+        return;
+    b->sig = (uint8_t)sig;
+    b->sig_power = power;
+}
+
+static int signature_skill(int sig)
+{
+    return sig == SIG_STORMWOLF ? SIG_SKILL_SHRED : sig == SIG_BONESPEAR ? SIG_SKILL_BONESPEAR : SIG_SKILL_FIREBALL;
+}
+
+/* The signature only wakes with its skill on the bar; then it reshapes
+ * that skill (Stormhowl Pelt: Shred becomes free lightning) and makes the
+ * hero tanky enough to stand in the middle of it. */
+static void apply_signature(const Profile *p, BuildRT *b)
+{
+    if (!b->sig)
+        return;
+    if (!skill_on_bar(p, signature_skill(b->sig))) {
+        b->sig = SIG_NONE;
+        b->sig_power = 0;
+        return;
+    }
+    b->x_life *= 8.0;                        /* [x]: paragon's additive life can't drown it */
+    build_add_mod(b, MOD_DR, 0, 40);
+    if (b->sig == SIG_STORMWOLF) {
+        b->sk_elem[SIG_SKILL_SHRED] = EL_LIGHT + 1;
+        b->sk_cost[SIG_SKILL_SHRED] = -100;
+    }
+}
 
 static void add_skill_mod(BuildRT *b, int kind, int sk, double v)
 {
@@ -174,6 +209,8 @@ static void add_defence(BuildRT *b, int kind, int arg, double v)
     case MOD_GOLD:        b->gold += v; break;
     case MOD_XP:          b->xp += v; break;
     case MOD_MINION_COUNT: b->minion_add += (int)v; break;
+    case MOD_SIGNATURE:    signature_mod(b, arg, v); break;
+    case MOD_SIG_FACET:    if (arg < SF_COUNT) b->facet[arg] = MAX(b->facet[arg], v); break;
     case MOD_ALL_RANKS: {
         int i;
         for (i = 0; i < CLASS_SKILLS; i++)
@@ -310,6 +347,7 @@ static void apply_passives(const Profile *p, BuildRT *b)
 void resolve_build(const Profile *p, BuildRT *b)
 {
     int s;
+    apply_signature(p, b);
     apply_passives(p, b);
     for (s = 0; s < CLASS_SKILLS; s++)
         resolve_skill(p, b, s, &b->skill[s]);

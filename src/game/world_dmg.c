@@ -178,6 +178,11 @@ static void damage_floater(World *w, const Monster *m, double dmg, bool crit, bo
         c = vuln ? C_VCRIT : C_CRIT;
     else
         c = vuln ? C_VULN : C_NORMAL;
+    if (h->sig) {                                  /* signature hits: huge, outlined numbers */
+        c = crit ? RGB565(255, 240, 120) : element_color((Element)h->element);
+        floater_kind(w, x, y - 4, buf, c, crit || op || m->boss ? FL_MEGA : FL_BIG);
+        return;
+    }
     floater_kind(w, x, y, buf, c, op ? FL_BIG : FL_DMG);
     if (op)
         floater(w, x, y - 12, "OVERPOWER", C_OP);
@@ -253,6 +258,8 @@ void deal_damage(World *w, Profile *p, int i, const Hit *h)
     dmg = compute(w, m, h, &l);
     m->hp -= dmg;
     m->aggro = 1;
+    if (h->sig)
+        w->hs.sig += dmg;
     if (!h->dot) {
         m->flash = 2;
         world_sound(w, l.is_crit ? SND_CRIT : SND_HIT);
@@ -261,7 +268,9 @@ void deal_damage(World *w, Profile *p, int i, const Hit *h)
     }
     if (!h->dot || (w->tick % 30) < DOT_EVERY)
         damage_floater(w, m, dmg, l.is_crit, l.is_vuln, l.is_op, h);
-    if (m->hp <= 0)
+    if (w->st.b.sig && h->skill < CLASS_SKILLS)
+        sig_on_hit(w, p, i, h, l.is_crit);
+    if (m->hp <= 0 && m->alive)
         kill_rewards(w, p, m);
 }
 
@@ -380,6 +389,31 @@ Drop *world_drop_item(World *w, Profile *p, fx x, fx y, Rarity min, int luck)
     return NULL;
 }
 
+static Drop *free_drop(World *w, fx x, fx y)
+{
+    int i;
+    for (i = 0; i < MAX_DROP; i++)
+        if (!w->dr[i].alive) {
+            Drop *d = &w->dr[i];
+            d->alive = 1;
+            d->t = 0;
+            d->x = x;
+            d->y = y;
+            return d;
+        }
+    return NULL;
+}
+
+Drop *world_drop_unique(World *w, Profile *p, fx x, fx y, int unique)
+{
+    Drop *d = free_drop(w, x, y);
+    if (!d)
+        return NULL;
+    item_make_unique(&d->item, &w->rng, w->floor, unique, rng_range(&w->rng, 0, 99) < 25, p->cls);
+    announce_drop(w, p, &d->item);
+    return d;
+}
+
 static void drop_item(World *w, Profile *p, const Monster *m)
 {
     int chance = m->boss ? 100 : m->elite ? 40 : 7;
@@ -490,4 +524,6 @@ void kill_rewards(World *w, Profile *p, Monster *m)
         level_up_message(w, p, levels);
     kill_goals(w, p, m);
     events_on_kill(w, p, m);
+    sig_boss_drop(w, p, m);
+    sig_on_kill(w, p, m);
 }

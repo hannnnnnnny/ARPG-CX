@@ -18,10 +18,10 @@
 #define MAP_W 48
 #define MAP_H 32
 #define MAX_MON    40
-#define MAX_PROJ   32
+#define MAX_PROJ   48
 #define MAX_DROP   12
-#define MAX_FLOAT  24
-#define MAX_FX     24
+#define MAX_FLOAT  40
+#define MAX_FX     48
 #define MAX_GROUND 12
 #define MAX_ALLY   9
 #define MAX_CORPSE 16
@@ -77,6 +77,7 @@ typedef struct {
     uint8_t  skill;       /* class skill index, NO_SKILL for weapon / thorns */
     uint16_t flags;       /* RF_VULN ... */
     bool     dot, minion;
+    uint8_t  sig;         /* thrown by a signature power: never triggers another */
     double   crit_add, op_add, lucky;
 } Hit;
 
@@ -84,6 +85,7 @@ typedef enum { PJ_SKILL, PJ_ENEMY, PJ_MINION } ProjKind;
 typedef struct {
     uint8_t alive, kind;
     uint8_t pierce, ground, vfx, explode, wander;
+    uint8_t sig;             /* SIGP_* (world_sig.c) */
     int16_t radius;          /* explosion radius, 0 = single target */
     int16_t life;
     fx x, y, vx, vy, px, py;
@@ -104,11 +106,11 @@ typedef struct {
 
 typedef struct { uint8_t alive; fx x, y; int16_t t; Item item; } Drop;
 
-typedef enum { FL_TEXT, FL_DMG, FL_BIG } FloatKind;
+typedef enum { FL_TEXT, FL_DMG, FL_BIG, FL_MEGA } FloatKind;   /* FL_MEGA: signature hits */
 typedef struct { uint8_t alive, kind; int16_t x, y, t; uint16_t color; char text[32]; } Floater;
 
 typedef enum { FX_SLASH, FX_BOOM, FX_NOVA, FX_BOLT, FX_WHIRL, FX_WARN, FX_METEOR, FX_PUFF, FX_HEAL, FX_LEVEL,
-               FX_DASH, FX_RAISE } FxKind;
+               FX_DASH, FX_RAISE, FX_SKYBOLT, FX_SHARDS, FX_FIRERING, FX_FALL } FxKind;
 typedef struct { uint8_t alive, kind, vfx; int16_t x, y, x2, y2, t, dur, r; uint16_t color; } Effect;
 
 typedef enum { AK_SKELETON, AK_MAGE, AK_WOLF } AllyKind;
@@ -123,6 +125,20 @@ typedef struct { uint8_t alive; fx x, y; int16_t t; } Corpse;
 typedef struct { uint8_t alive; fx x, y; int16_t t; } Orb;  /* health potion on the ground */
 
 typedef enum { TGT_NONE, TGT_MON, TGT_DROP, TGT_STAIRS, TGT_OBJECT } TargetKind;
+
+/* Signature builds (world_sig.c): meteors on their way, screen shake and
+ * flash, and per-second limits that keep the effects readable. */
+#define MAX_METEOR 8
+typedef struct { uint8_t alive; int16_t t, x, y; } SigMeteor;
+typedef struct {
+    SigMeteor met[MAX_METEOR];
+    int16_t shake_t, shake_px, flash_t;
+    uint16_t flash_color;
+    int16_t heal_t;          /* ticks left in the current healing window */
+    double healed;           /* fraction of life healed in it (capped) */
+    int last_bolt, last_nova, last_boom, booms;  /* tick + 1 of the last of each (0 = never) */
+    int spears;              /* bone spears cast (every sixth is a giant) */
+} SigState;
 
 /* What the player asks of the hero this tick (set by the game layer from
  * keyboard and mouse; all zero on the calculator and in simulations). */
@@ -168,6 +184,7 @@ typedef struct {
 
 typedef struct {
     double hits, crits, vulns, ops, total;
+    double sig;               /* damage from signature powers */
 } HitStats;
 
 typedef struct {
@@ -241,6 +258,7 @@ typedef struct {
     HitLog last_big;
     HitStats hs;               /* this floor's hit statistics */
     FloorEvent ev;
+    SigState sig;
     HeroCommand cmd;
     ControlRT ctl;
     /* Carried across floors: the shrine blessing and the remarks. */

@@ -56,9 +56,25 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker);
 void kill_rewards(World *w, Profile *p, Monster *m);
 /* A loot drop near (x, y); NULL when the floor's drop pool is full. */
 Drop *world_drop_item(World *w, Profile *p, fx x, fx y, Rarity min, int luck);
+Drop *world_drop_unique(World *w, Profile *p, fx x, fx y, int unique);
 /* Warded champions shrug off most damage 1.2 s out of every 4 s. */
 static inline bool champion_warded(const World *w, const Monster *m) { return (w->tick + (int)(m - w->mon) * 37) % 120 < 36; }
 void tick_dots(World *w, Profile *p, int i);
+
+/* world_sig.c: signature builds (sig.h) */
+enum { SIGP_BURST = 1, SIGP_GIANT = 2, SIGP_SHARD = 4 };   /* Proj.sig */
+void sig_on_hit(World *w, Profile *p, int mi, const Hit *h, bool crit);
+void sig_on_kill(World *w, Profile *p, const Monster *m);
+void sig_tick(World *w, Profile *p);
+bool sig_lunge(World *w, int i, const Monster *tgt);
+bool sig_reach(const World *w, int i, const Monster *tgt);
+void sig_spear_cast(World *w, Proj *pj);
+void sig_spear_burst(World *w, Proj *pj);
+void sig_spear_end(World *w, Profile *p, const Proj *pj);
+void sig_fireball(World *w, Profile *p, const Proj *pj);
+void sig_shake(World *w, int ticks, int px);
+int  sig_unique_for(int cls);
+void sig_boss_drop(World *w, Profile *p, const Monster *m);
 
 /* world_mon.c */
 void monsters_update(World *w, Profile *p);

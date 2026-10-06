@@ -183,7 +183,8 @@ LootResult prog_handle_loot(Profile *p, const Item *it, double *gold_gained)
     int slot, worst, target = item_target_slot(p, it);
     *gold_gained = 0;
     prog_learn_aspect(p, it);
-    if (p->auto_equip && (!p->equip[target].used || item_upgrade_ratio(p, it) > 0.005)) {
+    if (p->auto_equip && (!p->equip[target].used || item_upgrade_ratio(p, it) > 0.005)
+        && (!item_is_signature(&p->equip[target]) || item_is_signature(it))) {
         equip_into(p, it, target);
         return LOOT_EQUIPPED;
     }

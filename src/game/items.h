@@ -34,6 +34,7 @@ void item_roll(Item *it, Rng *r, int ilvl, int luck, Rarity min_rarity, int cls)
 void item_roll_slot(Item *it, Rng *r, int ilvl, int luck, Rarity min_rarity, Slot slot, int cls);
 /* A specific unique (id from aspects.c). */
 void item_make_unique(Item *it, Rng *r, int ilvl, int unique, bool ancestral, int cls);
+void item_rescale(Item *it, int ilvl);      /* to a deeper item level, rolls kept */
 
 int  item_power(const Item *it);
 double item_mw_mult(const Item *it);                      /* masterwork multiplier on the base stat */

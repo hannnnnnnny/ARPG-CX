@@ -179,6 +179,9 @@ void world_spawn_ground(World *w, int x, int y, int r, int dur, const Hit *h, bo
 static void projectile_hit(World *w, Profile *p, Proj *pj, int target)
 {
     int i;
+    sig_spear_burst(w, pj);
+    if (pj->radius > 0)
+        sig_fireball(w, p, pj);
     if (pj->radius > 0) {
         Effect *e = effect(w, FX_BOOM, FX_TO_INT(pj->x), FX_TO_INT(pj->y), 0, 0, pj->radius, 10,
                            element_color((Element)pj->hit.element));
@@ -212,6 +215,7 @@ static void projectile_explode(World *w, Profile *p, Proj *pj)
     for (i = 0; i < w->nmon; i++)
         if (w->mon[i].alive && dist_px(pj->x, pj->y, w->mon[i].x, w->mon[i].y) <= 22)
             deal_damage(w, p, i, &h);
+    sig_spear_end(w, p, pj);
 }
 
 static int proj_target(const World *w, const Proj *pj)

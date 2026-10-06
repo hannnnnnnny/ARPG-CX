@@ -50,6 +50,9 @@ static void add_elixir_and_upgrades(BuildRT *b, const Profile *p)
         build_add_mod(b, MOD_X_ALL, 0, m);
         build_add_mod(b, MOD_LIFE_PCT, 0, m);
     }
+#ifdef PROBE_LIFE
+    b->x_life *= PROBE_LIFE;
+#endif
     if (renown_tier(p) > 0) {
         build_add_mod(b, MOD_X_ALL, 0, RENOWN_DMG_PCT * renown_tier(p));
         build_add_mod(b, MOD_LIFE_PCT, 0, RENOWN_DMG_PCT * renown_tier(p));
@@ -80,7 +83,7 @@ static void defence_stats(Stats *st, const Profile *p, double armor)
     const ClassDef *c = &class_defs[p->cls % CLASS_COUNT];
     const BuildRT *b = &st->b;
     int e, lv = MIN(p->level, LEVEL_CAP);
-    st->max_hp = (80.0 + 12.0 * lv + b->life) * (1.0 + b->life_pct / 100.0) * c->hp_mult;
+    st->max_hp = (80.0 + 12.0 * lv + b->life) * (1.0 + b->life_pct / 100.0) * c->hp_mult * b->x_life;
     st->armor = (armor + b->armor) * (1.0 + (b->armor_pct + st->stat[STAT_STR] * 0.1) / 100.0);
     st->dr = MIN(b->dr, 80.0) / 100.0;
     st->dr_close = MIN(b->dr_close, 50.0) / 100.0;
@@ -179,7 +182,8 @@ double stats_dps(const Stats *st, const Profile *p)
     const BuildPreset *pr = &c->preset[p->preset % PRESETS];
     const SkillRT *core = &st->b.skill[pr->bar[1] % CLASS_SKILLS];
     double add = typical_add(st, pr, core, c->attack_range <= 30);
-    return st->weapon * st->stat_mult * (1.0 + add / 100.0) * typical_mult(st, pr, p) * st->aps;
+    double sig = st->b.sig ? 1.0 + st->b.sig_power / 100.0 : 1.0;
+    return st->weapon * st->stat_mult * (1.0 + add / 100.0) * typical_mult(st, pr, p) * st->aps * sig;
 }
 
 double stats_power(const Stats *st, const Profile *p, int floor)

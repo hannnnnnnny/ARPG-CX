@@ -1,0 +1,20 @@
+// Signature (meta) builds: build-defining uniques, their facet aspects, presets.
+STORMHOWL PELT	风暴嚎叫之皮	風暴嚎叫之皮	嵐吼えの毛皮	폭풍울음 가죽
+SPINE OF THE FIRST KEEPER	初代守护者之脊	初代守護者之脊	最初の番人の背骨	첫 수호자의 척추
+HEART OF THE INFERNO	炼狱之心	煉獄之心	業火の心臓	지옥불의 심장
+SHRED IS LIGHTNING: EVERY HIT CALLS A SKY BOLT FOR #% THAT HEALS YOU	撕碎变为闪电：每次命中召唤天雷，造成#%伤害并为你治疗	撕碎變為閃電：每次命中召喚天雷，造成#%傷害並為你治療	切り裂きが雷に：命中ごとに天雷が#%のダメージを与え回復する	갈래 찢기가 번개로: 적중마다 낙뢰가 #% 피해를 주고 치유
+BONE SPEAR BURSTS INTO SHARDS, CRITS ERUPT IN A BONE NOVA FOR #%	白骨之矛爆裂成碎片，暴击引发白骨新星造成#%伤害	白骨之矛爆裂成碎片，暴擊引發白骨新星造成#%傷害	ボーンスピアが破片に砕け、会心で骨の新星が#%のダメージ	뼈창이 파편으로 터지고, 극대화 시 뼈 회오리가 #% 피해
+FIREBALLS EXPLODE TWICE AND CALL METEORS FOR #%	火球爆炸两次并召唤陨石，造成#%伤害	火球爆炸兩次並召喚隕石，造成#%傷害	火球が二度爆発し、隕石を呼んで#%のダメージ	화염구가 두 번 폭발하고 운석을 불러 #% 피해
+SKY BOLTS CHAIN TO # MORE FOES, SHRED DEALS [x]20%	天雷额外连锁#个敌人，撕碎伤害[x]20%	天雷額外連鎖#個敵人，撕碎傷害[x]20%	天雷がさらに#体へ連鎖、切り裂きダメージ[x]20%	낙뢰가 #명에게 더 연쇄, 갈래 찢기 피해 [x]20%
+SKY BOLTS GRANT #% LIFE AS BARRIER, +15% MOVEMENT SPEED	天雷提供#%生命值的屏障，移动速度+15%	天雷提供#%生命值的屏障，移動速度+15%	天雷で最大ライフ#%のバリア、移動速度+15%	낙뢰가 생명력 #% 보호막 부여, 이동 속도 +15%
+BONE SPEAR BURSTS INTO +# SHARDS THAT PIERCE, [x]20% DAMAGE	白骨之矛额外爆出#片穿透碎骨，伤害[x]20%	白骨之矛額外爆出#片穿透碎骨，傷害[x]20%	ボーンスピアの破片+#、貫通する、ダメージ[x]20%	뼈창 파편 +#개, 관통, 피해 [x]20%
+BONE NOVAS RESTORE # ESSENCE AND 2% LIFE, +10% MAXIMUM LIFE	白骨新星恢复#点精魂和2%生命，最大生命+10%	白骨新星恢復#點精魂和2%生命，最大生命+10%	骨の新星でエッセンス#と2%ライフ回復、最大ライフ+10%	뼈 회오리가 정수 #, 생명력 2% 회복, 최대 생명력 +10%
+METEORS FALL IN SHOWERS OF #, FIREBALL DEALS [x]20%	陨石以#颗为一阵落下，火球伤害[x]20%	隕石以#顆為一陣落下，火球傷害[x]20%	隕石が#個ずつ降り注ぐ、火球ダメージ[x]20%	운석이 #개씩 쏟아짐, 화염구 피해 [x]20%
+BURNING FOES EXPLODE ON DEATH FOR #%, 10% DAMAGE REDUCTION	燃烧的敌人死亡时爆炸造成#%伤害，伤害减免10%	燃燒的敵人死亡時爆炸造成#%傷害，傷害減免10%	燃える敵は死亡時に爆発し#%のダメージ、被ダメージ10%軽減	불타는 적이 죽을 때 폭발해 #% 피해, 피해 감소 10%
+STORM WEREWOLF	风暴狼人	風暴狼人	嵐の人狼	폭풍 늑대인간
+SHRED CALLS DOWN THE SKY. NEVER STOPS, NEVER FALLS.	撕碎引下天雷，永不停歇，永不倒下。	撕碎引下天雷，永不停歇，永不倒下。	切り裂きが天を呼ぶ。止まらず、倒れない。	갈래 찢기가 하늘을 부른다. 멈추지도, 쓰러지지도 않는다.
+LANCES OF BONE THAT BURST INTO STORMS OF SHARDS.	白骨长矛炸裂成漫天碎骨风暴。	白骨長矛炸裂成漫天碎骨風暴。	骨の槍が破片の嵐となって弾ける。	뼈의 창이 파편 폭풍으로 터진다.
+FIREBALLS THAT EXPLODE TWICE AND RAIN METEORS.	火球两度爆炸，陨石如雨落下。	火球兩度爆炸，隕石如雨落下。	二度爆ぜる火球と隕石の雨。	두 번 터지는 화염구와 쏟아지는 운석.
+BUILD-DEFINING UNIQUE!	流派核心暗金！	流派核心暗金！	ビルド核心ユニーク！	빌드 핵심 고유 아이템!
+BUILD-DEFINING UNIQUE EMPOWERED	流派核心暗金已强化	流派核心暗金已強化	ビルド核心ユニーク強化	빌드 핵심 고유 아이템 강화
+BUILD-DEFINING UNIQUE	流派核心暗金	流派核心暗金	ビルド核心ユニーク	빌드 핵심 고유 아이템

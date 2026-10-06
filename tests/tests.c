@@ -631,6 +631,101 @@ static void test_control(void)
     CHECK(!hero_manual(w, &P));
 }
 
+/* ---------------------------------------------------- signature builds */
+
+/* A floor with one monster 'dx' cells from the hero, and the class's
+ * build-defining unique equipped. */
+static int sig_setup(int cls, int preset, int dx)
+{
+    World *w = &S.w;
+    Rng r;
+    int uid = sig_unique_for(cls), i;
+    const UniqueDef *u = unique_def(uid);
+    prog_new(&P, 41, cls);
+    build_apply_preset(&P, preset);
+    P.level = 40;
+    P.skill_points = 40 - skill_points_spent(&P);
+    build_auto_spend(&P);
+    rng_seed(&r, 3);
+    item_make_unique(&P.equip[u->slot], &r, 40, uid, false, cls);
+    memset(&S, 0, sizeof S);
+    session_start(&S, &P);
+    for (i = 0; i < w->nmon; i++)
+        w->mon[i].alive = 0;
+    for (i = 0; i < 6 && w->nmon < MAX_MON; i++) {
+        spawn_monster(w, MT_GOLEM, px_to_cell(w->h.x) + dx, px_to_cell(w->h.y), false, false);
+        if (w->mon[w->nmon - 1].alive)
+            break;
+        dx = -dx;
+    }
+    w->mon[w->nmon - 1].max_hp = w->mon[w->nmon - 1].hp = 1e30;   /* a training dummy */
+    w->mon[w->nmon - 1].aggro = 0;
+    return w->nmon - 1;
+}
+
+static int count_fx(const World *w, int kind)
+{
+    int i, n = 0;
+    for (i = 0; i < MAX_FX; i++)
+        n += w->fx[i].alive && w->fx[i].kind == kind;
+    return n;
+}
+
+static void test_signatures(void)
+{
+    World *w = &S.w;
+    Hit h;
+    int m, k, alive;
+    /* storm werewolf: Shred is lightning, every hit a sky bolt that heals */
+    m = sig_setup(CLASS_DRUID, 2, 1);
+    CHECK(w->st.b.sig == SIG_STORMWOLF && w->st.b.skill[SIG_SKILL_SHRED].element == EL_LIGHT);
+    w->h.hp = w->st.max_hp * 0.5;
+    h = skill_hit(w, SIG_SKILL_SHRED, 1.0);
+    deal_damage(w, &P, m, &h);
+    CHECK(count_fx(w, FX_SKYBOLT) >= 1 && w->h.hp > w->st.max_hp * 0.5);
+    /* ... and lunges at foes out of reach */
+    m = sig_setup(CLASS_DRUID, 2, 4);
+    CHECK(sig_reach(w, SIG_SKILL_SHRED, &w->mon[m]));
+    CHECK(cast_skill(w, &P, SIG_SKILL_SHRED, &w->st.b.skill[SIG_SKILL_SHRED], &w->mon[m]) && w->h.dash_t > 0);
+    /* bone spear: the first hit bursts into shards, every sixth spear is a giant */
+    m = sig_setup(CLASS_NECRO, 0, 3);
+    CHECK(w->st.b.sig == SIG_BONESPEAR);
+    for (k = 0; k < 6; k++) {
+        w->h.res = 1000;
+        cast_skill(w, &P, SIG_SKILL_BONESPEAR, &w->st.b.skill[SIG_SKILL_BONESPEAR], &w->mon[m]);
+    }
+    for (k = 0, alive = 0; k < MAX_PROJ; k++)
+        alive += w->pj[k].alive && (w->pj[k].sig & SIGP_GIANT);
+    CHECK(alive == 1);
+    for (k = 0; k < 20; k++)
+        world_tick(w, &P);
+    for (k = 0, alive = 0; k < MAX_PROJ; k++)
+        alive += w->pj[k].alive && (w->pj[k].sig & SIGP_SHARD);
+    CHECK(alive >= 3 || count_fx(w, FX_SHARDS) >= 1);
+    /* inferno: fireballs explode twice and call meteors that land */
+    m = sig_setup(CLASS_SORCERER, 0, 3);
+    CHECK(w->st.b.sig == SIG_INFERNO);
+    for (k = 0; k < 40 && !w->sig.met[0].alive; k++) {
+        Proj pj;
+        memset(&pj, 0, sizeof pj);
+        pj.x = w->mon[m].x;
+        pj.y = w->mon[m].y;
+        pj.radius = 22;
+        pj.hit = skill_hit(w, SIG_SKILL_FIREBALL, 1.0);
+        sig_fireball(w, &P, &pj);
+    }
+    CHECK(count_fx(w, FX_FIRERING) >= 1 && w->sig.met[0].alive);
+    for (k = 0; k < 30; k++)
+        sig_tick(w, &P);
+    CHECK(!w->sig.met[0].alive && w->sig.shake_t >= 0);
+    /* a summoner wearing the spine: no bone spear on the bar, no signature */
+    sig_setup(CLASS_NECRO, 1, 3);
+    CHECK(w->st.b.sig == SIG_NONE && w->st.b.x_life == 1.0);
+    /* the bosses hand out the unique; the auto equip values it */
+    CHECK(sig_unique_for(CLASS_DRUID) && sig_unique_for(CLASS_NECRO) && sig_unique_for(CLASS_SORCERER));
+    CHECK(sig_unique_for(CLASS_BARBARIAN) == 0);
+}
+
 /* --------------------------------------------------------------- events */
 
 static int kill_wave(World *w)
@@ -931,6 +1026,7 @@ int main(void)
     printf("goals\n");         test_goals();
     printf("events\n");        test_events();
     printf("control\n");       test_control();
+    printf("signatures\n");    test_signatures();
     printf("languages\n");     test_languages();
     printf("slots\n");         test_slot_paths();
     printf("sprites\n");       test_sprites();

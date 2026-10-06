@@ -132,7 +132,11 @@ static int card_affixes(const Game *g, const Item *it, int x, int y, int w)
 
 static int card_power(const Game *g, const Item *it, int x, int y, int w)
 {
-    char buf[96];
+    char buf[128];
+    if (item_is_signature(it)) {                 /* the core of a meta build */
+        font_draw(x, y, "BUILD-DEFINING UNIQUE", RGB565(255, 160, 40), 1);
+        y += 10;
+    }
     if (it->rarity == RAR_LEGEND && aspect_def(it->power)) {
         const AspectDef *a = aspect_def(it->power);
         aspect_text(buf, sizeof buf, a, it->power_roll);

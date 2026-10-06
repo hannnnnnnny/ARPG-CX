@@ -207,7 +207,7 @@ static void age_visuals(World *w)
 {
     int i;
     for (i = 0; i < MAX_FLOAT; i++)
-        if (w->fl[i].alive && ++w->fl[i].t > (w->fl[i].kind == FL_BIG ? 36 : 26))
+        if (w->fl[i].alive && ++w->fl[i].t > (w->fl[i].kind >= FL_BIG ? 36 : 26))
             w->fl[i].alive = 0;
     for (i = 0; i < MAX_FX; i++)
         if (w->fx[i].alive && ++w->fx[i].t > w->fx[i].dur)
@@ -278,6 +278,8 @@ void world_tick(World *w, Profile *p)
     grounds_update(w, p);
     orbs_update(w);
     events_tick(w, p);
+    if (w->st.b.sig)
+        sig_tick(w, p);
     bark_tick(&w->bark, (uint32_t)w->tick);
     age_visuals(w);
     if (w->tick % 4 == 0)

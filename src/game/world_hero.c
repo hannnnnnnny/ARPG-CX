@@ -152,6 +152,7 @@ static bool in_reach(const World *w, const SkillRT *s, const Monster *tgt)
     case SB_PROJ:
     case SB_CHAIN:   return d <= MAX(s->range, 24);
     case SB_ARC:
+        return count_near(w, hx(w), hy(w), s->radius) >= 1 || sig_reach(w, (int)(s - w->st.b.skill), tgt);
     case SB_NOVA:
     case SB_CHANNEL: return count_near(w, hx(w), hy(w), s->radius) >= 1;
     case SB_STRIKE:

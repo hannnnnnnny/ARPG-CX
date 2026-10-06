@@ -343,6 +343,22 @@ static void finish_item(Item *it, Rng *r)
     it->name = (uint8_t)rng_range(r, 0, 143);
 }
 
+/* Raise an item to a deeper item level, keeping every roll, temper and
+ * masterwork: values that grow with depth grow with it. */
+void item_rescale(Item *it, int ilvl)
+{
+    double k;
+    int i;
+    if (!it->used || ilvl <= it->ilvl)
+        return;
+    k = floor_scale(ilvl) / floor_scale(it->ilvl);
+    it->main *= k;
+    for (i = 0; i < it->naff; i++)
+        if (affix_info[it->aff[i].type % AF_COUNT].scale == SC_FLOOR)
+            it->aff[i].value *= k;
+    it->ilvl = (uint16_t)ilvl;
+}
+
 void item_make_unique(Item *it, Rng *r, int ilvl, int unique, bool ancestral, int cls)
 {
     const UniqueDef *u = unique_def(unique);

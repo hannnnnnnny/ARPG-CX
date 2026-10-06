@@ -43,8 +43,8 @@ static int ipx(fx prev, fx cur)
 
 static void compute_camera(const World *w)
 {
-    cam_x = CLAMP(ipx(w->h.px, w->h.x) - SCREEN_W / 2, 0, MAP_W * TILE_SIZE - SCREEN_W);
-    cam_y = CLAMP(ipx(w->h.py, w->h.y) - VIEW_H / 2, 0, MAP_H * TILE_SIZE - VIEW_H);
+    cam_x = CLAMP(ipx(w->h.px, w->h.x) - SCREEN_W / 2, 0, MAP_W * TILE_SIZE - SCREEN_W) + render_sig_shake(w, 0);
+    cam_y = CLAMP(ipx(w->h.py, w->h.y) - VIEW_H / 2, 0, MAP_H * TILE_SIZE - VIEW_H) + render_sig_shake(w, 1);
 }
 
 /* Light falls off with the pixel distance from the hero to each tile's
@@ -175,6 +175,7 @@ static void draw_hero(const World *w, const Profile *p)
     gfx_blit(spr_hero_look(&look, frame), x - 8, y - 13, flags);
     if (wp->used)
         fx_draw_weapon(wp->base, wp->rarity + 1, x, y, h->face, h->attack_t, w->accent, w->tick);
+    render_sig_aura(w, x, y);
 }
 
 static void draw_ally(const World *w, const Ally *a)
@@ -289,7 +290,12 @@ static void draw_entities(const World *w, const Profile *p)
         switch (items[i].kind) {
         case DI_DROP: draw_drop(w, &w->dr[items[i].idx]); break;
         case DI_MON:  draw_monster(w, &w->mon[items[i].idx]); break;
-        case DI_PROJ: fx_draw_proj(pj, ipx(pj->px, pj->x) - cam_x, ipx(pj->py, pj->y) - cam_y); break;
+        case DI_PROJ:
+            if (pj->sig & SIGP_GIANT)
+                render_sig_giant(pj, ipx(pj->px, pj->x) - cam_x, ipx(pj->py, pj->y) - cam_y);
+            else
+                fx_draw_proj(pj, ipx(pj->px, pj->x) - cam_x, ipx(pj->py, pj->y) - cam_y);
+            break;
         case DI_ALLY: draw_ally(w, &w->al[items[i].idx]); break;
         default:      draw_hero(w, p); break;
         }
@@ -318,8 +324,14 @@ static void draw_floaters(const World *w)
     for (i = 0; i < MAX_FLOAT; i++)
         if (w->fl[i].alive) {
             const Floater *f = &w->fl[i];
-            int scale = f->kind == FL_BIG ? 2 : 1;
+            int scale = f->kind == FL_MEGA ? (f->t < 5 ? 3 : 2) : f->kind == FL_BIG ? 2 : 1;
             int x = f->x - cam_x - font_text_width(f->text, scale) / 2, y = f->y - cam_y - f->t / 2;
+            if (f->kind == FL_MEGA) {              /* signature hits: a thick outline that pops */
+                font_draw(x - 1, y, f->text, 0, scale);
+                font_draw(x + 2, y, f->text, 0, scale);
+                font_draw(x, y - 1, f->text, 0, scale);
+                font_draw(x, y + 2, f->text, 0, scale);
+            }
             font_draw(x + 1, y + 1, f->text, 0, scale);
             font_draw(x, y, f->text, f->color, scale);
         }
@@ -341,5 +353,6 @@ void render_world(const World *w, const Profile *p)
     render_event_object(w, cam_x, cam_y);
     draw_entities(w, p);
     draw_overlays(w);
+    render_sig_flash(w, VIEW_H);
     draw_floaters(w);
 }

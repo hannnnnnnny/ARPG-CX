@@ -44,6 +44,8 @@ extern const int unique_count;          /* ids 1..unique_count */
 
 const AspectDef *aspect_def(int id);    /* NULL if out of range */
 const UniqueDef *unique_def(int id);
+/* A build-defining unique (sig.h): the auto equip never takes it off. */
+bool item_is_signature(const Item *it);
 double aspect_value(const AspectDef *a, int roll);      /* roll 0..1000 */
 double unique_value(const UniqueDef *u, int roll);
 /* Text with '#' filled in. */
