@@ -1,0 +1,95 @@
+// Aspect and unique powers ('#' = rolled value), unique item names, aspect categories.
+#% COOLDOWN REDUCTION	冷却缩减#%	冷卻縮減#%	クールダウン短縮#%	재사용 대기시간 #% 감소
+#% COOLDOWN REDUCTION, +20 MAXIMUM RESOURCE	冷却缩减#%，最大资源+20	冷卻縮減#%，最大資源+20	クールダウン短縮#%、最大リソース+20	재사용 대기시간 #% 감소, 최대 자원 +20
+#% DAMAGE REDUCTION	伤害减免#%	傷害減免#%	ダメージ軽減#%	피해 감소 #%
+#% DAMAGE REDUCTION, EARTHQUAKE FOLLOWS YOU	伤害减免#%，地震跟随你	傷害減免#%，地震跟隨你	ダメージ軽減#%、地震が追従	피해 감소 #%, 지진이 따라다님
+#% RESOURCE COST REDUCTION	资源消耗降低#%	資源消耗降低#%	リソース消費軽減#%	자원 소모 #% 감소
++# RANKS TO ALL SKILLS, 15% DAMAGE REDUCTION	所有技能+#级，伤害减免15%	所有技能+#級，傷害減免15%	全スキル+#ランク、ダメージ軽減15%	모든 기술 +# 레벨, 피해 감소 15%
++# SKELETON WARRIORS	+#名骷髅战士	+#名骷髏戰士	スケルトン戦士+#	해골 전사 +#
++# SKELETON WARRIORS, MINIONS [x]30%	+#名骷髅战士，仆从[x]30%	+#名骷髏戰士，僕從[x]30%	スケルトン戦士+#、ミニオン[x]30%	해골 전사 +#, 하수인 [x]30%
++# TORNADOES, STORM SKILLS [x]25%	+#道龙卷风，风暴技能[x]25%	+#道龍捲風，風暴技能[x]25%	竜巻+#、嵐スキル[x]25%	회오리 +#, 폭풍 기술 [x]25%
++# WOLVES, MINIONS [x]30% DAMAGE	+#只狼，仆从[x]30%伤害	+#隻狼，僕從[x]30%傷害	狼+#、ミニオンのダメージ[x]30%	늑대 +#, 하수인 피해 [x]30%
++#% ATTACK SPEED	攻速+#%	攻速+#%	攻撃速度+#%	공격 속도 +#%
++#% CRITICAL STRIKE CHANCE	暴击率+#%	暴擊率+#%	会心率+#%	극대화 확률 +#%
++#% GOLD AND EXPERIENCE, [x]10% DAMAGE	金币与经验+#%，[x]10%伤害	金幣與經驗+#%，[x]10%傷害	ゴールドと経験+#%、ダメージ[x]10%	골드와 경험치 +#%, 피해 [x]10%
++#% GOLD FOUND AND +20% EXPERIENCE	金币获取+#%，经验+20%	金幣獲取+#%，經驗+20%	ゴールド獲得+#%、経験+20%	골드 획득 +#%, 경험치 +20%
++#% MAXIMUM LIFE	最大生命+#%	最大生命+#%	最大ライフ+#%	최대 생명력 +#%
++#% MOVEMENT SPEED	移动速度+#%	移動速度+#%	移動速度+#%	이동 속도 +#%
++#% MOVEMENT SPEED, 5% DAMAGE REDUCTION	移动速度+#%，伤害减免5%	移動速度+#%，傷害減免5%	移動速度+#%、ダメージ軽減5%	이동 속도 +#%, 피해 감소 5%
++#% THORNS	荆棘+#%	荊棘+#%	茨+#%	가시 +#%
+BARRAGE FIRES +# ARROWS	弹幕+#支箭	彈幕+#支箭	バラージの矢+#	탄막 화살 +#
+BLIGHT +#% SIZE, [x]20% DAMAGE	枯萎范围+#%，[x]20%伤害	枯萎範圍+#%，[x]20%傷害	ブライト範囲+#%、ダメージ[x]20%	역병 크기 +#%, 피해 [x]20%
+BLOOD SURGE DEALS [x]#% DAMAGE	鲜血涌动造成[x]#%伤害	鮮血湧動造成[x]#%傷害	ブラッドサージのダメージ[x]#%	피의 쇄도 피해 [x]#%
+BONE SKILLS DEAL [x]#%, +5% CRIT CHANCE	白骨技能[x]#%，暴击率+5%	白骨技能[x]#%，暴擊率+5%	骨スキル[x]#%、会心率+5%	뼈 기술 [x]#%, 극대화 확률 +5%
+BONE SPEAR DEALS [x]#% AND SHATTERS	白骨之矛[x]#%并碎裂	白骨之矛[x]#%並碎裂	ボーンスピア[x]#%、砕け散る	뼈창 [x]#%, 산산조각
+BOULDER DEALS [x]#% AND PIERCES	巨石[x]#%并穿透	巨石[x]#%並穿透	ボルダー[x]#%、貫通	바위 [x]#%, 관통
+CENTIPEDE SWARM +#% SIZE AND FOLLOWS YOU	蜈蚣虫群范围+#%并跟随你	蜈蚣蟲群範圍+#%並跟隨你	ムカデの群れ範囲+#%、追従	지네 떼 크기 +#%, 따라다님
+CHAIN LIGHTNING +# CHAINS	连锁闪电+#次连锁	連鎖閃電+#次連鎖	チェインライトニング連鎖+#	연쇄 번개 연쇄 +#
+COOLDOWN SKILLS GRANT A BARRIER OF #% LIFE	冷却技能提供#%生命的屏障	冷卻技能提供#%生命的屏障	CDスキルでライフ#%のバリア	재사용 기술이 생명력 #% 보호막 부여
+CORPSE EXPLOSION +#% SIZE, [x]30% DAMAGE	尸体爆炸范围+#%，[x]30%伤害	屍體爆炸範圍+#%，[x]30%傷害	死体爆発範囲+#%、ダメージ[x]30%	시체 폭발 크기 +#%, 피해 [x]30%
+CRUSHING PALM DEALS [x]#% DAMAGE	碎岩掌造成[x]#%伤害	碎岩掌造成[x]#%傷害	粉砕の掌のダメージ[x]#%	분쇄의 손바닥 피해 [x]#%
+CYCLONE ARMOR COOLDOWN -#%	旋风护甲冷却-#%	旋風護甲冷卻-#%	サイクロンアーマーCD-#%	회오리 갑옷 재사용 -#%
+EARTH SKILLS DEAL [x]#%, +5% OVERPOWER CHANCE	大地技能[x]#%，压制几率+5%	大地技能[x]#%，壓制機率+5%	大地スキル[x]#%、威圧確率+5%	대지 기술 [x]#%, 제압 확률 +5%
+EARTHQUAKE +#% SIZE AND LASTS 2S LONGER	地震范围+#%，持续+2秒	地震範圍+#%，持續+2秒	地震範囲+#%、持続+2秒	지진 크기 +#%, 지속 +2초
+FIREBALL DEALS [x]#% AND LEAVES BURNING GROUND	火球术[x]#%并留下燃烧地面	火球術[x]#%並留下燃燒地面	ファイアボール[x]#%、燃える地面	화염구 [x]#%, 불타는 땅
+FROST NOVA COOLDOWN -#%, MAKES VULNERABLE	冰霜新星冷却-#%，造成易伤	冰霜新星冷卻-#%，造成易傷	フロストノヴァCD-#%、脆弱化	서리 회오리 재사용 -#%, 취약
+GROUND SLAM DEALS [x]#% AND HITS ALL AROUND	震地猛击[x]#%并命中周围	震地猛擊[x]#%並命中周圍	大地強打[x]#%、周囲全てに命中	대지 강타 [x]#%, 주변 전체 적중
+ICE SHARDS +# SHARDS THAT FREEZE	冰霜碎片+#片且冻结	冰霜碎片+#片且凍結	アイスシャード+#、凍結	얼음 파편 +#, 빙결
+IMBUED SKILLS DEAL [x]#% DAMAGE	灌注技能造成[x]#%伤害	灌注技能造成[x]#%傷害	付与スキルのダメージ[x]#%	주입된 기술 피해 [x]#%
+JAGUAR SKILLS DEAL [x]#% DAMAGE	美洲豹技能造成[x]#%伤害	美洲豹技能造成[x]#%傷害	ジャガースキルのダメージ[x]#%	재규어 기술 피해 [x]#%
+KILLS HEAL #% OF YOUR LIFE	击杀恢复#%生命	擊殺恢復#%生命	撃破でライフ#%回復	처치 시 생명력 #% 회복
+KILLS RESTORE # RESOURCE	击杀恢复#点资源	擊殺恢復#點資源	撃破でリソース#回復	처치 시 자원 # 회복
+LANDSLIDE DEALS [x]#% DAMAGE	山崩造成[x]#%伤害	山崩造成[x]#%傷害	地すべりのダメージ[x]#%	산사태 피해 [x]#%
+LEAP SLAM DEALS [x]#% AND LEAVES AN EARTHQUAKE	跃击[x]#%并留下地震	躍擊[x]#%並留下地震	跳躍強打[x]#%、地震を残す	도약 강타 [x]#%, 지진을 남김
+LUCKY HIT: UP TO #% CHANCE TO MAKE ENEMIES VULNERABLE	幸运一击：最多#%几率使敌人易伤	幸運一擊：最多#%機率使敵人易傷	ラッキーヒット：最大#%で敵を脆弱化	행운의 적중: 최대 #% 확률로 적 취약
+METEOR COOLDOWN -#%	陨石术冷却-#%	隕石術冷卻-#%	メテオCD-#%	운석 재사용 -#%
+METEOR FALLS +# TIMES AND DEALS [x]30%	陨石多落下#次并造成[x]30%	隕石多落下#次並造成[x]30%	メテオが+#回落下、[x]30%	운석이 +#회 떨어지고 [x]30%
+MINIONS DEAL [x]#% DAMAGE	仆从造成[x]#%伤害	僕從造成[x]#%傷害	ミニオンのダメージ[x]#%	하수인 피해 [x]#%
+PENETRATING SHOT +# ARROWS, [x]40% DAMAGE	穿透射击+#支箭，[x]40%伤害	穿透射擊+#支箭，[x]40%傷害	貫通射撃の矢+#、ダメージ[x]40%	관통 사격 화살 +#, 피해 [x]40%
+PENETRATING SHOT DEALS [x]#% DAMAGE	穿透射击造成[x]#%伤害	穿透射擊造成[x]#%傷害	貫通射撃のダメージ[x]#%	관통 사격 피해 [x]#%
+QUILL VOLLEY DEALS [x]#%, +3 QUILLS	羽刃齐射[x]#%，+3根羽刃	羽刃齊射[x]#%，+3根羽刃	羽根の一斉射[x]#%、羽根+3	깃털 일제 사격 [x]#%, 깃털 +3
+QUILL VOLLEY FIRES +# QUILLS	羽刃齐射+#根羽刃	羽刃齊射+#根羽刃	羽根の一斉射の羽根+#	깃털 일제 사격 깃털 +#
+RAIN OF ARROWS COOLDOWN -#%	箭雨冷却-#%	箭雨冷卻-#%	アローレインCD-#%	화살비 재사용 -#%
+REND DEALS [x]#% DAMAGE	撕裂造成[x]#%伤害	撕裂造成[x]#%傷害	切り裂きのダメージ[x]#%	찢어발기기 피해 [x]#%
+SHRED DEALS [x]#% DAMAGE	撕碎造成[x]#%伤害	撕碎造成[x]#%傷害	シュレッドのダメージ[x]#%	갈가리 찢기 피해 [x]#%
+SOAR COOLDOWN -#%	翱翔冷却-#%	翱翔冷卻-#%	飛翔CD-#%	비상 재사용 -#%
+SPIKE TRAP +#% SIZE AND POISONS	尖刺陷阱范围+#%并带毒	尖刺陷阱範圍+#%並帶毒	スパイクトラップ範囲+#%、毒	가시 덫 크기 +#%, 중독
+STINGER DEALS [x]#% AND LEAVES POISON	毒刺[x]#%并留下毒素	毒刺[x]#%並留下毒素	スティンガー[x]#%、毒を残す	독침 [x]#%, 독을 남김
+THUNDERSTORM +#% SIZE AND FOLLOWS YOU	雷暴范围+#%并跟随你	雷暴範圍+#%並跟隨你	サンダーストーム範囲+#%、追従	뇌우 크기 +#%, 따라다님
+TORNADO SPAWNS +# TORNADOES	龙卷风多生成#道	龍捲風多生成#道	竜巻が+#増える	회오리가 +#개 생성
+WAR CRY COOLDOWN -#%, GRANTS UNSTOPPABLE	战吼冷却-#%，获得势不可挡	戰吼冷卻-#%，獲得勢不可擋	ウォークライCD-#%、阻止不可	전투의 외침 재사용 -#%, 저지 불가
+WHIRLWIND DEALS [x]#% AND IS 30% LARGER	旋风斩[x]#%且范围大30%	旋風斬[x]#%且範圍大30%	旋風[x]#%、範囲30%拡大	소용돌이 [x]#%, 범위 30% 증가
+WHIRLWIND DEALS [x]#% DAMAGE AND HEALS	旋风斩造成[x]#%伤害并治疗	旋風斬造成[x]#%傷害並治療	旋風のダメージ[x]#%、回復	소용돌이 피해 [x]#%, 회복
+[x]#% CRITICAL STRIKE DAMAGE	[x]#%暴击伤害	[x]#%暴擊傷害	会心ダメージ[x]#%	극대화 피해 [x]#%
+[x]#% DAMAGE	[x]#%伤害	[x]#%傷害	ダメージ[x]#%	피해 [x]#%
+[x]#% DAMAGE OVER TIME	[x]#%持续伤害	[x]#%持續傷害	継続ダメージ[x]#%	지속 피해 [x]#%
+[x]#% DAMAGE OVER TIME, 5% DAMAGE REDUCTION	[x]#%持续伤害，伤害减免5%	[x]#%持續傷害，傷害減免5%	継続ダメージ[x]#%、ダメージ軽減5%	지속 피해 [x]#%, 피해 감소 5%
+[x]#% DAMAGE TO CROWD CONTROLLED ENEMIES	对受控敌人[x]#%伤害	對受控敵人[x]#%傷害	行動妨害中の敵へ[x]#%	군중 제어된 적에게 피해 [x]#%
+[x]#% DAMAGE TO VULNERABLE ENEMIES	对易伤敌人[x]#%伤害	對易傷敵人[x]#%傷害	脆弱な敵へ[x]#%	취약한 적에게 피해 [x]#%
+[x]#% DAMAGE TO VULNERABLE, LUCKY HIT: 25% VULNERABLE	对易伤[x]#%伤害，幸运一击：25%易伤	對易傷[x]#%傷害，幸運一擊：25%易傷	脆弱へ[x]#%、ラッキーヒット：25%脆弱化	취약 대상 피해 [x]#%, 행운의 적중: 25% 취약
+[x]#% DAMAGE, +10% CRITICAL STRIKE CHANCE	[x]#%伤害，暴击率+10%	[x]#%傷害，暴擊率+10%	ダメージ[x]#%、会心率+10%	피해 [x]#%, 극대화 확률 +10%
+[x]#% FIRE DAMAGE	[x]#%火焰伤害	[x]#%火焰傷害	火炎ダメージ[x]#%	화염 피해 [x]#%
+[x]#% OVERPOWER DAMAGE, +5% OVERPOWER CHANCE	[x]#%压制伤害，压制几率+5%	[x]#%壓制傷害，壓制機率+5%	威圧ダメージ[x]#%、威圧確率+5%	제압 피해 [x]#%, 제압 확률 +5%
+[x]#% POISON DAMAGE, +8% ATTACK SPEED	[x]#%毒素伤害，攻速+8%	[x]#%毒素傷害，攻速+8%	毒ダメージ[x]#%、攻撃速度+8%	독 피해 [x]#%, 공격 속도 +8%
+ASHWALKER BOOTS	踏灰者之靴	踏灰者之靴	灰歩きの靴	재걸음 장화
+BAND OF EMBERLIGHT	烬光指环	燼光指環	燃え火の指輪	잿불빛 반지
+CENTIPEDE COIL	蜈蚣之缠	蜈蚣之纏	ムカデの巻物	지네 고리
+CHAINS OF THE PIT	深渊锁链	深淵鎖鏈	奈落の鎖	구덩이의 사슬
+CROWN OF THE NAMELESS KING	无名之王的王冠	無名之王的王冠	名もなき王の冠	이름 없는 왕의 왕관
+EMBERWEAVE ROBE	烬织长袍	燼織長袍	燃え殻織りのローブ	잿불 직조 로브
+GLOAMING HEART	暮光之心	暮光之心	薄明の心臓	황혼의 심장
+GRAVEWARDEN'S MAUL	守墓人之槌	守墓人之槌	墓守の大槌	무덤지기의 망치
+MOONBARK TOTEM	月树皮图腾	月樹皮圖騰	月樹皮のトーテム	달껍질 토템
+OSSUARY CROWN	藏骨堂之冠	藏骨堂之冠	納骨堂の冠	납골당 왕관
+STARFALL CIRCLET	星落头环	星落頭環	星落ちのサークレット	별똥별 머리장식
+STORMHIDE MANTLE	风暴皮斗篷	風暴皮斗篷	嵐皮のマント	폭풍가죽 망토
+TALON OF THE FOUR	四灵之爪	四靈之爪	四霊の鉤爪	넷의 발톱
+THE HOLLOW BELL	空洞之钟	空洞之鐘	虚ろな鐘	텅 빈 종
+THE SHATTERED STAR	破碎之星	破碎之星	砕けた星	부서진 별
+VEIL OF THE PALE MOON	苍月面纱	蒼月面紗	蒼月のヴェール	창백한 달의 장막
+VIPERSKIN WRAPS	蝰蛇皮缠手	蝰蛇皮纏手	毒蛇皮の手甲	독사가죽 손싸개
+WHISPERWIND BOW	低语之风长弓	低語之風長弓	囁く風の弓	속삭이는 바람 활
+OFFENSIVE	进攻	進攻	攻撃	공격
+MOBILITY	机动	機動	機動	기동
+RESOURCE	资源	資源	リソース	자원
+UTILITY	功能	功能	ユーティリティ	유틸리티

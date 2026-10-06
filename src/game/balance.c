@@ -1,0 +1,91 @@
+#include "balance.h"
+#include <math.h>
+
+double floor_scale(int floor)
+{
+    double f = (double)MAX(floor, 1) - 1.0;
+    return pow(1.075, f) * (1.0 + 0.04 * f);
+}
+
+double monster_scale(int floor)
+{
+    /* Monsters outgrow gear a little on every floor: that gap is the idle
+     * "wall" that crafting, skills, paragon and rebirth push through. */
+    return floor_scale(floor) * pow(1.05, (double)MAX(floor, 1) - 1.0);
+}
+
+double xp_to_next(int level)
+{
+    return 25.0 * pow(1.13, (double)(MIN(MAX(level, 1), LEVEL_CAP) - 1));
+}
+
+double paragon_xp(int paragon_level)
+{
+    /* Each paragon level asks a little more than the last, so the boards
+     * keep filling for many hours instead of in one evening. */
+    return xp_to_next(LEVEL_CAP) * pow(1.035, (double)MAX(paragon_level, 0));
+}
+
+double kill_xp(int floor)   { return 6.0 * floor_scale(floor); }
+double kill_gold(int floor) { return 3.0 * floor_scale(floor); }
+
+double salvage_gold(const Item *it)
+{
+    static const double mult[RAR_COUNT] = { 2.0, 5.0, 14.0, 40.0, 60.0, 100.0 };
+    return mult[it->rarity % RAR_COUNT] * floor_scale(it->ilvl);
+}
+
+double salvage_iron(const Item *it)
+{
+    static const double n[RAR_COUNT] = { 1, 2, 4, 5, 5, 10 };
+    return n[it->rarity % RAR_COUNT];
+}
+
+double salvage_souls(const Item *it)
+{
+    static const double n[RAR_COUNT] = { 0, 0, 0.5, 2, 3, 10 };
+    return n[it->rarity % RAR_COUNT] * (it->ancestral ? 2 : 1);
+}
+
+double masterwork_gold(const Item *it)  { return 15.0 * pow(1.35, it->mw) * floor_scale(it->ilvl); }
+double masterwork_iron(const Item *it)  { return 3.0 + 2.0 * it->mw; }
+double masterwork_souls(const Item *it) { return it->mw >= 8 ? (it->mw - 7) * 2.0 : it->mw >= 4 ? 1.0 : 0.0; }
+double temper_gold(const Item *it)      { return 10.0 * floor_scale(it->ilvl); }
+double enchant_gold(const Item *it)     { return 12.0 * floor_scale(it->ilvl); }
+double imprint_gold(const Item *it)     { return 25.0 * floor_scale(it->ilvl); }
+double socket_gold(const Item *it)      { return 30.0 * floor_scale(it->ilvl); }
+double gem_craft_gold(int tier)         { return 40.0 * pow(4.0, tier); }
+double gamble_gold(int best_floor)      { return 60.0 * floor_scale(best_floor); }
+double elixir_gold(int best_floor)      { return 40.0 * floor_scale(best_floor); }
+double potion_upgrade_gold(int lvl)     { return 500.0 * pow(6.0, lvl); }
+
+double respec_gold(int level, int best_floor)
+{
+    return level < 15 ? 0.0 : floor(20.0 * floor_scale(best_floor));
+}
+
+double ember_reward(int best_floor)
+{
+    if (best_floor < REBIRTH_MIN_FLOOR)
+        return 0;
+    return floor(pow(best_floor / 10.0, 2.2));
+}
+
+double upgrade_cost(int rank)
+{
+    return ceil(pow(1.55, (double)rank));
+}
+
+int upgrade_max(UpgradeId id)
+{
+    switch (id) {
+    case UP_START:    return 10;
+    case UP_PATIENCE: return 8;
+    case UP_FORTUNE:  return 20;
+    case UP_HASTE:    return 20;
+    default:          return 99;
+    }
+}
+
+int floor_monsters(int floor) { return 12 + MIN(floor / 3, 16); }
+int floor_quota(int floor)    { return floor_monsters(floor) * 3 / 4; }

@@ -1,0 +1,181 @@
+// Items: rarities, slots, bases, affix labels, name fragments, gems, temper recipes.
++%d RANKS TO %s	+%d级 %s	+%d級 %s	+%dランク：%s	+%d 레벨: %s
+LUCKY HIT: %s%% CHANCE TO MAKE VULNERABLE	幸运一击：%s%%几率使敌人易伤	幸運一擊：%s%%機率使敵人易傷	ラッキーヒット：%s%%で脆弱化	행운의 적중: %s%% 확률로 취약
+RANKS TO	级：	級：	ランク：	레벨:
+COMMON	普通	普通	コモン	일반
+MAGIC	魔法	魔法	マジック	마법
+RARE	稀有	稀有	レア	희귀
+LEGENDARY	传奇	傳奇	レジェンダリー	전설
+UNIQUE	暗金	暗金	ユニーク	고유
+MYTHIC UNIQUE	神话暗金	神話暗金	神話ユニーク	신화 고유
+WEAPON	武器	武器	武器	무기
+OFF-HAND	副手	副手	オフハンド	보조장비
+HELM	头盔	頭盔	兜	투구
+CHEST	胸甲	胸甲	胴	갑옷
+GLOVES	手套	手套	手袋	장갑
+PANTS	护腿	護腿	脚	바지
+BOOTS	靴子	靴子	ブーツ	장화
+AMULET	护身符	護身符	アミュレット	목걸이
+RING	戒指	戒指	指輪	반지
+SWORD	剑	劍	剣	검
+AXE	斧	斧	斧	도끼
+MACE	锤	錘	メイス	철퇴
+STAFF	法杖	法杖	杖	지팡이
+WAND	魔杖	魔杖	ワンド	마법봉
+BOW	弓	弓	弓	활
+CROSSBOW	弩	弩	クロスボウ	석궁
+DAGGER	匕首	匕首	ダガー	단검
+SCYTHE	镰刀	鐮刀	大鎌	낫
+GLAIVE	长柄刃	長柄刃	グレイブ	글레이브
+QUARTERSTAFF	长棍	長棍	クォータースタッフ	육척봉
+SHIELD	盾牌	盾牌	盾	방패
+FOCUS	法器	法器	フォーカス	집중구
+TOTEM	图腾	圖騰	トーテム	토템
+HAND AXE	手斧	手斧	手斧	손도끼
+HOOD	兜帽	兜帽	フード	두건
+SKULLCAP	便帽	便帽	スカルキャップ	두개모
+HORNED HELM	角盔	角盔	角兜	뿔 투구
+GREAT HELM	巨盔	巨盔	大兜	대투구
+ROBE	长袍	長袍	ローブ	로브
+LEATHERS	皮甲	皮甲	革鎧	가죽 갑옷
+CHAIN MAIL	锁甲	鎖甲	鎖帷子	사슬 갑옷
+PLATE	板甲	板甲	板金鎧	판금 갑옷
+WRAPS	裹手	裹手	包帯	손싸개
+GAUNTLETS	铁手套	鐵手套	ガントレット	건틀릿
+WARGRIPS	战握	戰握	ウォーグリップ	전투 손아귀
+LEGGINGS	绑腿	綁腿	レギンス	레깅스
+TROUSERS	长裤	長褲	ズボン	바지
+CHAINLEGS	锁甲护腿	鎖甲護腿	鎖の脚甲	사슬 각반
+GREAVES	护胫	護脛	グリーヴ	정강이받이
+SANDALS	凉鞋	涼鞋	サンダル	샌들
+WARBOOTS	战靴	戰靴	戦靴	전투화
+TREADS	行者靴	行者靴	トレッド	걸음신
+CHARM	护符	護符	お守り	부적
+TALISMAN	法宝	法寶	タリスマン	탈리스만
+PENDANT	吊坠	吊墜	ペンダント	펜던트
+BAND	指环	指環	バンド	고리
+SIGNET	印戒	印戒	印章指輪	인장 반지
+LOOP	环戒	環戒	ループ	고리 반지
+DAMAGE PER HIT	每击伤害	每擊傷害	1撃ダメージ	타격당 피해
+ARMOR	护甲	護甲	アーマー	방어도
+CRITICAL STRIKE CHANCE	暴击率	暴擊率	会心率	극대화 확률
+CRITICAL STRIKE DAMAGE	暴击伤害	暴擊傷害	会心ダメージ	극대화 피해
+VULNERABLE DAMAGE	易伤伤害	易傷傷害	脆弱ダメージ	취약 피해
+OVERPOWER DAMAGE	压制伤害	壓制傷害	威圧ダメージ	제압 피해
+ATTACK SPEED	攻击速度	攻擊速度	攻撃速度	공격 속도
+LUCKY HIT CHANCE	幸运一击几率	幸運一擊機率	ラッキーヒット率	행운의 적중 확률
+DAMAGE TO CLOSE ENEMIES	对近距离敌人伤害	對近距離敵人傷害	近くの敵へのダメージ	근거리 적 피해
+DAMAGE TO DISTANT ENEMIES	对远距离敌人伤害	對遠距離敵人傷害	遠くの敵へのダメージ	원거리 적 피해
+DAMAGE TO CROWD CONTROLLED	对受控敌人伤害	對受控敵人傷害	行動妨害中の敵へのダメージ	군중 제어 적 피해
+DAMAGE TO ELITES	对精英伤害	對精英傷害	エリートへのダメージ	정예 피해
+DAMAGE OVER TIME	持续伤害	持續傷害	継続ダメージ	지속 피해
+CORE SKILL DAMAGE	核心技能伤害	核心技能傷害	コアスキルダメージ	핵심 기술 피해
+BASIC SKILL DAMAGE	基础技能伤害	基礎技能傷害	基本スキルダメージ	기본 기술 피해
+PHYSICAL DAMAGE	物理伤害	物理傷害	物理ダメージ	물리 피해
+FIRE DAMAGE	火焰伤害	火焰傷害	火炎ダメージ	화염 피해
+COLD DAMAGE	冰霜伤害	冰霜傷害	冷気ダメージ	냉기 피해
+POISON DAMAGE	毒素伤害	毒素傷害	毒ダメージ	독 피해
+SHADOW DAMAGE	暗影伤害	暗影傷害	影ダメージ	암흑 피해
+MAXIMUM LIFE	最大生命	最大生命	最大ライフ	최대 생명력
+DAMAGE REDUCTION	伤害减免	傷害減免	ダメージ軽減	피해 감소
+DAMAGE REDUCTION FROM CLOSE	受近距离伤害减免	受近距離傷害減免	近くからの被ダメージ軽減	근거리 피해 감소
+RESISTANCE TO ALL ELEMENTS	全元素抗性	全元素抗性	全属性耐性	모든 원소 저항
+LIFE ON HIT	击中回复生命	擊中回復生命	命中時ライフ回復	적중 시 생명력
+LIFE ON KILL	击杀回复生命	擊殺回復生命	撃破時ライフ回復	처치 시 생명력
+LIFE PER SECOND	每秒回复生命	每秒回復生命	毎秒ライフ回復	초당 생명력
+BARRIER GENERATION	屏障生成	屏障生成	バリア生成	보호막 생성
+THORNS	荆棘	荊棘	茨	가시
+COOLDOWN REDUCTION	冷却缩减	冷卻縮減	クールダウン短縮	재사용 대기시간 감소
+RESOURCE COST REDUCTION	资源消耗降低	資源消耗降低	リソース消費軽減	자원 소모 감소
+RESOURCE GENERATION	资源生成	資源生成	リソース生成	자원 생성
+MAXIMUM RESOURCE	最大资源	最大資源	最大リソース	최대 자원
+MOVEMENT SPEED	移动速度	移動速度	移動速度	이동 속도
+CROWD CONTROL DURATION	控制持续时间	控制持續時間	行動妨害時間	군중 제어 지속시간
+GOLD FOUND	金币获取	金幣獲取	ゴールド獲得	골드 획득
+EXPERIENCE	经验	經驗	経験値	경험치
+ALL RESISTANCE	全抗性	全抗性	全耐性	모든 저항
+FIRE RESISTANCE	火焰抗性	火焰抗性	火炎耐性	화염 저항
+COLD RESISTANCE	冰霜抗性	冰霜抗性	冷気耐性	냉기 저항
+LIGHTNING RESISTANCE	闪电抗性	閃電抗性	雷耐性	번개 저항
+POISON RESISTANCE	毒素抗性	毒素抗性	毒耐性	독 저항
+SHADOW RESISTANCE	暗影抗性	暗影抗性	影耐性	암흑 저항
+DR FROM CLOSE ENEMIES	近敌伤害减免	近敵傷害減免	近くの敵からの軽減	근거리 적 피해 감소
+MIGHTY	强力的	強力的	強大な	강력한
+PRECISE	精准的	精準的	精密な	정밀한
+SAVAGE	野蛮的	野蠻的	野蛮な	야만적인
+CRUEL	残忍的	殘忍的	残酷な	잔인한
+CRUSHING	碾压的	碾壓的	粉砕の	분쇄하는
+QUICK	迅捷的	迅捷的	素早い	재빠른
+LUCKY	幸运的	幸運的	幸運の	행운의
+BRUTAL	残暴的	殘暴的	残虐な	잔혹한
+FARSIGHTED	远见的	遠見的	遠見の	멀리 보는
+TYRANT'S	暴君的	暴君的	暴君の	폭군의
+SLAYER'S	屠戮者的	屠戮者的	討伐者の	학살자의
+FESTERING	溃烂的	潰爛的	膿んだ	곪은
+ARCANE	奥术的	奧術的	秘術の	비전의
+HONED	磨砺的	磨礪的	研ぎ澄まされた	연마된
+HEAVY	沉重的	沉重的	重い	묵직한
+SEARING	灼热的	灼熱的	灼熱の	작열하는
+CHARGED	充能的	充能的	帯電した	충전된
+VENOMOUS	剧毒的	劇毒的	猛毒の	맹독의
+UMBRAL	暗影的	暗影的	闇の	그림자의
+ADEPT'S	行家的	行家的	熟達者の	숙련자의
+EXPOSING	揭露的	揭露的	暴く	드러내는
+OF THE BEAR	巨熊之	巨熊之	熊の	곰의
+OF IRON	钢铁之	鋼鐵之	鉄の	강철의
+OF WARDING	守护之	守護之	守りの	수호의
+OF THE WALL	城墙之	城牆之	城壁の	성벽의
+OF THE PRISM	棱镜之	稜鏡之	プリズムの	프리즘의
+OF LEECHING	吸取之	吸取之	吸収の	흡수의
+OF FEASTING	饕餮之	饕餮之	饗宴の	포식의
+OF MENDING	愈合之	癒合之	癒しの	치유의
+OF SHELTER	庇护之	庇護之	庇護の	보호의
+OF BRAMBLES	荆丛之	荊叢之	茨の	가시덤불의
+OF FOCUS	专注之	專注之	集中の	집중의
+OF THRIFT	节约之	節約之	倹約の	절약의
+OF THE SPRING	泉水之	泉水之	泉の	샘의
+OF DEPTH	深渊之	深淵之	深淵の	심연의
+OF THE WIND	疾风之	疾風之	風の	바람의
+OF BINDING	束缚之	束縛之	束縛の	속박의
+OF GREED	贪婪之	貪婪之	強欲の	탐욕의
+OF WISDOM	智慧之	智慧之	知恵の	지혜의
+GRIM	阴森	陰森	冷酷な	음산한
+DOOM	厄运	厄運	破滅の	파멸의
+BLOOD	血腥	血腥	血の	피의
+GHOUL	食尸鬼	食屍鬼	屍鬼の	구울의
+RUNE	符文	符文	ルーンの	룬
+DUSK	黄昏	黃昏	黄昏の	황혼의
+ASH	灰烬	灰燼	灰の	잿빛
+BONE	白骨	白骨	骨の	뼈
+DREAD	恐惧	恐懼	恐怖の	공포의
+VILE	邪恶	邪惡	邪悪な	사악한
+HEX	咒术	咒術	呪いの	저주의
+FANG	之牙	之牙	牙	송곳니
+BITE	之噬	之噬	噛み	이빨
+SHROUD	之寿衣	之壽衣	経帷子	수의
+WARD	之护	之護	守り	수호
+GRASP	之握	之握	握り	손아귀
+HOWL	之嚎	之嚎	咆哮	울부짖음
+MARK	之印	之印	刻印	표식
+EDGE	之刃	之刃	刃	칼날
+VEIL	之纱	之紗	ヴェール	장막
+BRAND	之烙	之烙	烙印	낙인
+COIL	之环	之環	輪	고리
+SCAR	之痕	之痕	傷痕	흉터
+CHIPPED	碎裂	碎裂	欠けた	깨진
+FLAWED	瑕疵	瑕疵	傷のある	흠 있는
+FLAWLESS	无瑕	無瑕	完璧な	완벽한
+ROYAL	皇家	皇家	王家の	왕실
+RUBY	红宝石	紅寶石	ルビー	루비
+SAPPHIRE	蓝宝石	藍寶石	サファイア	사파이어
+EMERALD	绿宝石	綠寶石	エメラルド	에메랄드
+TOPAZ	黄玉	黃玉	トパーズ	토파즈
+AMETHYST	紫水晶	紫水晶	アメジスト	자수정
+DIAMOND	钻石	鑽石	ダイヤモンド	다이아몬드
+SKULL	头骨	頭骨	髑髏	해골
+WEAPONRY	武器类	武器類	武器	무기
+FINESSE	技巧	技巧	技巧	기교
+ELEMENTS	元素	元素	元素	원소
+ENDURANCE	耐久	耐久	耐久	지구력
+SUSTENANCE	续航	續航	持続	지속력
+PROFITEER	牟利	牟利	利得	이익

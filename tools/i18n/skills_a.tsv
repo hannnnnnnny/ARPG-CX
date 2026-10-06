@@ -1,0 +1,141 @@
+// Skills: Barbarian and Sorcerer. Columns: english, zh-Hans, zh-Hant, ja, ko
+FLAY	剥皮斩	剝皮斬	皮剥ぎ	가르기
+SLASH AND MAKE FOES BLEED. +10 FURY	斩击并使敌人流血。+10怒气	斬擊並使敵人流血。+10怒氣	斬りつけて出血させる。怒り+10	베어서 출혈을 일으킨다. 분노 +10
+ENHANCED FLAY	强化剥皮斩	強化剝皮斬	強化皮剥ぎ	강화된 가르기
+HITS MAKE ENEMIES VULNERABLE	命中使敌人易伤	命中使敵人易傷	命中した敵を脆弱にする	적중 시 적이 취약해짐
+COMBAT FLAY	战斗剥皮斩	戰鬥剝皮斬	戦闘の皮剥ぎ	전투 가르기
+HITS GRANT BERSERKING	命中获得狂暴	命中獲得狂暴	命中でバーサーク	적중 시 광폭화
+BRUTAL FLAY	残暴剥皮斩	殘暴剝皮斬	残虐な皮剥ぎ	잔혹한 가르기
++15% OVERPOWER CHANCE	+15%压制几率	+15%壓制機率	威圧確率+15%	제압 확률 +15%
+FRENZY	狂乱	狂亂	狂乱	광란
+FAST BLOWS, +20% ATTACK SPEED. +6 FURY	快速打击，攻速+20%。+6怒气	快速打擊，攻速+20%。+6怒氣	素早い連撃、攻撃速度+20%。怒り+6	빠른 연타, 공격 속도 +20%. 분노 +6
+ENHANCED FRENZY	强化狂乱	強化狂亂	強化狂乱	강화된 광란
++20% CRIT CHANCE	+20%暴击率	+20%暴擊率	会心率+20%	극대화 확률 +20%
+FURIOUS FRENZY	暴怒狂乱	暴怒狂亂	激怒の狂乱	격노의 광란
++60% FURY GENERATED	怒气获取+60%	怒氣獲取+60%	怒り獲得+60%	분노 획득 +60%
+BATTLE FRENZY	战斗狂乱	戰鬥狂亂	戦いの狂乱	전투 광란
+HITS MAKE VULNERABLE	命中造成易伤	命中造成易傷	命中で脆弱化	적중 시 취약
+WHIRLWIND	旋风斩	旋風斬	旋風	소용돌이
+SPIN, SHREDDING ALL AROUND. 6 FURY/PULSE	旋转撕碎周围敌人。每次6怒气	旋轉撕碎周圍敵人。每次6怒氣	回転して周囲を切り刻む。毎回怒り6	회전하며 주변을 벤다. 회당 분노 6
+ENHANCED WHIRLWIND	强化旋风斩	強化旋風斬	強化旋風	강화된 소용돌이
++25% RADIUS	范围+25%	範圍+25%	範囲+25%	범위 +25%
+BLOOD WHIRL	血之旋风	血之旋風	血の旋風	피의 소용돌이
+CUTS CAUSE BLEEDING	斩击造成流血	斬擊造成流血	斬撃で出血	베기가 출혈을 일으킴
+VIOLENT WHIRL	狂暴旋风	狂暴旋風	猛烈な旋風	맹렬한 소용돌이
++40% DAMAGE	伤害+40%	傷害+40%	ダメージ+40%	피해 +40%
+GROUND SLAM	震地猛击	震地猛擊	大地強打	대지 강타
+HEAVY BLOW THAT STUNS. 30 FURY	沉重一击并击晕。30怒气	沉重一擊並擊暈。30怒氣	重い一撃でスタン。怒り30	기절시키는 강타. 분노 30
+ENHANCED SLAM	强化猛击	強化猛擊	強化強打	강화된 강타
++20% OVERPOWER CHANCE	+20%压制几率	+20%壓制機率	威圧確率+20%	제압 확률 +20%
+SEISMIC SLAM	地震猛击	地震猛擊	震動強打	지진 강타
+LEAVES AN EARTHQUAKE	留下地震	留下地震	地震を残す	지진을 남김
+CRUSHING SLAM	粉碎猛击	粉碎猛擊	粉砕強打	분쇄 강타
+MAKES VULNERABLE, +20% DMG	造成易伤，伤害+20%	造成易傷，傷害+20%	脆弱化、ダメージ+20%	취약, 피해 +20%
+REND	撕裂	撕裂	切り裂き	찢어발기기
+DEEP CUTS: HEAVY BLEED FOR 5S. 25 FURY	深深割伤：5秒大量流血。25怒气	深深割傷：5秒大量流血。25怒氣	深い傷：5秒間大出血。怒り25	깊은 상처: 5초간 큰 출혈. 분노 25
+ENHANCED REND	强化撕裂	強化撕裂	強化切り裂き	강화된 찢어발기기
+DEEP WOUNDS	深度创伤	深度創傷	深手	깊은 상처
++50% DAMAGE	伤害+50%	傷害+50%	ダメージ+50%	피해 +50%
+SPREADING REND	扩散撕裂	擴散撕裂	拡散切り裂き	퍼지는 찢어발기기
++50% RADIUS	范围+50%	範圍+50%	範囲+50%	범위 +50%
+WAR CRY	战吼	戰吼	ウォークライ	전투의 외침
+BERSERKING: [x]25% DAMAGE FOR 6S	狂暴：6秒内[x]25%伤害	狂暴：6秒內[x]25%傷害	バーサーク：6秒間ダメージ[x]25%	광폭화: 6초간 피해 [x]25%
+ENHANCED WAR CRY	强化战吼	強化戰吼	強化ウォークライ	강화된 전투의 외침
+ALSO GRANTS UNSTOPPABLE	同时获得势不可挡	同時獲得勢不可擋	阻止不可も得る	저지 불가도 부여
+MIGHTY CRY	强力战吼	強力戰吼	力強い叫び	강력한 외침
++40% STRENGTH	强度+40%	強度+40%	効果+40%	효과 +40%
+RALLYING CRY	集结战吼	集結戰吼	鼓舞の叫び	집결의 외침
+HEALS 15%, +2S	治疗15%，+2秒	治療15%，+2秒	15%回復、+2秒	15% 회복, +2초
+IRON SKIN	钢铁之肤	鋼鐵之膚	鉄の皮膚	강철 피부
+BARRIER OF 40% LIFE FOR 5S	获得40%生命的屏障5秒	獲得40%生命的屏障5秒	5秒間ライフ40%のバリア	5초간 생명력 40% 보호막
+ENHANCED IRON SKIN	强化钢铁之肤	強化鋼鐵之膚	強化鉄の皮膚	강화된 강철 피부
++25% BARRIER	屏障+25%	屏障+25%	バリア+25%	보호막 +25%
+STRENGTHENED SKIN	坚固之肤	堅固之膚	強靭な皮膚	단련된 피부
+ALSO HEALS 15%	同时治疗15%	同時治療15%	さらに15%回復	15% 회복도 함
+UNYIELDING SKIN	不屈之肤	不屈之膚	不屈の皮膚	불굴의 피부
+GRANTS UNSTOPPABLE	获得势不可挡	獲得勢不可擋	阻止不可を得る	저지 불가 부여
+LEAP SLAM	跃击	躍擊	跳躍強打	도약 강타
+CRASH DOWN ON A PACK AND STUN	跃入敌群并击晕	躍入敵群並擊暈	群れに飛び込みスタン	무리에 내려찍고 기절
+ENHANCED LEAP	强化跃击	強化躍擊	強化跳躍	강화된 도약
++1 AFTERSHOCK	+1次余震	+1次餘震	余震+1	여진 +1
+MAGMA LEAP	熔岩跃击	熔岩躍擊	溶岩跳躍	용암 도약
+FIRE DAMAGE, BURNING GROUND	火焰伤害，燃烧地面	火焰傷害，燃燒地面	火炎ダメージ、燃える地面	화염 피해, 불타는 땅
+SHATTERING LEAP	粉碎跃击	粉碎躍擊	粉砕跳躍	파쇄 도약
+MAKES VULNERABLE, +30% SIZE	造成易伤，范围+30%	造成易傷，範圍+30%	脆弱化、範囲+30%	취약, 크기 +30%
+EARTHQUAKE	地震	地震	地震	지진
+THE GROUND SHATTERS AROUND YOU	周围的大地崩裂	周圍的大地崩裂	周囲の大地が砕ける	주변의 땅이 갈라진다
+ENHANCED QUAKE	强化地震	強化地震	強化地震	강화된 지진
++2 SECONDS	+2秒	+2秒	+2秒	+2초
+MOLTEN QUAKE	熔岩地震	熔岩地震	溶岩地震	용암 지진
+FIRE DAMAGE THAT BURNS	造成燃烧的火焰伤害	造成燃燒的火焰傷害	燃焼させる火炎ダメージ	불태우는 화염 피해
+RUPTURE	崩裂	崩裂	破裂	파열
+MAKES VULNERABLE, +30% DMG	造成易伤，伤害+30%	造成易傷，傷害+30%	脆弱化、ダメージ+30%	취약, 피해 +30%
+BLOOD FRENZY	血之狂怒	血之狂怒	血の狂乱	피의 광란
+ULTIMATE: [x]40% DMG, SPEED, UNSTOPPABLE	终极：[x]40%伤害、加速、势不可挡	終極：[x]40%傷害、加速、勢不可擋	究極：ダメージ[x]40%、加速、阻止不可	궁극기: 피해 [x]40%, 가속, 저지 불가
++3 SECONDS	+3秒	+3秒	+3秒	+3초
+SAVAGE FRENZY	野性狂怒	野性狂怒	野蛮な狂乱	야만의 광란
++50% STRENGTH	强度+50%	強度+50%	効果+50%	효과 +50%
+UNDYING FRENZY	不死狂怒	不死狂怒	不死の狂乱	불멸의 광란
+SPARK	电花	電花	スパーク	전격
+LIGHTNING THAT ARCS TO A FOE. +8 MANA	跳向敌人的闪电。+8法力	跳向敵人的閃電。+8法力	敵へ跳ぶ稲妻。マナ+8	적에게 튀는 번개. 마나 +8
+ENHANCED SPARK	强化电花	強化電花	強化スパーク	강화된 전격
++1 CHAIN	+1次连锁	+1次連鎖	連鎖+1	연쇄 +1
+FLICKERING SPARK	闪烁电花	閃爍電花	明滅スパーク	깜빡이는 전격
++15% CRIT CHANCE	+15%暴击率	+15%暴擊率	会心率+15%	극대화 확률 +15%
+SURGING SPARK	涌动电花	湧動電花	奔流スパーク	쇄도하는 전격
+FROST BOLT	寒冰箭	寒冰箭	フロストボルト	서리 화살
+A BOLT THAT CHILLS. +8 MANA	冰冻敌人的冰箭。+8法力	冰凍敵人的冰箭。+8法力	冷やす氷の矢。マナ+8	냉기를 주는 화살. 마나 +8
+ENHANCED FROST BOLT	强化寒冰箭	強化寒冰箭	強化フロストボルト	강화된 서리 화살
+PIERCES	穿透	穿透	貫通	관통
+GLINTING BOLT	闪耀冰箭	閃耀冰箭	煌めく矢	반짝이는 화살
++30% DAMAGE	伤害+30%	傷害+30%	ダメージ+30%	피해 +30%
+SHATTERING BOLT	碎裂冰箭	碎裂冰箭	砕く矢	파쇄 화살
+FIREBALL	火球术	火球術	ファイアボール	화염구
+EXPLODING BOLT OF FLAME. 40 MANA	爆炸的火焰弹。40法力	爆炸的火焰彈。40法力	爆発する炎弾。マナ40	폭발하는 화염탄. 마나 40
+ENHANCED FIREBALL	强化火球术	強化火球術	強化ファイアボール	강화된 화염구
++30% RADIUS	范围+30%	範圍+30%	範囲+30%	범위 +30%
+DESTRUCTIVE FIREBALL	毁灭火球	毀滅火球	破壊の火球	파괴의 화염구
++25% DMG, MAKES VULNERABLE	伤害+25%，造成易伤	傷害+25%，造成易傷	ダメージ+25%、脆弱化	피해 +25%, 취약
+SPLIT FIREBALL	分裂火球	分裂火球	分裂火球	분열 화염구
+FIRES 3 BOLTS	发射3发火球	發射3發火球	3発発射	3발 발사
+CHAIN LIGHTNING	连锁闪电	連鎖閃電	チェインライトニング	연쇄 번개
+ARCS BETWEEN FOES. 35 MANA	在敌人间跳跃。35法力	在敵人間跳躍。35法力	敵の間を跳ぶ。マナ35	적 사이를 튄다. 마나 35
+ENHANCED CHAIN	强化连锁	強化連鎖	強化チェイン	강화된 연쇄
++2 CHAINS	+2次连锁	+2次連鎖	連鎖+2	연쇄 +2
+STATIC CHAIN	静电连锁	靜電連鎖	静電チェイン	정전기 연쇄
+STUNS EVERY TARGET	击晕所有目标	擊暈所有目標	全ての標的をスタン	모든 대상 기절
+CHARGED CHAIN	充能连锁	充能連鎖	帯電チェイン	충전된 연쇄
+ICE SHARDS	冰霜碎片	冰霜碎片	アイスシャード	얼음 파편
+A FAN OF CHILLING SHARDS. 30 MANA	扇形发射冰片。30法力	扇形發射冰片。30法力	扇状の氷片。マナ30	부채꼴 얼음 파편. 마나 30
+ENHANCED SHARDS	强化冰片	強化冰片	強化シャード	강화된 파편
+SHARDS PIERCE	冰片穿透	冰片穿透	氷片が貫通	파편 관통
+SHATTERING SHARDS	碎裂冰片	碎裂冰片	砕ける氷片	파쇄 파편
+SHARDS FREEZE	冰片冻结	冰片凍結	氷片が凍結させる	파편이 빙결
+VOLLEY OF SHARDS	冰片齐射	冰片齊射	氷片の一斉射撃	파편 일제 사격
++2 SHARDS	+2片冰片	+2片冰片	氷片+2	파편 +2
+FROST NOVA	冰霜新星	冰霜新星	フロストノヴァ	서리 회오리
+BURST THAT FREEZES ALL AROUND	冻结周围一切的爆发	凍結周圍一切的爆發	周囲を凍らせる爆発	주변을 얼리는 폭발
+ENHANCED NOVA	强化新星	強化新星	強化ノヴァ	강화된 회오리
+MAKES VULNERABLE	造成易伤	造成易傷	脆弱化	취약하게 함
+DEEP FREEZE	深度冻结	深度凍結	ディープフリーズ	깊은 빙결
++1 SECOND FREEZE	冻结+1秒	凍結+1秒	凍結+1秒	빙결 +1초
+WIDE NOVA	广域新星	廣域新星	広域ノヴァ	넓은 회오리
+ICE ARMOR	寒冰护甲	寒冰護甲	アイスアーマー	얼음 갑옷
+BARRIER OF 35% LIFE FOR 6S	获得35%生命的屏障6秒	獲得35%生命的屏障6秒	6秒間ライフ35%のバリア	6초간 생명력 35% 보호막
+ENHANCED ARMOR	强化护甲	強化護甲	強化アーマー	강화된 갑옷
+MYSTICAL ARMOR	神秘护甲	神秘護甲	神秘のアーマー	신비한 갑옷
+FROZEN ARMOR	冰封护甲	冰封護甲	凍てつくアーマー	얼어붙은 갑옷
+METEOR	陨石术	隕石術	メテオ	운석
+CRUSH THE DENSEST PACK	砸向最密集的敌群	砸向最密集的敵群	最も密な群れを潰す	가장 밀집한 무리를 강타
+ENHANCED METEOR	强化陨石	強化隕石	強化メテオ	강화된 운석
+LEAVES BURNING GROUND	留下燃烧地面	留下燃燒地面	燃える地面を残す	불타는 땅을 남김
+COMET	彗星	彗星	コメット	혜성
+COLD DAMAGE THAT FREEZES	冻结的冰霜伤害	凍結的冰霜傷害	凍結させる冷気ダメージ	빙결시키는 냉기 피해
+MOLTEN METEOR	熔岩陨石	熔岩隕石	溶岩メテオ	용암 운석
+THUNDERSTORM	雷暴	雷暴	サンダーストーム	뇌우
+LIGHTNING RAINS AROUND YOU	闪电倾泻在你周围	閃電傾瀉在你周圍	周囲に稲妻が降り注ぐ	주변에 번개가 쏟아진다
+ENHANCED STORM	强化雷暴	強化雷暴	強化ストーム	강화된 뇌우
+EYE OF THE STORM	风暴之眼	風暴之眼	嵐の目	폭풍의 눈
+FOLLOWS YOU	跟随你	跟隨你	あなたに追従	당신을 따라감
+STATIC STORM	静电风暴	靜電風暴	静電ストーム	정전기 폭풍
+STUNS	击晕	擊暈	スタン	기절

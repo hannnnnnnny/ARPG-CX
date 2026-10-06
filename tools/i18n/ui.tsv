@@ -1,0 +1,372 @@
+// UI: HUD, menus, town, options, title, slots, character creation, battle messages.
+ON	开	開	オン	켬
+OFF	关	關	オフ	끔
+BARRIER %s	屏障 %s	屏障 %s	バリア %s	보호막 %s
+BERSERKING	狂暴	狂暴	バーサーク	광폭화
+FARM	刷层	刷層	周回	반복
+PUSH	推进	推進	前進	돌파
+FEROCITY %d	凶性 %d	兇性 %d	獰猛 %d	흉포 %d
+FLOOR %d  %d/%d	第%d层  %d/%d	第%d層  %d/%d	%d階  %d/%d	%d층  %d/%d
+FLOOR %d  GUARDIAN	第%d层  守护者	第%d層  守護者	%d階  ガーディアン	%d층  수호자
+HASTE	急速	急速	加速	신속
+IMBUED	灌注	灌注	付与	주입
+LV %d	等级 %d	等級 %d	Lv %d	레벨 %d
+P %d	巅峰 %d	巔峰 %d	パラゴン %d	정복자 %d
+SKILL+	技能+	技能+	スキル+	기술+
+TORMENT	折磨	折磨	苦痛	고통
+UNSTOPPABLE	势不可挡	勢不可擋	阻止不可	저지 불가
+ENTER: EQUIP  DEL: SALVAGE  CTRL: LOCK	ENTER:装备 DEL:分解 CTRL:锁定	ENTER:裝備 DEL:分解 CTRL:鎖定	ENTER:装備 DEL:分解 CTRL:ロック	ENTER:장착 DEL:분해 CTRL:잠금
+EQUIPPED	已装备	已裝備	装備	장착함
+SALVAGED	已分解	已分解	分解	분해함
+GOT	获得	獲得	入手	획득
+ITEM IS LOCKED (CTRL)	物品已锁定（CTRL）	物品已鎖定（CTRL）	ロック中（CTRL）	잠긴 아이템 (CTRL)
+SALVAGED: %s GOLD + MATERIALS	已分解：%s金币+材料	已分解：%s金幣+材料	分解：%sゴールド+素材	분해: 골드 %s + 재료
+[ SALVAGE ALL UNLOCKED ]	[ 分解全部未锁定 ]	[ 分解全部未鎖定 ]	[ 未ロックを全て分解 ]	[ 잠기지 않은 것 모두 분해 ]
+%s DAMAGE	%s伤害	%s傷害	%sダメージ	%s 피해
+-- BIGGEST HIT THIS FLOOR --	-- 本层最高一击 --	-- 本層最高一擊 --	-- この階の最大打撃 --	-- 이번 층 최대 타격 --
+-- DEFENSE --	-- 防御 --	-- 防禦 --	-- 防御 --	-- 방어 --
+-- OFFENSE --	-- 进攻 --	-- 進攻 --	-- 攻撃 --	-- 공격 --
+-- THIS FLOOR --	-- 本层 --	-- 本層 --	-- この階 --	-- 이번 층 --
+-- UTILITY --	-- 功能 --	-- 功能 --	-- その他 --	-- 유틸리티 --
+= TOTAL	= 总计	= 總計	= 合計	= 합계
+ADDITIVE BONUSES	加法增伤	加法增傷	加算ボーナス	합산 보너스
+ARROWS: SLOT  DEL: CHARACTER SHEET  TAB: PAGE	方向:部位 DEL:属性面板 TAB:翻页	方向:部位 DEL:屬性面板 TAB:翻頁	矢印:部位 DEL:能力 TAB:ページ	방향:부위 DEL:능력치 TAB:페이지
+ATTACK SPEED BONUS	攻速加成	攻速加成	攻撃速度ボーナス	공격 속도 보너스
+COLD RESIST	冰霜抗性	冰霜抗性	冷気耐性	냉기 저항
+FIRE RESIST	火焰抗性	火焰抗性	火炎耐性	화염 저항
+LIGHTNING RESIST	闪电抗性	閃電抗性	雷耐性	번개 저항
+POISON RESIST	毒素抗性	毒素抗性	毒耐性	독 저항
+SHADOW RESIST	暗影抗性	暗影抗性	影耐性	암흑 저항
+CRITICAL HITS	暴击次数	暴擊次數	会心の打撃	극대화 적중
+CRITICAL STRIKE	暴击	暴擊	会心	극대화
+DAMAGE (ADDITIVE)	伤害（加法）	傷害（加法）	ダメージ（加算）	피해 (합산)
+DAMAGE FROM MAIN STAT	主属性增伤	主屬性增傷	主能力値のダメージ	주 능력치 피해
+DAMAGE TO CLOSE	对近敌伤害	對近敵傷害	近くの敵へ	근거리 피해
+DAMAGE TO DISTANT	对远敌伤害	對遠敵傷害	遠くの敵へ	원거리 피해
+DR FROM ARMOR (THIS FLOOR)	护甲减伤（本层）	護甲減傷（本層）	アーマー軽減（この階）	방어도 감소 (이번 층)
+HEALING POTIONS	治疗药水	治療藥水	回復ポーション	치유 물약
+HITS	命中次数	命中次數	命中数	적중 수
+LEVEL %d	等级 %d	等級 %d	レベル %d	레벨 %d
+LUCKY HIT CHANCE BONUS	幸运一击加成	幸運一擊加成	ラッキーヒットボーナス	행운의 적중 보너스
+MAIN STAT	主属性	主屬性	主能力値	주 능력치
+MAXIMUM %s	最大%s	最大%s	最大%s	최대 %s
+NO HITS YET	尚无命中	尚無命中	まだ命中なし	아직 적중 없음
+NOTHING EQUIPPED	未装备	未裝備	未装備	장착 없음
+OVERPOWER	压制	壓制	威圧	제압
+OVERPOWER CHANCE	压制几率	壓制機率	威圧確率	제압 확률
+OVERPOWERED HITS	压制次数	壓制次數	威圧の打撃	제압 적중
+PARAGON %d	巅峰 %d	巔峰 %d	パラゴン %d	정복자 %d
+RESOURCE PER SECOND	每秒资源	每秒資源	毎秒リソース	초당 자원
+UP/DOWN: SCROLL   DEL: PAPER DOLL	上下:滚动 DEL:装备栏	上下:捲動 DEL:裝備欄	上下:スクロール DEL:装備	위아래:스크롤 DEL:장비창
+VULNERABLE	易伤	易傷	脆弱	취약
+VULNERABLE HITS	易伤次数	易傷次數	脆弱への打撃	취약 적중
+WEAPON DAMAGE	武器伤害	武器傷害	武器ダメージ	무기 피해
+WEAPON X SKILL	武器 x 技能	武器 x 技能	武器 x スキル	무기 x 기술
+[X] CORE SKILLS	[X] 核心技能	[X] 核心技能	[X] コアスキル	[X] 핵심 기술
+[X] CRITICAL DAMAGE	[X] 暴击伤害	[X] 暴擊傷害	[X] 会心ダメージ	[X] 극대화 피해
+[X] CROWD CONTROLLED	[X] 受控敌人	[X] 受控敵人	[X] 行動妨害中	[X] 군중 제어 대상
+[X] DAMAGE	[X] 伤害	[X] 傷害	[X] ダメージ	[X] 피해
+[X] DAMAGE OVER TIME	[X] 持续伤害	[X] 持續傷害	[X] 継続ダメージ	[X] 지속 피해
+[X] MINIONS	[X] 仆从	[X] 僕從	[X] ミニオン	[X] 하수인
+[X] MULTIPLIERS	[X] 乘区	[X] 乘區	[X] 乗算	[X] 배율
+[X] OVERPOWER DAMAGE	[X] 压制伤害	[X] 壓制傷害	[X] 威圧ダメージ	[X] 제압 피해
+[X] VS VULNERABLE	[X] 对易伤	[X] 對易傷	[X] 脆弱へ	[X] 취약 대상
++15% LIFE	生命+15%	生命+15%	ライフ+15%	생명력 +15%
++20% EXPERIENCE	经验+20%	經驗+20%	経験+20%	경험치 +20%
++20% GOLD	金币+20%	金幣+20%	ゴールド+20%	골드 +20%
++2H OFFLINE CAP	离线上限+2小时	離線上限+2小時	オフライン上限+2時間	오프라인 한도 +2시간
++5 STARTING FLOOR	起始层数+5	起始層數+5	開始階+5	시작 층 +5
++5% ATTACK AND MOVE	攻速与移速+5%	攻速與移速+5%	攻撃と移動+5%	공격과 이동 +5%
+[X]15% DAMAGE	[X]15%伤害	[X]15%傷害	ダメージ[X]15%	피해 [X]15%
+RARER LOOT	更稀有的掉落	更稀有的掉落	よりレアな戦利品	더 희귀한 전리품
+MIGHT	力量	力量	剛力	완력
+VIGOR	活力	活力	活力	활력
+GREED	贪婪	貪婪	強欲	탐욕
+WISDOM	智慧	智慧	知恵	지혜
+FORTUNE	幸运	幸運	幸運	행운
+HEAD START	先行一步	先行一步	先手	선발
+PATIENCE	耐心	耐心	忍耐	인내
+LANGUAGE	语言	語言	言語	언어
+APPEARANCE...	外观...	外觀...	外見...	외형...
+AUTO CRAFT (FORGE, GEMS, ELIXIRS)	自动打造（锻造、宝石、药剂）	自動打造（鍛造、寶石、藥劑）	自動製作（鍛冶・宝石・薬）	자동 제작 (단조, 보석, 비약)
+AUTO EQUIP UPGRADES	自动装备更好物品	自動裝備更好物品	より良い装備を自動装備	더 좋은 장비 자동 장착
+AUTO PARAGON	自动巅峰	自動巔峰	パラゴン自動	정복자 자동
+AUTO SALVAGE UP TO	自动分解至	自動分解至	自動分解の上限	자동 분해 등급
+AUTO SPEND SKILLS	自动加点	自動加點	スキル自動割り振り	기술 자동 투자
+BIG HITS	仅大数字	僅大數字	大きな打撃のみ	큰 타격만
+ALL	全部	全部	全て	전체
+CRIT	暴击	暴擊	会心	극대화
+CRIT+VULN	暴击+易伤	暴擊+易傷	会心+脆弱	극대화+취약
+OVERPOWER+CRIT	压制+暴击	壓制+暴擊	威圧+会心	제압+극대화
+DAMAGE NUMBERS	伤害数字	傷害數字	ダメージ表示	피해 숫자
+DOT = ELEMENT	持续伤害=元素色	持續傷害=元素色	継続=属性色	지속=원소 색
+NUMBERS:	数字：	數字：	数字：	숫자:
+NORMAL	普通	普通	通常	일반
+EMBERS, UPGRADES, CODEX AND LOOK STAY.	余烬、升级、典籍和外观会保留。	餘燼、升級、典籍和外觀會保留。	残り火・強化・図鑑・外見は残る。	잔불, 강화, 도감, 외형은 유지.
+EMBERS: %s    REBIRTHS: %d	余烬：%s    转生：%d	餘燼：%s    轉生：%d	残り火：%s    転生：%d	잔불: %s    환생: %d
+ENTER: BUY / REBIRTH   ESC: BATTLE	ENTER:购买/转生  ESC:战斗	ENTER:購買/轉生  ESC:戰鬥	ENTER:購入/転生  ESC:戦闘	ENTER:구매/환생  ESC:전투
+ENTER: CHANGE   ESC: BATTLE	ENTER:更改  ESC:战斗	ENTER:更改  ESC:戰鬥	ENTER:変更  ESC:戦闘	ENTER:변경  ESC:전투
+ENTER: READ   ESC: BACK	ENTER:阅读  ESC:返回	ENTER:閱讀  ESC:返回	ENTER:読む  ESC:戻る	ENTER:읽기  ESC:뒤로
+FLOOR MODE	层数模式	層數模式	階層モード	층 모드
+FPS COUNTER	帧率显示	幀率顯示	FPS表示	FPS 표시
+FULL PAGES	整页	整頁	全画面	전체 화면
+SUBTITLES	字幕	字幕	字幕	자막
+STORY	剧情	劇情	ストーリー	이야기
+JOURNAL - CHAPTERS SO FAR	日志 - 已解锁章节	日誌 - 已解鎖章節	日誌 - これまでの章	일지 - 지금까지의 장
+JOURNAL...	日志...	日誌...	日誌...	일지...
+KILLS %.0f   PLAYED %dH %02dM   BEST FLOOR %d	击杀 %.0f  游戏 %d时%02d分  最高 %d层	擊殺 %.0f  遊戲 %d時%02d分  最高 %d層	撃破 %.0f  プレイ %d時間%02d分  最高 %d階	처치 %.0f  플레이 %d시간 %02d분  최고 %d층
+LOW POWER (15 FPS)	省电模式（15帧）	省電模式（15幀）	省電力（15FPS）	절전 (15 FPS)
+MAX	满级	滿級	最大	최대
+NOT ENOUGH EMBERS	余烬不足	餘燼不足	残り火が足りない	잔불이 부족함
+NOTHING YET. DESCEND!	暂无。继续深入！	暫無。繼續深入！	まだない。降りよ！	아직 없음. 내려가라!
+REACH FLOOR 20 TO REBIRTH	到达第20层才能转生	到達第20層才能轉生	20階に到達で転生可能	20층에 도달해야 환생
+REBIRTH NOW: +%s EMBERS (BEST FLOOR %d)	立即转生：+%s余烬（最高%d层）	立即轉生：+%s餘燼（最高%d層）	今すぐ転生：残り火+%s（最高%d階）	지금 환생: 잔불 +%s (최고 %d층)
+REBIRTH RESETS LEVEL, GEAR, GOLD AND FLOOR.	转生会重置等级、装备、金币和层数。	轉生會重置等級、裝備、金幣和層數。	転生でレベル・装備・金・階層がリセット。	환생 시 레벨, 장비, 골드, 층 초기화.
+REBIRTH UNLOCKS AT FLOOR %d (BEST %d)	第%d层解锁转生（最高%d）	第%d層解鎖轉生（最高%d）	%d階で転生解放（最高%d）	%d층에서 환생 해제 (최고 %d)
+RESET PARAGON BOARD	重置巅峰盘	重置巔峰盤	パラゴン盤をリセット	정복자 판 초기화
+SAVE AND EXIT TO TITLE	保存并返回标题	保存並返回標題	セーブしてタイトルへ	저장 후 타이틀로
+SAVE FAILED	保存失败	保存失敗	セーブ失敗	저장 실패
+SAVE NOW	立即保存	立即保存	今すぐセーブ	지금 저장
+SAVED	已保存	已保存	セーブした	저장됨
+SHOW HELM	显示头盔	顯示頭盔	兜を表示	투구 표시
+UPGRADE BOUGHT	已购买升级	已購買升級	強化を購入	강화 구매
+WARNING: LAST SAVE FAILED	警告：上次保存失败	警告：上次保存失敗	警告：前回のセーブ失敗	경고: 마지막 저장 실패
+ARROWS: MOVE  ENTER: BUY  DEL: BOARD  CTRL: GLYPH	方向:移动 ENTER:购买 DEL:换盘 CTRL:雕文	方向:移動 ENTER:購買 DEL:換盤 CTRL:雕文	矢印:移動 ENTER:購入 DEL:盤 CTRL:グリフ	방향:이동 ENTER:구매 DEL:판 CTRL:문양
+AUTO: %s (OPTIONS)	自动：%s（选项）	自動：%s（選項）	自動：%s（オプション）	자동: %s (옵션)
+STARTING BOARD	起始盘	起始盤	初期盤	시작 판
+BOARD II	第二盘	第二盤	第2盤	두 번째 판
+BOARD III	第三盘	第三盤	第3盤	세 번째 판
+BOARD IV	第四盘	第四盤	第4盤	네 번째 판
+BUY THE SOCKET FIRST	请先购买雕文孔	請先購買雕文孔	先にソケットを購入	먼저 홈을 구매
+GLYPH: %s  LV %d	雕文：%s  等级%d	雕文：%s  等級%d	グリフ：%s  Lv%d	문양: %s  레벨 %d
+LOCKED: BUY THE GATE BELOW	未解锁：请购买下方大门	未解鎖：請購買下方大門	ロック：下のゲートを購入	잠김: 아래 관문을 구매
+MUST TOUCH AN OWNED NODE	必须与已拥有的节点相邻	必須與已擁有的節點相鄰	取得済みノードに隣接が必要	보유한 노드와 인접해야 함
+NO GLYPH. BUY THE SOCKET, THEN CTRL.	无雕文。购买雕文孔后按CTRL。	無雕文。購買雕文孔後按CTRL。	グリフなし。ソケット購入後CTRL。	문양 없음. 홈 구매 후 CTRL.
+NO PARAGON POINTS	没有巅峰点数	沒有巔峰點數	パラゴンポイントなし	정복자 점수 없음
+PARAGON POINTS START AT LEVEL 50.	巅峰点数从50级开始获得。	巔峰點數從50級開始獲得。	パラゴンポイントはLv50から。	정복자 점수는 50레벨부터.
+POINTS %d  (PARAGON %d)	点数 %d （巅峰%d）	點數 %d （巔峰%d）	ポイント %d （パラゴン%d）	점수 %d (정복자 %d)
+STAT IN RADIUS %d/25	范围内属性 %d/25	範圍內屬性 %d/25	範囲内の能力値 %d/25	범위 내 능력치 %d/25
+%d%% WEAPON DMG  RANK %d	%d%%武器伤害  等级%d	%d%%武器傷害  等級%d	武器%d%%  ランク%d	무기 피해 %d%%  레벨 %d
+ACTION BAR	技能栏	技能欄	アクションバー	행동 단축창
+ACTIVE	已激活	已啟用	有効	활성
+AUTO SPEND OFF: MANUAL BUILD	已关闭自动加点：手动构筑	已關閉自動加點：手動構築	自動割り振りOFF：手動構築	자동 투자 끔: 수동 빌드
+AUTO SPEND: OFF	自动加点：关	自動加點：關	自動割り振り：オフ	자동 투자: 끔
+AUTO SPEND: ON	自动加点：开	自動加點：開	自動割り振り：オン	자동 투자: 켬
+CHOOSE AN UPGRADE FOR	选择升级：	選擇升級：	アップグレード選択：	업그레이드 선택:
+COOLDOWN %d.%dS	冷却 %d.%d秒	冷卻 %d.%d秒	CD %d.%d秒	재사용 %d.%d초
+COST	消耗	消耗	消費	소모
+GENERATES	产生	產生	生成	생성
+CURRENT BUILD	当前流派	當前流派	現在のビルド	현재 빌드
+ENTER: LEARN  DEL: UPGRADE  CTRL: BAR  TAB: PAGE	ENTER:学习 DEL:升级 CTRL:技能栏	ENTER:學習 DEL:升級 CTRL:技能欄	ENTER:習得 DEL:強化 CTRL:バー	ENTER:배움 DEL:강화 CTRL:단축창
+KEY	关键	關鍵	キー	핵심
+KEY PASSIVE - NEEDS %d POINTS	关键被动 - 需要%d点	關鍵被動 - 需要%d點	キーパッシブ - %dポイント必要	핵심 지속 효과 - %d점 필요
+LEARN THE SKILL FIRST	请先学习该技能	請先學習該技能	先にスキルを習得	먼저 기술을 배우세요
+LOCKED OR MAXED	未解锁或已满级	未解鎖或已滿級	ロック中か最大	잠김 또는 최대
+LOCKED: SPEND MORE POINTS FIRST	未解锁：需先投入更多点数	未解鎖：需先投入更多點數	ロック：先にポイントを使う	잠김: 먼저 점수를 더 투자
+NO SKILL POINTS	没有技能点	沒有技能點	スキルポイントなし	기술 점수 없음
+ONLY ONE KEY PASSIVE CAN BE ACTIVE. SWITCHING IS FREE.	只能激活一个关键被动。切换免费。	只能啟用一個關鍵被動。切換免費。	キーパッシブは1つのみ。切替は無料。	핵심 지속 효과는 하나만. 교체는 무료.
+OPENS AT %d POINTS	投入%d点后开放	投入%d點後開放	%dポイントで解放	%d점에서 해제
+PASSIVE (PER RANK)	被动（每级）	被動（每級）	パッシブ（ランク毎）	지속 효과 (레벨당)
+POINTS %d  SPENT %d	点数 %d  已用 %d	點數 %d  已用 %d	ポイント %d  使用 %d	점수 %d  사용 %d
+REFUND ALL POINTS	返还所有点数	返還所有點數	全ポイント返却	모든 점수 환급
+STRENGTH %d%%  RANK %d	强度%d%%  等级%d	強度%d%%  等級%d	効果%d%%  ランク%d	효과 %d%%  레벨 %d
+SWITCH BUILD...	切换流派...	切換流派...	ビルド切替...	빌드 변경...
+SWITCHING BUILD REFUNDS EVERY POINT (FREE BEFORE LEVEL 15).	切换流派会返还所有点数（15级前免费）。	切換流派會返還所有點數（15級前免費）。	ビルド切替で全ポイント返却（Lv15まで無料）。	빌드 변경 시 모든 점수 환급 (15레벨 전 무료).
+THE BAR IS FULL	技能栏已满	技能欄已滿	バーが満杯	단축창이 가득 참
+UP/DOWN: PICK  ENTER: SET  ESC: CANCEL	上下:选择 ENTER:确定 ESC:取消	上下:選擇 ENTER:確定 ESC:取消	上下:選択 ENTER:決定 ESC:取消	위아래:선택 ENTER:설정 ESC:취소
+%s GOLD	%s金币	%s金幣	%sゴールド	골드 %s
+%s GOLD %s IRON	%s金币 %s铁	%s金幣 %s鐵	%s金 %s鉄	골드 %s 철 %s
+%s GOLD %s IRON %s SOULS	%s金币 %s铁 %s魂	%s金幣 %s鐵 %s魂	%s金 %s鉄 %s魂	골드 %s 철 %s 영혼 %s
++10% LIFE	生命+10%	生命+10%	ライフ+10%	생명력 +10%
++10% XP	经验+10%	經驗+10%	経験+10%	경험치 +10%
++15% CRIT DAMAGE	暴击伤害+15%	暴擊傷害+15%	会心ダメージ+15%	극대화 피해 +15%
++8% ATTACK SPEED	攻速+8%	攻速+8%	攻撃速度+8%	공격 속도 +8%
+5% DR, +25% THORNS	5%减伤，荆棘+25%	5%減傷，荊棘+25%	軽減5%、茨+25%	피해 감소 5%, 가시 +25%
++5% TO ALL AFFIXES PER RANK. RANKS 4, 8, 12 GIVE ONE AFFIX +25%.	每级所有词缀+5%。第4、8、12级使一条词缀+25%。	每級所有詞綴+5%。第4、8、12級使一條詞綴+25%。	ランク毎に全特性+5%。4・8・12で1つの特性+25%。	레벨당 모든 속성 +5%. 4, 8, 12레벨에 속성 하나 +25%.
+ADD SOCKET (DEL):	添加插槽（DEL）：	添加插槽（DEL）：	ソケット追加（DEL）：	홈 추가 (DEL):
+ALCHEMIST	炼金术士	煉金術士	錬金術師	연금술사
+ANCESTRAL	先祖	先祖	祖先	선조
+ANCESTRAL 	先祖	先祖	祖先の	선조
+ASPECT IMPRINTED	威能已刻印	威能已刻印	威能を刻印した	위상 각인됨
+BLACKSMITH	铁匠	鐵匠	鍛冶屋	대장장이
+BUY UNKNOWN GEAR	购买未知装备	購買未知裝備	未鑑定の装備を買う	미확인 장비 구매
+CHARGES LEFT %d	剩余次数 %d	剩餘次數 %d	残り回数 %d	남은 횟수 %d
+CHOOSE THE NEW AFFIX	选择新词缀	選擇新詞綴	新しい特性を選ぶ	새 속성 선택
+CODEX OF POWER: %d/%d ASPECTS	威能典籍：%d/%d	威能典籍：%d/%d	威能の写本：%d/%d	위상 도감: %d/%d
+CTRL: COMBINE 3 -> 1 HIGHER	CTRL：3合1升级	CTRL：3合1升級	CTRL：3つを1つ上位に	CTRL: 3개를 1개 상위로
+ELIXIR ACTIVE FOR 30 MINUTES	药剂生效30分钟	藥劑生效30分鐘	薬が30分間有効	비약 30분간 효과
+ELIXIR OF ADVANTAGE	优势药剂	優勢藥劑	優位の薬	우위의 비약
+ELIXIR OF FORTITUDE	坚韧药剂	堅韌藥劑	不屈の薬	강인함의 비약
+ELIXIR OF IRON BARBS	铁刺药剂	鐵刺藥劑	鉄棘の薬	강철 가시의 비약
+ELIXIR OF PRECISION	精准药剂	精準藥劑	精密の薬	정밀의 비약
+ELIXIR OF WISDOM	智慧药剂	智慧藥劑	知恵の薬	지혜의 비약
+ENCHANT	附魔	附魔	エンチャント	마법부여
+ENCHANT AFFIXES, IMPRINT ASPECTS	附魔词缀、刻印威能	附魔詞綴、刻印威能	特性付与、威能の刻印	속성 부여, 위상 각인
+ENCHANTED	附魔完成	附魔完成	エンチャント完了	마법부여 완료
+ENTER: APPLY  ESC: TOWN	ENTER:执行  ESC:城镇	ENTER:執行  ESC:城鎮	ENTER:実行  ESC:町	ENTER:적용  ESC:마을
+ENTER: BUY   ESC: TOWN	ENTER:购买  ESC:城镇	ENTER:購買  ESC:城鎮	ENTER:購入  ESC:町	ENTER:구매  ESC:마을
+ENTER: MASTERWORK  DEL: TEMPER  ESC: TOWN	ENTER:精造 DEL:回火 ESC:城镇	ENTER:精造 DEL:回火 ESC:城鎮	ENTER:名匠 DEL:焼き戻し ESC:町	ENTER:명품화 DEL:담금질 ESC:마을
+ENTER: SOCKET  DEL: ADD SOCKET  ESC: TOWN	ENTER:镶嵌 DEL:加孔 ESC:城镇	ENTER:鑲嵌 DEL:加孔 ESC:城鎮	ENTER:装着 DEL:穴あけ ESC:町	ENTER:장착 DEL:홈 추가 ESC:마을
+ENTER: VISIT   TAB: PAGE   ESC: BATTLE	ENTER:拜访 TAB:翻页 ESC:战斗	ENTER:拜訪 TAB:翻頁 ESC:戰鬥	ENTER:訪問 TAB:ページ ESC:戦闘	ENTER:방문 TAB:페이지 ESC:전투
+GAMBLER	赌徒	賭徒	賭博師	도박꾼
+GEM SOCKETED	宝石已镶嵌	寶石已鑲嵌	宝石を装着した	보석 장착됨
+GEM: %s  (LEFT/RIGHT)	宝石：%s（左右）	寶石：%s（左右）	宝石：%s（左右）	보석: %s (좌우)
+GEMS AND SOCKETS	宝石与插槽	寶石與插槽	宝石とソケット	보석과 홈
+GEMS COMBINED	宝石已合成	寶石已合成	宝石を合成した	보석 합성됨
+HEALING POTION LV %d/%d	治疗药水 等级%d/%d	治療藥水 等級%d/%d	回復ポーション Lv%d/%d	치유 물약 레벨 %d/%d
+IMPRINT	刻印	刻印	刻印	각인
+JEWELER	珠宝匠	珠寶匠	宝石職人	보석공
+KEEP THE CURRENT AFFIX	保留当前词缀	保留當前詞綴	今の特性を残す	현재 속성 유지
+LAST: %s%s (%d)	上次：%s%s（%d）	上次：%s%s（%d）	前回：%s%s（%d）	지난번: %s%s (%d)
+LEFT/RIGHT: AFFIX  ENTER: REROLL. ONLY ONE AFFIX PER ITEM CAN BE ENCHANTED.	左右:词缀 ENTER:重铸。每件物品只能附魔一条词缀。	左右:詞綴 ENTER:重鑄。每件物品只能附魔一條詞綴。	左右:特性 ENTER:再抽選。1アイテム1特性のみ。	좌우:속성 ENTER:재굴림. 아이템당 하나만 가능.
+LEFT/RIGHT: ASPECT  ENTER: IMPRINT	左右:威能  ENTER:刻印	左右:威能  ENTER:刻印	左右:威能  ENTER:刻印	좌우:위상  ENTER:각인
+LEFT/RIGHT: RECIPE	左右：配方	左右：配方	左右：レシピ	좌우: 제작법
+MASTERWORK %d/%d (ENTER)	精造 %d/%d（ENTER）	精造 %d/%d（ENTER）	名匠 %d/%d（ENTER）	명품화 %d/%d (ENTER)
+MASTERWORK AND TEMPER YOUR GEAR	精造与回火你的装备	精造與回火你的裝備	装備の名匠化と焼き戻し	장비 명품화와 담금질
+MASTERWORK! A CRITICAL UPGRADE	精造！暴击升级	精造！暴擊升級	名匠！会心の強化	명품화! 치명적 강화
+MASTERWORKED +5%	精造完成 +5%	精造完成 +5%	名匠化 +5%	명품화 +5%
+MODE: %s (DEL)	模式：%s（DEL）	模式：%s（DEL）	モード：%s（DEL）	모드: %s (DEL)
+NEED 3 GEMS OF A TIER (AND GOLD)	需要3颗同级宝石（和金币）	需要3顆同級寶石（和金幣）	同等級の宝石3つ（と金）が必要	같은 등급 보석 3개 (와 골드) 필요
+NO GEM OF THAT KIND	没有该种宝石	沒有該種寶石	その宝石がない	그 보석이 없음
+NO MATCHING ASPECT IN THE CODEX FOR THIS ITEM (RARE OR LEGENDARY ONLY).	典籍中没有适合该物品的威能（仅限稀有或传奇）。	典籍中沒有適合該物品的威能（僅限稀有或傳奇）。	写本に合う威能がない（レアかレジェンダリーのみ）。	도감에 맞는 위상이 없음 (희귀 또는 전설만).
+NO SOCKET (DEL ADDS ONE)	没有插槽（DEL添加）	沒有插槽（DEL添加）	ソケットなし（DELで追加）	홈 없음 (DEL로 추가)
+NOT ENOUGH GOLD	金币不足	金幣不足	ゴールドが足りない	골드가 부족함
+OCCULTIST	神秘学者	神秘學者	オカルティスト	신비학자
+POTIONS AND ELIXIRS	药水与药剂	藥水與藥劑	ポーションと薬	물약과 비약
+POTIONS UPGRADED	药水已升级	藥水已升級	ポーション強化	물약 강화됨
+SOCKET ADDED	已添加插槽	已添加插槽	ソケットを追加	홈 추가됨
+TEMPER: %s (DEL)	回火：%s（DEL）	回火：%s（DEL）	焼き戻し：%s（DEL）	담금질: %s (DEL)
+TEMPERED: A NEW AFFIX	回火完成：新词缀	回火完成：新詞綴	焼き戻し：新しい特性	담금질: 새 속성
+UP TO 2 TEMPERED AFFIXES. TEMPERING A RECIPE AGAIN REROLLS ITS AFFIX.	最多2条回火词缀。再次使用同一配方会重铸该词缀。	最多2條回火詞綴。再次使用同一配方會重鑄該詞綴。	焼き戻し特性は最大2つ。同じレシピで再抽選。	담금질 속성은 최대 2개. 같은 제작법은 다시 굴림.
+  LOCKED	  已锁定	  已鎖定	  ロック	  잠김
+%d ITEM POWER	%d 物品强度	%d 物品強度	アイテムパワー %d	아이템 위력 %d
+%s%d%% POWER	%s%d%% 战力	%s%d%% 戰力	%s%d%% 戦力	%s%d%% 전투력
+BOARD	巅峰	巔峰	パラゴン	정복자
+EMBERS	余烬	餘燼	残り火	잔불
+FLOOR %d  GOLD %s  IRON %s  SOULS %s	第%d层 金%s 铁%s 魂%s	第%d層 金%s 鐵%s 魂%s	%d階 金%s 鉄%s 魂%s	%d층 골드%s 철%s 영혼%s
+HERO	英雄	英雄	英雄	영웅
+MW %d/%d	精造 %d/%d	精造 %d/%d	名匠 %d/%d	명품 %d/%d
+NOT ENOUGH MATERIALS (SALVAGE ITEMS)	材料不足（分解物品获取）	材料不足（分解物品獲取）	素材不足（アイテムを分解）	재료 부족 (아이템 분해)
+NOT POSSIBLE ON THIS ITEM	此物品无法进行	此物品無法進行	このアイテムには不可	이 아이템에는 불가
+O EMPTY SOCKET	O 空插槽	O 空插槽	O 空きソケット	O 빈 홈
+OPTION	选项	選項	設定	설정
+SKILLS	技能	技能	スキル	기술
+TEMPERS LEFT %d%s	剩余回火 %d%s	剩餘回火 %d%s	焼き戻し残り %d%s	남은 담금질 %d%s
+TOWN	城镇	城鎮	町	마을
+BAG	背包	背包	バッグ	가방
+(OFFLINE TIME IS CAPPED - SEE EMBERS: PATIENCE)	（离线时间有上限 - 见余烬：耐心）	（離線時間有上限 - 見餘燼：耐心）	（オフライン時間に上限 - 残り火：忍耐）	(오프라인 시간 제한 - 잔불: 인내 참고)
+AN IDLE DESCENT	放置式深渊之旅	放置式深淵之旅	放置の降下	방치형 하강
+ASHEN	灰烬	灰燼	灰の	잿빛
+DEPTHS	深渊	深淵	深淵	심연
+BUILD SWITCHED	流派已切换	流派已切換	ビルドを切替	빌드 변경됨
+CONTINUE	继续游戏	繼續遊戲	続きから	이어하기
+NEW GAME	新游戏	新遊戲	ニューゲーム	새 게임
+LOAD GAME	读取游戏	讀取遊戲	ロード	불러오기
+QUIT	退出	退出	終了	종료
+COST: %s GOLD. EVERY POINT COMES BACK.	花费：%s金币。所有点数都会返还。	花費：%s金幣。所有點數都會返還。	費用：%sゴールド。全ポイント返却。	비용: 골드 %s. 모든 점수 반환.
+DAMAGED SAVE	存档已损坏	存檔已損壞	破損したセーブ	손상된 저장
+DELETE THIS SAVE?	删除这个存档？	刪除這個存檔？	このセーブを削除？	이 저장을 삭제할까요?
+EMPTY	空	空	空き	비어 있음
+EMPTY SLOT	空存档位	空存檔位	空きスロット	빈 슬롯
+ENTER: SELECT   DEL: DELETE   ESC: BACK	ENTER:选择 DEL:删除 ESC:返回	ENTER:選擇 DEL:刪除 ESC:返回	ENTER:選択 DEL:削除 ESC:戻る	ENTER:선택 DEL:삭제 ESC:뒤로
+ENTER: YES      ESC: NO	ENTER：是      ESC：否	ENTER：是      ESC：否	ENTER：はい    ESC：いいえ	ENTER: 예      ESC: 아니오
+EXPERIENCE       %s	经验         %s	經驗         %s	経験値       %s	경험치       %s
+GOLD             %s	金币         %s	金幣         %s	ゴールド     %s	골드         %s
+ITEMS KEPT       %d  (SALVAGED %d)	保留物品     %d（分解 %d）	保留物品     %d（分解 %d）	保持アイテム %d（分解 %d）	보관 아이템  %d (분해 %d)
+LEVELS GAINED    %d	提升等级     %d	提升等級     %d	上昇レベル   %d	오른 레벨    %d
+MONSTERS SLAIN   %s	击杀怪物     %s	擊殺怪物     %s	倒した魔物   %s	처치한 괴물  %s
+GAIN %s EMBERS. LEVEL, GEAR, GOLD RESET.	获得%s余烬。等级、装备、金币重置。	獲得%s餘燼。等級、裝備、金幣重置。	残り火%s獲得。レベル・装備・金をリセット。	잔불 %s 획득. 레벨, 장비, 골드 초기화.
+LEVEL %d  FLOOR %d  BEST %d  REBIRTHS %d	等级%d 第%d层 最高%d 转生%d	等級%d 第%d層 最高%d 轉生%d	Lv%d %d階 最高%d 転生%d	레벨 %d %d층 최고 %d 환생 %d
+PARAGON %d  FLOOR %d  BEST %d  REBIRTHS %d	巅峰%d 第%d层 最高%d 转生%d	巔峰%d 第%d層 最高%d 轉生%d	パラゴン%d %d階 最高%d 転生%d	정복자 %d %d층 최고 %d 환생 %d
+LOCKED ITEMS (CTRL) ARE KEPT.	已锁定物品（CTRL）会保留。	已鎖定物品（CTRL）會保留。	ロック中（CTRL）は残る。	잠긴 아이템(CTRL)은 유지됨.
+NEW GAME - CHOOSE A SLOT	新游戏 - 选择存档位	新遊戲 - 選擇存檔位	ニューゲーム - スロット選択	새 게임 - 슬롯 선택
+OVERWRITE THIS SLOT?	覆盖这个存档位？	覆蓋這個存檔位？	このスロットを上書き？	이 슬롯을 덮어쓸까요?
+PARAGON POINTS REFUNDED	巅峰点数已返还	巔峰點數已返還	パラゴンポイント返却	정복자 점수 환급됨
+PRESS ENTER	按ENTER	按ENTER	ENTERを押す	ENTER를 누르세요
+REBIRTH NOW?	现在转生？	現在轉生？	今転生する？	지금 환생할까요?
+REFUND ALL PARAGON POINTS?	返还所有巅峰点数？	返還所有巔峰點數？	全パラゴンポイントを返却？	모든 정복자 점수를 환급할까요?
+REFUND ALL SKILL POINTS?	返还所有技能点？	返還所有技能點？	全スキルポイントを返却？	모든 기술 점수를 환급할까요?
+SALVAGE ALL UNLOCKED BAG ITEMS?	分解背包中所有未锁定物品？	分解背包中所有未鎖定物品？	未ロックのバッグ品を全て分解？	잠기지 않은 가방 아이템을 모두 분해?
+SALVAGED %d ITEMS FOR %s GOLD	分解%d件物品，获得%s金币	分解%d件物品，獲得%s金幣	%d個分解、%sゴールド	%d개 분해, 골드 %s
+SAVE DELETED	存档已删除	存檔已刪除	セーブを削除した	저장 삭제됨
+SAVE FILE WAS DAMAGED - STARTING FRESH	存档损坏 - 重新开始	存檔損壞 - 重新開始	セーブ破損 - 最初から	저장 파일 손상 - 새로 시작
+SKILL POINTS REFUNDED	技能点已返还	技能點已返還	スキルポイント返却	기술 점수 환급됨
+SLOT %d	存档位 %d	存檔位 %d	スロット %d	슬롯 %d
+SLOT %d: %s, %s LV %d  FLOOR %d	存档%d：%s，%s 等级%d 第%d层	存檔%d：%s，%s 等級%d 第%d層	スロット%d：%s、%s Lv%d %d階	슬롯 %d: %s, %s 레벨 %d %d층
+SWITCH TO THIS BUILD? (FULL RESPEC)	切换到这个流派？（全部洗点）	切換到這個流派？（全部洗點）	このビルドに切替？（全リセット）	이 빌드로 바꿀까요? (전체 초기화)
+TAB: MENU   ESC: OPTIONS	TAB：菜单   ESC：选项	TAB：選單   ESC：選項	TAB：メニュー  ESC：設定	TAB: 메뉴   ESC: 설정
+THE HERO SAVED HERE WILL BE ERASED.	这里保存的英雄将被抹去。	這裡保存的英雄將被抹去。	ここの英雄は消去される。	여기 저장된 영웅이 지워집니다.
+THIS HERO WILL BE GONE FOREVER.	这名英雄将永远消失。	這名英雄將永遠消失。	この英雄は永遠に消える。	이 영웅은 영원히 사라집니다.
+THIS SAVE IS DAMAGED	这个存档已损坏	這個存檔已損壞	このセーブは破損している	이 저장은 손상됨
+WELCOME BACK	欢迎回来	歡迎回來	おかえり	다시 오신 것을 환영합니다
+WHILE YOU WERE AWAY	你离开的时候	你離開的時候	留守の間に	자리를 비운 동안
+YOUR HERO FOUGHT FOR %uH %02uM	你的英雄战斗了%u小时%02u分	你的英雄戰鬥了%u小時%02u分	英雄は%u時間%02u分戦った	영웅이 %u시간 %02u분 싸웠다
+AMBER	琥珀	琥珀	琥珀	호박색
+APPEARANCE	外观	外觀	外見	외형
+APPEARANCE CHANGED	外观已更改	外觀已更改	外見を変更した	외형 변경됨
+AUBURN	赤褐	赤褐	赤褐色	적갈색
+BALD	光头	光頭	スキンヘッド	대머리
+BEARD	胡须	鬍鬚	ひげ	수염
+BLACK	黑色	黑色	黒	검은색
+BLOND	金色	金色	金髪	금발
+BLUE	蓝色	藍色	青	파란색
+BLUE-BLACK	蓝黑	藍黑	青黒	청흑색
+BRAIDS	辫子	辮子	三つ編み	땋은 머리
+BROWN	棕色	棕色	茶	갈색
+BUILDS:	流派：	流派：	ビルド：	빌드:
+CHOOSE YOUR CLASS	选择职业	選擇職業	クラスを選択	직업 선택
+CHOOSE YOUR NEXT LIFE	选择你的来世	選擇你的來世	次の生を選べ	다음 생을 선택
+CLEAN	干净	乾淨	素顔	깔끔함
+CLOTHING	服装	服裝	服	의복
+CREATE YOUR HERO	创建你的英雄	創建你的英雄	英雄を作成	영웅 만들기
+CRIMSON	深红	深紅	深紅	진홍색
+DARK	深色	深色	暗い	어두운색
+ENTER: EDIT NAME   DEL: RANDOM NAME	ENTER:编辑名字 DEL:随机名字	ENTER:編輯名字 DEL:隨機名字	ENTER:名前編集 DEL:ランダム	ENTER:이름 편집 DEL:무작위
+EYES	眼睛	眼睛	目	눈
+FACE	面部	面部	顔	얼굴
+GREEN	绿色	綠色	緑	초록색
+GREY	灰色	灰色	灰	회색
+HAIR	发型	髮型	髪型	머리 모양
+HAIR COLOUR	发色	髮色	髪の色	머리 색
+LEFT/RIGHT: LETTER  UP/DOWN: CHANGE  ENTER: DONE	左右:字母 上下:更改 ENTER:完成	左右:字母 上下:更改 ENTER:完成	左右:文字 上下:変更 ENTER:完了	좌우:글자 위아래:변경 ENTER:완료
+LIGHT	浅色	淺色	明るい	밝은색
+MOHAWK	莫西干	莫西干	モヒカン	모히칸
+NAME	名字	名字	名前	이름
+PALE	苍白	蒼白	色白	창백함
+PONYTAIL	马尾	馬尾	ポニーテール	포니테일
+PURPLE	紫色	紫色	紫	보라색
+REBORN AS %s! +%s EMBERS	转生为%s！+%s余烬	轉生為%s！+%s餘燼	%sに転生！残り火+%s	%s(으)로 환생! 잔불 +%s
+RED	红色	紅色	赤	빨간색
+SHORT	短发	短髮	短髪	짧은 머리
+SKIN	肤色	膚色	肌	피부
+STARTS WITH %s	初始技能：%s	初始技能：%s	初期スキル：%s	시작 기술: %s
+TAN	小麦色	小麥色	日焼け	구릿빛
+TATTOO	纹身	紋身	刺青	문신
+TEAL	青绿	青綠	青緑	청록색
+UP/DOWN: CHOOSE    ENTER: NEXT    ESC: BACK	上下:选择  ENTER:下一步  ESC:返回	上下:選擇  ENTER:下一步  ESC:返回	上下:選択  ENTER:次へ  ESC:戻る	위아래:선택  ENTER:다음  ESC:뒤로
+UP/DOWN: ROW  LEFT/RIGHT: CHANGE  ENTER: SELECT	上下:行 左右:更改 ENTER:选择	上下:行 左右:更改 ENTER:選擇	上下:行 左右:変更 ENTER:選択	위아래:줄 좌우:변경 ENTER:선택
+WAR PAINT	战纹	戰紋	ウォーペイント	전투 문양
+WHITE	白色	白色	白	흰색
+[ BEGIN ]	[ 开始 ]	[ 開始 ]	[ 開始 ]	[ 시작 ]
+[ DONE ]	[ 完成 ]	[ 完成 ]	[ 完了 ]	[ 완료 ]
+[ RANDOMIZE ]	[ 随机 ]	[ 隨機 ]	[ ランダム ]	[ 무작위 ]
+EPILOGUE	尾声	尾聲	エピローグ	에필로그
+%s AWAITS	%s正在等待	%s正在等待	%sが待つ	%s이(가) 기다린다
+FLOOR %d	第%d层	第%d層	%d階	%d층
+CATACOMBS	地下墓穴	地下墓穴	地下墓所	지하 묘지
+FROZEN HALLS	冰封大厅	冰封大廳	凍てつく広間	얼어붙은 전당
+HELLFORGE	地狱熔炉	地獄熔爐	獄炎の鍛冶場	지옥 대장간
+THE CRYPT	地穴	地穴	地下聖堂	지하 납골당
+THE VOID	虚空	虛空	虚空	공허
+BAT	蝙蝠	蝙蝠	コウモリ	박쥐
+CULTIST	邪教徒	邪教徒	教団員	광신도
+GOLEM	魔像	魔像	ゴーレム	골렘
+IMP	小恶魔	小惡魔	インプ	임프
+SKELETON	骷髅	骷髏	スケルトン	해골
+SPIDER	蜘蛛	蜘蛛	クモ	거미
++POTION	+药水	+藥水	+ポーション	+물약
+POTION	药水	藥水	ポーション	물약
+LEVEL UP! NOW LEVEL %d	升级！当前等级 %d	升級！當前等級 %d	レベルアップ！Lv%d	레벨 업! 이제 레벨 %d
+PARAGON LEVEL %d	巅峰等级 %d	巔峰等級 %d	パラゴンレベル %d	정복자 레벨 %d
+YOU HAVE FALLEN... RETREATING	你倒下了……撤退中	你倒下了……撤退中	倒れた……撤退する	쓰러졌다... 후퇴 중
+NEW ASPECT IN CODEX	典籍新增威能	典籍新增威能	写本に新しい威能	도감에 새 위상

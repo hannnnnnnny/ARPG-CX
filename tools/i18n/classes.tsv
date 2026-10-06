@@ -1,0 +1,137 @@
+// Classes, builds, resources, main stats; paragon nodes, glyphs, legendary nodes.
+BARBARIAN	野蛮人	野蠻人	バーバリアン	야만용사
+SORCERER	巫师	巫師	ソーサラー	원소술사
+ROGUE	游侠	遊俠	ローグ	도적
+NECROMANCER	死灵法师	死靈法師	ネクロマンサー	강령술사
+DRUID	德鲁伊	德魯伊	ドルイド	드루이드
+SPIRITBORN	灵巫	靈巫	スピリットボーン	혼령사
+A WARRIOR OF THE HIGH PEAKS WHO FIGHTS WITH RAGE AND STEEL.	来自高山之巅的战士，以怒火与钢铁作战。	來自高山之巔的戰士，以怒火與鋼鐵作戰。	高峰の戦士。怒りと鋼で戦う。	높은 봉우리의 전사. 분노와 강철로 싸운다.
+WIELDS FIRE, FROST AND LIGHTNING FROM AFAR.	从远处驾驭火焰、冰霜与闪电。	從遠處駕馭火焰、冰霜與閃電。	遠くから炎と氷と雷を操る。	멀리서 화염, 냉기, 번개를 다룬다.
+A SWIFT HUNTER OF BOWS, BLADES, TRAPS AND VENOM.	擅长弓箭、利刃、陷阱与毒药的迅捷猎手。	擅長弓箭、利刃、陷阱與毒藥的迅捷獵手。	弓と刃、罠と毒を操る俊敏な狩人。	활, 칼날, 덫, 독을 쓰는 날쌘 사냥꾼.
+COMMANDS BONE, BLOOD AND AN ARMY OF THE DEAD.	号令白骨、鲜血与亡者大军。	號令白骨、鮮血與亡者大軍。	骨と血と死者の軍勢を操る。	뼈와 피, 망자의 군대를 부린다.
+A SHAPESHIFTER WHO CALLS THE STORM AND THE EARTH.	召唤风暴与大地的变形者。	召喚風暴與大地的變形者。	嵐と大地を呼ぶ変身者。	폭풍과 대지를 부르는 변신술사.
+A JUNGLE WARRIOR BOUND TO FOUR SPIRIT GUARDIANS.	与四位灵魂守护者结契的丛林战士。	與四位靈魂守護者結契的叢林戰士。	四柱の守護霊と結ばれた密林の戦士。	네 수호령과 맺어진 밀림의 전사.
+MELEE - TOUGH	近战 - 坚韧	近戰 - 堅韌	近接 - 頑丈	근접 - 강인함
+RANGED - FRAGILE	远程 - 脆弱	遠程 - 脆弱	遠距離 - 脆い	원거리 - 연약함
+RANGED - SWIFT	远程 - 迅捷	遠程 - 迅捷	遠距離 - 俊敏	원거리 - 신속함
+RANGED - MINIONS	远程 - 仆从	遠程 - 僕從	遠距離 - ミニオン	원거리 - 하수인
+MELEE - STURDY	近战 - 结实	近戰 - 結實	近接 - 堅牢	근접 - 튼튼함
+MELEE - QUICK	近战 - 敏捷	近戰 - 敏捷	近接 - 素早い	근접 - 재빠름
+WHIRLWIND BLEED	旋风流血	旋風流血	旋風出血	소용돌이 출혈
+SPIN THROUGH THE HORDE AND BLEED IT DRY.	在敌群中旋转，令其血流殆尽。	在敵群中旋轉，令其血流殆盡。	群れの中で回り、血を流し尽くさせる。	무리 속을 돌며 피를 말린다.
+LEAP AND SLAM: THE GROUND DOES THE REST.	跃起猛击，剩下的交给大地。	躍起猛擊，剩下的交給大地。	跳んで叩け、後は大地に任せよ。	뛰어올라 내리쳐라, 나머진 땅이 한다.
+BERSERKER	狂战士	狂戰士	狂戦士	광전사
+FAST AXES AND ENDLESS BERSERKING.	迅捷斧击与无尽的狂暴。	迅捷斧擊與無盡的狂暴。	速い斧と尽きぬバーサーク。	빠른 도끼와 끝없는 광폭화.
+PYROMANCER	火法	火法	炎術師	화염술사
+FIREBALLS, METEORS AND BURNING GROUND.	火球、陨石与燃烧的大地。	火球、隕石與燃燒的大地。	火球、メテオ、燃える大地。	화염구, 운석, 불타는 땅.
+CRYOMANCER	冰法	冰法	氷術師	냉기술사
+FREEZE EVERYTHING, THEN SHATTER IT.	冻结一切，然后将其粉碎。	凍結一切，然後將其粉碎。	全てを凍らせ、そして砕く。	모든 것을 얼리고 부순다.
+CHAIN LIGHTNING THAT NEVER STOPS.	永不停歇的连锁闪电。	永不停歇的連鎖閃電。	止まらない連鎖の雷。	멈추지 않는 연쇄 번개.
+MARKSMAN	神射手流	神射手流	射手	저격수
+PIERCING SHOTS THAT CRIT THE HEALTHY.	穿透射击，专门暴击满血敌人。	穿透射擊，專門暴擊滿血敵人。	健康な敵に会心する貫通射撃。	건강한 적을 극대화하는 관통 사격.
+VENOM	毒液	毒液	毒	독
+RAPID FIRE THAT DROWNS FOES IN POISON.	急速射击，让敌人淹没在毒中。	急速射擊，讓敵人淹沒在毒中。	敵を毒に沈める速射。	적을 독에 빠뜨리는 속사.
+ARROWS IN EVERY DIRECTION.	箭矢射向四面八方。	箭矢射向四面八方。	四方八方に矢を放つ。	사방으로 쏟아지는 화살.
+SUMMONER	召唤师	召喚師	召喚士	소환사
+LANCES OF BONE THAT PIERCE ROWS OF FOES.	贯穿成排敌人的骨矛。	貫穿成排敵人的骨矛。	敵の列を貫く骨の槍。	적의 대열을 꿰뚫는 뼈 창.
+AN ARMY OF SKELETONS AND ROTTING BLIGHT.	骷髅大军与腐朽的枯萎。	骷髏大軍與腐朽的枯萎。	骸骨の軍勢と腐敗のブライト。	해골 군대와 썩어가는 역병.
+DRAIN THE HORDE TO FEED YOUR OWN LIFE.	吸干敌群来滋养自身生命。	吸乾敵群來滋養自身生命。	群れを吸い尽くし己の命とする。	무리를 흡수해 자신의 생명으로 삼는다.
+STORM	风暴	風暴	嵐	폭풍
+TORNADOES AND LIGHTNING ALL AROUND.	龙卷风与闪电环绕四周。	龍捲風與閃電環繞四周。	周囲に竜巻と稲妻。	사방에 회오리와 번개.
+EARTH	大地	大地	大地	대지
+LANDSLIDES AND BOULDERS THAT OVERPOWER.	造成压制的山崩与巨石。	造成壓制的山崩與巨石。	威圧する地すべりと岩。	제압하는 산사태와 바위.
+WEREWOLF	狼人	狼人	人狼	늑대인간
+SHRED WITH THE PACK AT YOUR SIDE.	与狼群并肩撕碎敌人。	與狼群並肩撕碎敵人。	群れと共に引き裂け。	무리와 함께 갈가리 찢어라.
+EAGLE QUILLS	鹰羽	鷹羽	鷲の羽根	독수리 깃털
+VOLLEYS OF QUILLS FROM THE SKY.	来自天空的羽刃齐射。	來自天空的羽刃齊射。	空から降る羽根の一斉射。	하늘에서 쏟아지는 깃털.
+JAGUAR	美洲豹	美洲豹	ジャガー	재규어
+CRUSHING PALMS AND A RISING FEROCITY.	碎岩之掌与不断高涨的凶性。	碎岩之掌與不斷高漲的兇性。	粉砕の掌と高まる獰猛さ。	분쇄의 손바닥과 치솟는 흉포함.
+CENTIPEDE	蜈蚣	蜈蚣	ムカデ	지네
+STINGERS AND SWARMS OF VENOM.	毒刺与成群的毒虫。	毒刺與成群的毒蟲。	毒針と毒の群れ。	독침과 독의 떼.
+FURY	怒气	怒氣	怒り	분노
+MANA	法力	法力	マナ	마나
+ENERGY	能量	能量	エネルギー	기력
+ESSENCE	精魂	精魂	エッセンス	정수
+SPIRIT	灵力	靈力	スピリット	영기
+VIGOR	活力	活力	活力	활력
+STRENGTH	力量	力量	筋力	힘
+INTELLIGENCE	智力	智力	知力	지능
+DEXTERITY	敏捷	敏捷	器用さ	민첩
+WILLPOWER	意志	意志	意志力	의지력
+ MAIN STAT	 主属性	 主屬性	 主能力値	 주 능력치
+% ALL RESISTANCE	%全抗性	%全抗性	%全耐性	% 모든 저항
+% ARMOR	%护甲	%護甲	%アーマー	% 방어도
+% CORE SKILL DAMAGE	%核心技能伤害	%核心技能傷害	%コアスキルダメージ	% 핵심 기술 피해
+% CRIT DAMAGE	%暴击伤害	%暴擊傷害	%会心ダメージ	% 극대화 피해
+% DAMAGE	%伤害	%傷害	%ダメージ	% 피해
+% DAMAGE REDUCTION	%伤害减免	%傷害減免	%ダメージ軽減	% 피해 감소
+% MAXIMUM LIFE	%最大生命	%最大生命	%最大ライフ	% 최대 생명력
+% OVERPOWER DAMAGE	%压制伤害	%壓制傷害	%威圧ダメージ	% 제압 피해
+% VULNERABLE DAMAGE	%易伤伤害	%易傷傷害	%脆弱ダメージ	% 취약 피해
++#% CORE SKILL DAMAGE PER 5 STAT	每5点属性：核心技能伤害+#%	每5點屬性：核心技能傷害+#%	能力値5ごとにコアスキル+#%	능력치 5당 핵심 기술 피해 +#%
++#% DAMAGE OVER TIME PER 5 STAT	每5点属性：持续伤害+#%	每5點屬性：持續傷害+#%	能力値5ごとに継続ダメージ+#%	능력치 5당 지속 피해 +#%
++#% DAMAGE PER 5 STAT	每5点属性：伤害+#%	每5點屬性：傷害+#%	能力値5ごとにダメージ+#%	능력치 5당 피해 +#%
++#% DAMAGE TO CLOSE ENEMIES PER 5 STAT	每5点属性：对近敌伤害+#%	每5點屬性：對近敵傷害+#%	能力値5ごとに近くの敵へ+#%	능력치 5당 근거리 적 피해 +#%
++#% DAMAGE TO DISTANT PER 5 STAT	每5点属性：对远敌伤害+#%	每5點屬性：對遠敵傷害+#%	能力値5ごとに遠くの敵へ+#%	능력치 5당 원거리 적 피해 +#%
++#% MINION DAMAGE PER 5 STAT	每5点属性：仆从伤害+#%	每5點屬性：僕從傷害+#%	能力値5ごとにミニオン+#%	능력치 5당 하수인 피해 +#%
++#% OVERPOWER DAMAGE PER 5 STAT	每5点属性：压制伤害+#%	每5點屬性：壓制傷害+#%	能力値5ごとに威圧ダメージ+#%	능력치 5당 제압 피해 +#%
++#% POISON DAMAGE PER 5 STAT	每5点属性：毒素伤害+#%	每5點屬性：毒素傷害+#%	能力値5ごとに毒ダメージ+#%	능력치 5당 독 피해 +#%
++#% STORM SKILL DAMAGE PER 5 STAT	每5点属性：风暴技能伤害+#%	每5點屬性：風暴技能傷害+#%	能力値5ごとに嵐スキル+#%	능력치 5당 폭풍 기술 피해 +#%
++#% VULNERABLE DAMAGE PER 5 STAT	每5点属性：易伤伤害+#%	每5點屬性：易傷傷害+#%	能力値5ごとに脆弱ダメージ+#%	능력치 5당 취약 피해 +#%
+ANCESTRAL GUIDANCE	先祖指引	先祖指引	祖霊の導き	선조의 인도
+APEX	巅峰	巔峰	頂点	정점
+ARCANE FURNACE	奥术熔炉	奧術熔爐	秘術の炉	비전 용광로
+BLOODBATH	血浴	血浴	血の海	피바다
+BLOODBORNE	血脉	血脈	血に宿る者	피에서 난 자
+BONE BREAKER	碎骨者	碎骨者	骨砕き	뼈 부수는 자
+BONE GRAFT	骨之嫁接	骨之嫁接	骨の接ぎ木	뼈 이식
+DECIMATOR	屠戮者	屠戮者	殲滅者	섬멸자
+DESTRUCTION	毁灭	毀滅	破壊	파괴
+DOMINANCE	支配	支配	支配	지배
+EAGLE'S DOMINION	鹰之领域	鷹之領域	鷲の領域	독수리의 영역
+EARTH AND SKY	天与地	天與地	天と地	땅과 하늘
+EARTHEN DEVASTATION	大地浩劫	大地浩劫	大地の荒廃	대지의 파괴
+ELEMENTALIST	元素使	元素使	元素術師	원소술사의 문양
+EXPLOIT	破绽	破綻	弱点	약점
+EXPLOITER	趁虚者	趁虛者	弱点を突く者	약점을 노리는 자
+FLESH EATER	食肉者	食肉者	肉喰らい	살점 포식자
+FROZEN MIRROR	冰封之镜	冰封之鏡	凍てつく鏡	얼어붙은 거울
+GATE	大门	大門	ゲート	관문
+GLYPH SOCKET	雕文孔	雕文孔	グリフソケット	문양 홈
+LEGENDARY NODE	传奇节点	傳奇節點	レジェンダリーノード	전설 노드
+MAGIC: +%d.%d%s	魔法：+%d.%d%s	魔法：+%d.%d%s	マジック：+%d.%d%s	마법: +%d.%d%s
+NO WITNESSES	不留活口	不留活口	目撃者なし	목격자는 없다
+PLAGUE CARRIER	瘟疫携带者	瘟疫攜帶者	疫病の運び屋	역병 보균자
+RANGER	游猎者	遊獵者	レンジャー	순찰자
+RARE: +%d%s, +%d%s	稀有：+%d%s，+%d%s	稀有：+%d%s，+%d%s	レア：+%d%s、+%d%s	희귀: +%d%s, +%d%s
+SPIRIT FURY	灵魂之怒	靈魂之怒	霊の憤怒	영혼의 격노
+START	起点	起點	スタート	시작
+STATIC SURGE	静电涌动	靜電湧動	静電の奔流	정전기 쇄도
+TEMPEST	暴风雨	暴風雨	テンペスト	폭풍우
+TERROR	恐惧	恐懼	恐怖	공포
+THUNDERSTRUCK	雷击	雷擊	落雷	벼락
+TOXIN	毒素之力	毒素之力	毒素	독소
+UNDYING	不朽	不朽	不死	불사
+[x]10% CRIT DAMAGE	[x]10%暴击伤害	[x]10%暴擊傷害	会心ダメージ[x]10%	극대화 피해 [x]10%
+[x]10% DAMAGE OVER TIME	[x]10%持续伤害	[x]10%持續傷害	継続ダメージ[x]10%	지속 피해 [x]10%
+[x]10% STORM DAMAGE	[x]10%风暴伤害	[x]10%風暴傷害	嵐ダメージ[x]10%	폭풍 피해 [x]10%
+[x]12% OVERPOWER DAMAGE	[x]12%压制伤害	[x]12%壓制傷害	威圧ダメージ[x]12%	제압 피해 [x]12%
+[x]15% DAMAGE	[x]15%伤害	[x]15%傷害	ダメージ[x]15%	피해 [x]15%
+[x]15% MINION DAMAGE	[x]15%仆从伤害	[x]15%僕從傷害	ミニオンダメージ[x]15%	하수인 피해 [x]15%
+[x]25% BLOOD SKILL DAMAGE	[x]25%鲜血技能伤害	[x]25%鮮血技能傷害	血スキルダメージ[x]25%	피 기술 피해 [x]25%
+[x]25% BONE SKILL DAMAGE	[x]25%白骨技能伤害	[x]25%白骨技能傷害	骨スキルダメージ[x]25%	뼈 기술 피해 [x]25%
+[x]25% DAMAGE TO CROWD CONTROLLED	对受控敌人[x]25%伤害	對受控敵人[x]25%傷害	行動妨害中の敵へ[x]25%	군중 제어된 적에게 [x]25%
+[x]25% DAMAGE TO VULNERABLE	对易伤敌人[x]25%伤害	對易傷敵人[x]25%傷害	脆弱な敵へ[x]25%	취약한 적에게 [x]25%
+[x]25% EAGLE SKILL DAMAGE	[x]25%鹰之技能伤害	[x]25%鷹之技能傷害	鷲スキルダメージ[x]25%	독수리 기술 피해 [x]25%
+[x]25% EARTH SKILL DAMAGE	[x]25%大地技能伤害	[x]25%大地技能傷害	大地スキルダメージ[x]25%	대지 기술 피해 [x]25%
+[x]25% FIRE DAMAGE	[x]25%火焰伤害	[x]25%火焰傷害	火炎ダメージ[x]25%	화염 피해 [x]25%
+[x]25% JAGUAR SKILL DAMAGE	[x]25%美洲豹技能伤害	[x]25%美洲豹技能傷害	ジャガースキルダメージ[x]25%	재규어 기술 피해 [x]25%
+[x]25% LIGHTNING DAMAGE	[x]25%闪电伤害	[x]25%閃電傷害	雷ダメージ[x]25%	번개 피해 [x]25%
+[x]25% POISON DAMAGE	[x]25%毒素伤害	[x]25%毒素傷害	毒ダメージ[x]25%	독 피해 [x]25%
+[x]25% STORM SKILL DAMAGE	[x]25%风暴技能伤害	[x]25%風暴技能傷害	嵐スキルダメージ[x]25%	폭풍 기술 피해 [x]25%
+[x]30% DAMAGE OVER TIME	[x]30%持续伤害	[x]30%持續傷害	継続ダメージ[x]30%	지속 피해 [x]30%
+[x]40% MINION DAMAGE	[x]40%仆从伤害	[x]40%僕從傷害	ミニオンダメージ[x]40%	하수인 피해 [x]40%
+[x]40% OVERPOWER DAMAGE	[x]40%压制伤害	[x]40%壓制傷害	威圧ダメージ[x]40%	제압 피해 [x]40%
+[x]6% DAMAGE	[x]6%伤害	[x]6%傷害	ダメージ[x]6%	피해 [x]6%
+[x]8% CORE DAMAGE	[x]8%核心伤害	[x]8%核心傷害	コアダメージ[x]8%	핵심 피해 [x]8%
+[x]8% VS VULNERABLE	对易伤[x]8%	對易傷[x]8%	脆弱へ[x]8%	취약 대상 [x]8%

@@ -1,0 +1,170 @@
+// Skills: Spiritborn, passives, key passives, clusters, elements, statuses.
+PIERCING THRUST	穿透刺击	穿透刺擊	貫く突き	관통 찌르기
+RUSHING THRUST	疾驰刺击	疾馳刺擊	疾走の突き	돌진 찌르기
++40% VIGOR GENERATED	活力获取+40%	活力獲取+40%	活力獲得+40%	활력 획득 +40%
+WITHERING FIST	凋零之拳	凋零之拳	枯死の拳	시드는 주먹
+POISONED PUNCH. +10 VIGOR	带毒的拳击。+10活力	帶毒的拳擊。+10活力	毒の拳。活力+10	독 주먹. 활력 +10
+ENHANCED FIST	强化之拳	強化之拳	強化の拳	강화된 주먹
+ACIDIC FIST	酸蚀之拳	酸蝕之拳	酸の拳	산성 주먹
+SPREADING FIST	扩散之拳	擴散之拳	拡散の拳	퍼지는 주먹
+QUILL VOLLEY	羽刃齐射	羽刃齊射	羽根の一斉射	깃털 일제 사격
+A FAN OF SPIRIT QUILLS. 30 VIGOR	扇形射出灵羽。30活力	扇形射出靈羽。30活力	霊の羽根を扇状に。活力30	부채꼴 영혼 깃털. 활력 30
+ENHANCED VOLLEY	强化齐射	強化齊射	強化一斉射	강화된 일제 사격
+RAGING VOLLEY	狂暴齐射	狂暴齊射	荒れ狂う一斉射	성난 일제 사격
++2 QUILLS	+2根羽刃	+2根羽刃	羽根+2	깃털 +2
+KEEN VOLLEY	锐利齐射	銳利齊射	鋭い一斉射	예리한 일제 사격
+CRUSHING PALM	碎岩掌	碎岩掌	粉砕の掌	분쇄의 손바닥
+A SPIRIT HAND SLAMS DOWN. 30 VIGOR	灵魂之手重重拍下。30活力	靈魂之手重重拍下。30活力	霊の手が叩きつける。活力30	영혼의 손이 내리친다. 활력 30
+ENHANCED PALM	强化碎岩掌	強化碎岩掌	強化の掌	강화된 손바닥
+DOUBLE PALM	双重碎岩掌	雙重碎岩掌	二重の掌	이중 손바닥
++1 SLAM	+1次拍击	+1次拍擊	叩きつけ+1	강타 +1
+DREADED PALM	恐惧碎岩掌	恐懼碎岩掌	恐怖の掌	공포의 손바닥
+STINGER	毒刺	毒刺	スティンガー	독침
+DASH AND STING WITH VENOM. 25 VIGOR	突进并以毒刺螫刺。25活力	突進並以毒刺螫刺。25活力	突進し毒で刺す。活力25	돌진하며 독침으로 쏜다. 활력 25
+ENHANCED STINGER	强化毒刺	強化毒刺	強化スティンガー	강화된 독침
+VENOMOUS STINGER	剧毒毒刺	劇毒毒刺	猛毒のスティンガー	맹독 독침
+TOXIC STINGER	毒性毒刺	毒性毒刺	毒性スティンガー	유독 독침
+LEAVES A POISON POOL	留下毒池	留下毒池	毒の沼を残す	독 웅덩이를 남김
+CENTIPEDE SWARM	蜈蚣虫群	蜈蚣蟲群	ムカデの群れ	지네 떼
+A CRAWLING SWARM POISONS FOES	爬行的虫群使敌人中毒	爬行的蟲群使敵人中毒	這う群れが敵を毒する	기어가는 떼가 적을 중독
+ENHANCED SWARM	强化虫群	強化蟲群	強化の群れ	강화된 떼
+RAVENOUS SWARM	贪婪虫群	貪婪蟲群	貪欲な群れ	굶주린 떼
+BINDING SWARM	束缚虫群	束縛蟲群	束縛の群れ	속박의 떼
+ARMORED HIDE	装甲兽皮	裝甲獸皮	装甲の皮	장갑 가죽
+ENHANCED HIDE	强化兽皮	強化獸皮	強化の皮	강화된 가죽
+REJUVENATING HIDE	回春兽皮	回春獸皮	若返りの皮	회복의 가죽
+THICK HIDE	厚实兽皮	厚實獸皮	厚い皮	두꺼운 가죽
+SOAR	翱翔	翱翔	飛翔	비상
+LEAP ON EAGLE WINGS AND STUN	乘鹰翼跃起并击晕	乘鷹翼躍起並擊暈	鷲の翼で跳びスタン	독수리 날개로 도약해 기절
+ENHANCED SOAR	强化翱翔	強化翱翔	強化飛翔	강화된 비상
++1 STRIKE	+1次打击	+1次打擊	一撃+1	타격 +1
+RAPTOR SOAR	猛禽翱翔	猛禽翱翔	猛禽の飛翔	맹금의 비상
+STORM SOAR	风暴翱翔	風暴翱翔	嵐の飛翔	폭풍의 비상
+LIGHTNING DAMAGE	闪电伤害	閃電傷害	雷ダメージ	번개 피해
+JAGUAR RUSH	美洲豹冲刺	美洲豹衝刺	ジャガーラッシュ	재규어 돌격
++30% ATTACK SPEED FOR 5S	5秒内攻速+30%	5秒內攻速+30%	5秒間攻撃速度+30%	5초간 공격 속도 +30%
+ENHANCED RUSH	强化冲刺	強化衝刺	強化ラッシュ	강화된 돌격
+FEROCIOUS RUSH	凶残冲刺	兇殘衝刺	獰猛なラッシュ	흉포한 돌격
+ALSO GRANTS BERSERKING	同时获得狂暴	同時獲得狂暴	バーサークも得る	광폭화도 부여
+SWIFT RUSH	迅捷冲刺	迅捷衝刺	迅速なラッシュ	신속한 돌격
++30% STRENGTH	强度+30%	強度+30%	効果+30%	효과 +30%
+SPIRIT AVATAR	灵魂化身	靈魂化身	精霊の化身	영혼의 화신
+ULTIMATE: [x]35% DMG, SPEED, UNSTOPPABLE	终极：[x]35%伤害、加速、势不可挡	終極：[x]35%傷害、加速、勢不可擋	究極：ダメージ[x]35%、加速、阻止不可	궁극기: 피해 [x]35%, 가속, 저지 불가
+ENHANCED AVATAR	强化化身	強化化身	強化化身	강화된 화신
+EMPOWERED AVATAR	强能化身	強能化身	力ある化身	강력해진 화신
+RENEWING AVATAR	复苏化身	復甦化身	再生の化身	재생의 화신
+PIT FIGHTER	角斗士	角鬥士	闘技者	투기장 전사
++4% DAMAGE TO CLOSE ENEMIES	对近距离敌人伤害+4%	對近距離敵人傷害+4%	近くの敵へのダメージ+4%	근거리 적에게 주는 피해 +4%
+THICK SKIN	厚皮	厚皮	厚い皮膚	두꺼운 피부
++3% DAMAGE REDUCTION	伤害减免+3%	傷害減免+3%	ダメージ軽減+3%	피해 감소 +3%
+BLOODLETTER	放血者	放血者	血抜き	방혈자
++8% DAMAGE OVER TIME	持续伤害+8%	持續傷害+8%	継続ダメージ+8%	지속 피해 +8%
+HEAVY HANDED	重手	重手	重い一撃	묵직한 손
++6% CRITICAL STRIKE DAMAGE	暴击伤害+6%	暴擊傷害+6%	会心ダメージ+6%	극대화 피해 +6%
+BRAWLER	斗殴者	鬥毆者	喧嘩屋	싸움꾼
++8% OVERPOWER DAMAGE	压制伤害+8%	壓制傷害+8%	威圧ダメージ+8%	제압 피해 +8%
+IMPOSING PRESENCE	威慑之姿	威懾之姿	威圧的な存在	위압적인 존재
++5% MAXIMUM LIFE	最大生命+5%	最大生命+5%	最大ライフ+5%	최대 생명력 +5%
+GLASS CANNON	玻璃大炮	玻璃大砲	ガラスの大砲	유리 대포
++6% DAMAGE	伤害+6%	傷害+6%	ダメージ+6%	피해 +6%
+DEVASTATION	毁灭	毀滅	壊滅	황폐
++10 MAXIMUM MANA	最大法力+10	最大法力+10	最大マナ+10	최대 마나 +10
+ELEMENTAL DOMINANCE	元素支配	元素支配	元素の支配	원소 지배
++6% CORE SKILL DAMAGE	核心技能伤害+6%	核心技能傷害+6%	コアスキルダメージ+6%	핵심 기술 피해 +6%
+PRECISION MAGIC	精准魔法	精準魔法	精密魔法	정밀 마법
++2% CRITICAL STRIKE CHANCE	暴击率+2%	暴擊率+2%	会心率+2%	극대화 확률 +2%
+PERMAFROST	永冻	永凍	永久凍土	영구동토
++6% DAMAGE TO CROWD CONTROLLED	对受控敌人伤害+6%	對受控敵人傷害+6%	行動妨害中の敵へ+6%	군중 제어된 적에게 피해 +6%
+ALIGN THE ELEMENTS	元素调和	元素調和	元素の調和	원소 정렬
++3% COOLDOWN REDUCTION	冷却缩减+3%	冷卻縮減+3%	クールダウン短縮+3%	재사용 대기시간 감소 +3%
+SHARPSHOOTER	神射手	神射手	狙撃手	명사수
+EXPLOITATION	乘虚而入	乘虛而入	弱点突き	약점 공략
++8% VULNERABLE DAMAGE	易伤伤害+8%	易傷傷害+8%	脆弱ダメージ+8%	취약 피해 +8%
+DEADLY VENOM	致命毒液	致命毒液	致死の毒	치명적인 독
+TRICK ATTACKS	诡计攻击	詭計攻擊	トリック攻撃	속임수 공격
+WEAPON MASTERY	武器精通	武器精通	武器の熟練	무기 숙련
++3% ATTACK SPEED	攻速+3%	攻速+3%	攻撃速度+3%	공격 속도 +3%
+AGILITY	敏捷	敏捷	敏捷性	민첩성
++4% MOVEMENT SPEED	移动速度+4%	移動速度+4%	移動速度+4%	이동 속도 +4%
+GRIM HARVEST	冷酷收获	冷酷收穫	冷酷な収穫	섬뜩한 수확
++2 ESSENCE ON KILL	击杀获得2精魂	擊殺獲得2精魂	撃破でエッセンス+2	처치 시 정수 +2
+UNLIFE	非生	非生	非生命	비생명
+DEATH'S EMBRACE	死亡之拥	死亡之擁	死の抱擁	죽음의 포옹
++4% DAMAGE REDUCTION FROM CLOSE	受近距离伤害减免+4%	受近距離傷害減免+4%	近くからの被ダメージ軽減+4%	근거리 피해 감소 +4%
+SKELETAL MASTERY	骷髅精通	骷髏精通	スケルトンの熟練	해골 숙련
++10% MINION DAMAGE	仆从伤害+10%	僕從傷害+10%	ミニオンダメージ+10%	하수인 피해 +10%
+BONE MASTERY	白骨精通	白骨精通	骨の熟練	뼈 숙련
+IMPERFECT BALANCE	不完美的平衡	不完美的平衡	不完全な均衡	불완전한 균형
++5% CORE SKILL DAMAGE	核心技能伤害+5%	核心技能傷害+5%	コアスキルダメージ+5%	핵심 기술 피해 +5%
+NATURE'S FURY	自然之怒	自然之怒	自然の怒り	자연의 분노
++5% DAMAGE	伤害+5%	傷害+5%	ダメージ+5%	피해 +5%
+VIGILANCE	警觉	警覺	警戒	경계
+PREDATORY INSTINCT	掠食本能	掠食本能	捕食本能	포식 본능
+EARTHEN MIGHT	大地之力	大地之力	大地の力	대지의 힘
+ELECTRIC SHOCK	电击	電擊	電撃	전기 충격
++6% LIGHTNING DAMAGE	闪电伤害+6%	閃電傷害+6%	雷ダメージ+6%	번개 피해 +6%
+PROTECTION	庇护	庇護	守護	보호
++8% BARRIER GENERATION	屏障生成+8%	屏障生成+8%	バリア生成+8%	보호막 생성 +8%
+VIGOROUS	精力充沛	精力充沛	活力旺盛	활기찬
++10 MAXIMUM VIGOR	最大活力+10	最大活力+10	最大活力+10	최대 활력 +10
+SWIFT FEATHERS	迅捷之羽	迅捷之羽	迅速の羽根	신속한 깃털
+PROTECTOR	守护者	守護者	守護者	수호자
+PREDATOR'S FOCUS	猎手专注	獵手專注	捕食者の集中	포식자의 집중
+ACIDIC VENOM	酸性毒液	酸性毒液	酸性の毒	산성 독
++6% POISON DAMAGE	毒素伤害+6%	毒素傷害+6%	毒ダメージ+6%	독 피해 +6%
+FERAL STRENGTH	野性之力	野性之力	野生の力	야성의 힘
+UNBRIDLED RAGE	无尽狂怒	無盡狂怒	抑えきれぬ怒り	고삐 풀린 분노
+WHILE BERSERKING: [x]25% DAMAGE. CRITS GRANT BERSERKING.	狂暴时：[x]25%伤害。暴击时获得狂暴。	狂暴時：[x]25%傷害。暴擊時獲得狂暴。	バーサーク中：ダメージ[x]25%。会心でバーサーク。	광폭화 중: 피해 [x]25%. 극대화 시 광폭화.
+HEMORRHAGE	大出血	大出血	大出血	대량 출혈
+BLEEDING ENEMIES TAKE [x]30% DAMAGE FROM CORE SKILLS.	流血的敌人受到核心技能[x]30%伤害。	流血的敵人受到核心技能[x]30%傷害。	出血中の敵はコアスキルから[x]30%ダメージ。	출혈 중인 적은 핵심 기술에 [x]30% 피해.
+TITAN'S GRIP	泰坦之握	泰坦之握	タイタンの握力	거인의 손아귀
++10% OVERPOWER CHANCE AND [x]40% OVERPOWER DAMAGE.	压制几率+10%，[x]40%压制伤害。	壓制機率+10%，[x]40%壓制傷害。	威圧確率+10%、威圧ダメージ[x]40%。	제압 확률 +10%, 제압 피해 [x]40%.
+COMBUSTION	自燃	自燃	燃焼	연소
+BURNING ENEMIES EXPLODE ON DEATH. [x]20% BURNING DAMAGE.	燃烧的敌人死亡时爆炸。[x]20%燃烧伤害。	燃燒的敵人死亡時爆炸。[x]20%燃燒傷害。	燃焼中の敵は死亡時に爆発。燃焼ダメージ[x]20%。	불타는 적이 죽으면 폭발. 화상 피해 [x]20%.
+SHATTERING ICE	碎冰	碎冰	砕ける氷	부서지는 얼음
+FROZEN ENEMIES TAKE [x]60% DAMAGE.	冻结的敌人受到[x]60%伤害。	凍結的敵人受到[x]60%傷害。	凍結中の敵は[x]60%ダメージを受ける。	빙결된 적은 [x]60% 피해를 받는다.
+OVERCHARGE	超载	超載	オーバーチャージ	과충전
+LIGHTNING CRITICAL STRIKES DEAL TRIPLE CRIT DAMAGE.	闪电暴击造成三倍暴击伤害。	閃電暴擊造成三倍暴擊傷害。	雷の会心は会心ダメージ3倍。	번개 극대화는 극대화 피해 3배.
+DEADEYE	神眼	神眼	必中の眼	백발백중
++30% CRIT CHANCE VS HEALTHY ENEMIES, [x]20% CRIT DAMAGE.	对健康敌人暴击率+30%，[x]20%暴击伤害。	對健康敵人暴擊率+30%，[x]20%暴擊傷害。	健康な敵への会心率+30%、会心ダメージ[x]20%。	건강한 적에게 극대화 확률 +30%, 극대화 피해 [x]20%.
+VIRULENCE	剧毒	劇毒	猛毒	맹독
+POISON DEALS [x]100% DAMAGE.	毒素造成[x]100%伤害。	毒素造成[x]100%傷害。	毒のダメージ[x]100%。	독이 [x]100% 피해를 준다.
+HAIL OF STEEL	钢铁之雹	鋼鐵之雹	鋼の雹	강철 우박
+PROJECTILE SKILLS FIRE 2 EXTRA PROJECTILES.	投射物技能额外发射2个投射物。	投射物技能額外發射2個投射物。	投射スキルは投射物が2つ増える。	투사체 기술이 투사체 2개를 추가 발사.
+MARROW SURGE	骨髓奔涌	骨髓奔湧	骨髄の奔流	골수 쇄도
+BONE SKILLS DEAL [x]30% DAMAGE, +10% CRIT CHANCE.	白骨技能造成[x]30%伤害，暴击率+10%。	白骨技能造成[x]30%傷害，暴擊率+10%。	骨スキルのダメージ[x]30%、会心率+10%。	뼈 기술 피해 [x]30%, 극대화 확률 +10%.
+COMMANDER	统帅	統帥	指揮官	지휘관
++2 MINIONS. MINIONS DEAL [x]60% DAMAGE.	+2个仆从。仆从造成[x]60%伤害。	+2個僕從。僕從造成[x]60%傷害。	ミニオン+2。ミニオンのダメージ[x]60%。	하수인 +2. 하수인 피해 [x]60%.
+BLOOD BOND	血之契约	血之契約	血の絆	피의 유대
+BLOOD SKILLS HEAL 3% LIFE. [x]30% DAMAGE WHILE HEALTHY.	鲜血技能治疗3%生命。健康时[x]30%伤害。	鮮血技能治療3%生命。健康時[x]30%傷害。	血のスキルでライフ3%回復。健康時ダメージ[x]30%。	피 기술이 생명력 3% 회복. 건강할 때 피해 [x]30%.
+EARTH SPIRIT	大地之灵	大地之靈	大地の精霊	대지의 정령
+EARTH SKILLS +15% OVERPOWER CHANCE, [x]30% OVERPOWER DMG.	大地技能压制几率+15%，[x]30%压制伤害。	大地技能壓制機率+15%，[x]30%壓制傷害。	大地スキルの威圧確率+15%、威圧ダメージ[x]30%。	대지 기술 제압 확률 +15%, 제압 피해 [x]30%.
+STORMCALLER	召雷者	召雷者	嵐を呼ぶ者	폭풍술사
+STORM SKILLS +1 CHAIN OR TORNADO AND DEAL [x]25%.	风暴技能+1连锁或龙卷风，造成[x]25%伤害。	風暴技能+1連鎖或龍捲風，造成[x]25%傷害。	嵐スキルの連鎖か竜巻+1、ダメージ[x]25%。	폭풍 기술 연쇄 또는 회오리 +1, 피해 [x]25%.
+PRIMAL BEAST	原始野兽	原始野獸	原初の獣	원시 야수
+BEAST SKILLS DEAL [x]30% DAMAGE, +15% ATTACK SPEED.	野兽技能造成[x]30%伤害，攻速+15%。	野獸技能造成[x]30%傷害，攻速+15%。	獣スキルのダメージ[x]30%、攻撃速度+15%。	야수 기술 피해 [x]30%, 공격 속도 +15%.
+JAGUAR'S FEROCITY	美洲豹之凶	美洲豹之兇	ジャガーの獰猛	재규어의 흉포함
+KILLS STACK [x]6% DAMAGE AND +4% ATTACK SPEED, UP TO 5.	击杀叠加[x]6%伤害和4%攻速，最多5层。	擊殺疊加[x]6%傷害和4%攻速，最多5層。	撃破でダメージ[x]6%と攻撃速度+4%、最大5重。	처치 시 피해 [x]6%와 공격 속도 +4% 중첩, 최대 5.
+EAGLE'S EYE	鹰之眼	鷹之眼	鷲の眼	독수리의 눈
+EAGLE SKILLS MAKE VULNERABLE AND DEAL [x]25% DAMAGE.	鹰之技能造成易伤并造成[x]25%伤害。	鷹之技能造成易傷並造成[x]25%傷害。	鷲スキルは脆弱化しダメージ[x]25%。	독수리 기술이 취약하게 하고 피해 [x]25%.
+CENTIPEDE'S PLAGUE	蜈蚣之疫	蜈蚣之疫	ムカデの疫病	지네의 역병
+POISONED ENEMIES TAKE [x]20% DAMAGE. POISON [x]50%.	中毒的敌人受到[x]20%伤害。毒素[x]50%。	中毒的敵人受到[x]20%傷害。毒素[x]50%。	毒状態の敵は[x]20%ダメージ。毒[x]50%。	중독된 적은 [x]20% 피해. 독 [x]50%.
+BASIC	基础	基礎	基本	기본
+CORE	核心	核心	コア	핵심
+DEFENSIVE	防御	防禦	防御	방어
+MASTERY	精通	精通	熟練	숙련
+ULTIMATE	终极	終極	究極	궁극기
+PHYSICAL	物理	物理	物理	물리
+FIRE	火焰	火焰	火炎	화염
+COLD	冰霜	冰霜	冷気	냉기
+LIGHTNING	闪电	閃電	雷	번개
+POISON	毒素	毒素	毒	독
+SHADOW	暗影	暗影	影	암흑
+FROZEN	冰冻	冰凍	凍結	빙결
+STUNNED	晕眩	暈眩	スタン	기절
+CHILLED	冰冷	冰冷	冷気	냉기
+IMMOBILIZED	定身	定身	移動不能	속박
+BURNING	燃烧	燃燒	燃焼	화상
+POISONED	中毒	中毒	毒	중독
+BLEEDING	流血	流血	出血	출혈
+WITHERING	凋零	凋零	衰弱	쇠약

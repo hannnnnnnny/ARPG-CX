@@ -1,0 +1,17 @@
+# Local toolchain venv (zig compiler via pip)
+.tools/
+# Build outputs
+build/
+*.o
+*.elf
+*.zehn
+*.exe
+*.pdb
+*.ilk
+# Calculator build artifact is copied to dist/ explicitly
+platform/nspire/*.tns
+# Runtime save files from desktop runs
+*.sav
+screenshots/
+!tests/fixtures/*.sav
+shots/
