@@ -38,6 +38,13 @@ CLIPS = [
     ('desktop_play', ['--new', '--class', '0', '--fast', '0.25'] + ZH, PLAY, (0, 130, 3), 100),
     ('desktop_menus', ['--new', '--class', '1', '--fast', '1.5'] + ZH, MENUS, (30, 110, 3), 100),
     ('desktop_battle', ['--new', '--class', '3', '--fast', '0.3'] + ZH, '-:400', (0, 125, 2), 66),
+    # the three signature builds, wearing their build-defining uniques
+    ('meta_storm_werewolf', ['--new', '--class', '4', '--preset', '2', '--fast', '0.6', '--sig'] + ZH, '-:600',
+     (180, 120, 3), 100),
+    ('meta_bone_spear', ['--new', '--class', '3', '--preset', '0', '--fast', '0.5', '--sig'] + ZH, '-:1100',
+     (640, 120, 3), 100),
+    ('meta_inferno', ['--new', '--class', '1', '--preset', '0', '--fast', '0.4', '--sig'] + ZH, '-:500',
+     (20, 120, 3), 100),
 ]
 
 SHOTS = [
