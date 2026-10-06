@@ -3,10 +3,12 @@
  *
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
- *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX]
+ *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
+ * --sounds logs every sound effect the game asks for as "tick id volume"
+ * lines, so a video can be scored with the game's own effects.
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
  * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
@@ -52,7 +54,18 @@ const char *plat_save_path(void) { return NULL; }
 const char *plat_name(void) { return "HEADLESS"; }
 const char *plat_clock_desc(void) { return "CLOCK: SCRIPTED"; }
 const char *const *plat_control_lines(void) { return NULL; }
-void plat_sound(int id, int volume) { (void)id; (void)volume; }
+
+static FILE *g_sound_log;   /* --sounds: one "tick id volume" line per effect, for video soundtracks */
+static int g_tick;
+
+void plat_sound(int id, int volume)
+{
+    if (g_sound_log && fprintf(g_sound_log, "%d %d %d\n", g_tick, id, volume) < 0) {
+        fprintf(stderr, "sound log write failed, logging stopped\n");
+        fclose(g_sound_log);
+        g_sound_log = NULL;
+    }
+}
 
 bool plat_read_mouse(int *x, int *y)
 {
@@ -178,6 +191,10 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--record") && i + 1 < argc) parse_record(argv[++i], &rec);
         else if (!strcmp(argv[i], "--preset") && i + 1 < argc) preset = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--sounds") && i + 1 < argc && !(g_sound_log = fopen(argv[++i], "w"))) {
+            fprintf(stderr, "cannot write %s\n", argv[i]);
+            return 2;
+        }
         else if (!strcmp(argv[i], "--shot") && i + 1 < argc && nshots < MAX_SHOTS) {
             char *arg = argv[++i], *colon = strchr(arg, ':');
             if (colon) { shots[nshots].tick = atoi(arg); shots[nshots].path = colon + 1; nshots++; }
@@ -222,11 +239,14 @@ int main(int argc, char **argv)
                 }
             input_feed(&in, g_buttons);
             in.mouse = plat_read_mouse(&in.mx, &in.my);
+            g_tick = tick;
             game_tick(&g_game, &in, now + (uint32_t)(tick / TICK_HZ));
             if (trace && tick % trace == 0)
                 printf("t=%d state=%d page=%d floor=%d lvl=%d hp=%.0f kills=%d/%d\n", tick, g_game.state, g_game.page,
                        g_game.p.floor, g_game.p.level, g_game.s.w.h.hp, g_game.s.w.kills, g_game.s.w.quota);
         }
     }
+    if (g_sound_log)
+        fclose(g_sound_log);
     return 0;
 }

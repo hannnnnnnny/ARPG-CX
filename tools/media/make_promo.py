@@ -41,21 +41,22 @@ def crop_scale(img, box, width):
     return part.resize((width, round(width * part.height / part.width)), Image.NEAREST)
 
 
-def background(seed, glow=ORANGE):
+def background(seed, glow=ORANGE, size=(W, H)):
     """Dark gradient with a warm glow at the top and drifting embers."""
-    bg = Image.new("RGB", (W, H), INK)
+    w, h = size
+    bg = Image.new("RGB", size, INK)
     d = ImageDraw.Draw(bg)
-    for y in range(H):
-        t = y / H
-        d.line([(0, y), (W, y)], fill=(int(24 - 16 * t), int(14 - 8 * t), int(26 - 16 * t)))
-    halo = Image.new("RGB", (W, H), (0, 0, 0))
-    ImageDraw.Draw(halo).ellipse([-200, -520, W + 200, 420], fill=tuple(c // 3 for c in glow))
+    for y in range(h):
+        t = y / h
+        d.line([(0, y), (w, y)], fill=(int(24 - 16 * t), int(14 - 8 * t), int(26 - 16 * t)))
+    halo = Image.new("RGB", size, (0, 0, 0))
+    ImageDraw.Draw(halo).ellipse([-200, -520, w + 200, 420], fill=tuple(c // 3 for c in glow))
     bg = Image.blend(bg, Image.composite(halo, bg, halo.convert("L").point(lambda v: 255 if v else 0)), 0.55)
     bg = bg.filter(ImageFilter.GaussianBlur(2))
     d = ImageDraw.Draw(bg)
     rnd = random.Random(seed)
-    for _ in range(90):
-        x, y, r = rnd.randrange(W), rnd.randrange(H), rnd.choice((2, 2, 3, 4))
+    for _ in range(90 * h // H):
+        x, y, r = rnd.randrange(w), rnd.randrange(h), rnd.choice((2, 2, 3, 4))
         d.rectangle([x, y, x + r, y + r], fill=rnd.choice((ORANGE, GOLD, FIRE)))
     return bg
 
