@@ -6,13 +6,16 @@
  *               [--lang 0-4]
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
- * K(lock) F(debug), and a dash for no buttons. --fast simulates HOURS of
+ * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
+ * z (auto battle), and a dash for no buttons. BUTTONS@X/Y:TICKS also moves
+ * the mouse pointer to logical pixel (X, Y). --fast simulates HOURS of
  * idle play before the script runs (no rendering), for late-game shots.
  */
 #include "../../src/core/platform.h"
 #include "../../src/game/game.h"
 #include "../../src/game/build.h"
 #include "../../src/gfx/sprites.h"
+#include "../../src/gfx/gfx.h"
 #include "../../src/i18n/i18n.h"
 #include "png.h"
 #include <stdio.h>
@@ -22,12 +25,14 @@
 #define MAX_STEPS 256
 #define MAX_SHOTS 64
 
-typedef struct { uint32_t buttons; int ticks; } Step;
+typedef struct { uint32_t buttons; int ticks; int mx, my; } Step;
 typedef struct { int tick; const char *path; } Shot;
 
-static uint16_t g_fb[SCREEN_W * SCREEN_H];
+static uint16_t g_fb[FB_W * FB_H];
 static Game g_game;
 static uint32_t g_buttons;
+static bool g_mouse;
+static int g_mx, g_my;
 
 bool plat_init(void) { return true; }
 void plat_shutdown(void) {}
@@ -40,13 +45,21 @@ const char *plat_save_path(void) { return NULL; }
 const char *plat_name(void) { return "HEADLESS"; }
 const char *plat_clock_desc(void) { return "CLOCK: SCRIPTED"; }
 const char *const *plat_control_lines(void) { return NULL; }
+void plat_sound(int id, int volume) { (void)id; (void)volume; }
+
+bool plat_read_mouse(int *x, int *y)
+{
+    *x = g_mx;
+    *y = g_my;
+    return g_mouse;
+}
 
 static uint32_t parse_buttons(const char *s, size_t n)
 {
-    static const char keys[] = "LRUDOBTAKF";
+    static const char keys[] = "LRUDOBTAKFlr123456qz";
     uint32_t b = 0;
     size_t i;
-    for (i = 0; i < n; i++) {
+    for (i = 0; i < n && s[i] != '@'; i++) {
         const char *k = s[i] ? strchr(keys, s[i]) : NULL;
         if (k)
             b |= 1u << (k - keys);
@@ -64,6 +77,14 @@ static int parse_script(const char *p, Step *steps)
             break;
         steps[n].buttons = parse_buttons(p, (size_t)(colon - p));
         steps[n].ticks = atoi(colon + 1);
+        steps[n].mx = steps[n].my = -1;
+        {
+            const char *at = memchr(p, '@', (size_t)(colon - p));
+            if (at) {
+                steps[n].mx = atoi(at + 1);
+                steps[n].my = strchr(at, '/') ? atoi(strchr(at, '/') + 1) : 0;
+            }
+        }
         n++;
         p = colon + 1;
         while (*p && *p != ' ' && *p != ',') p++;
@@ -131,14 +152,20 @@ int main(int argc, char **argv)
     for (s = 0; s <= nsteps; s++) {
         int n = s < nsteps ? steps[s].ticks : 1;
         g_buttons = s < nsteps ? steps[s].buttons : 0;
+        if (s < nsteps && steps[s].mx >= 0) {
+            g_mouse = true;
+            g_mx = steps[s].mx;
+            g_my = steps[s].my;
+        }
         for (i = 0; i < n; i++, tick++) {
             int k;
             for (k = 0; k < nshots; k++)
                 if (shots[k].tick == tick) {
                     game_render(&g_game);
-                    png_write_rgb565(shots[k].path, g_fb, SCREEN_W, SCREEN_H);
+                    png_write_rgb565(shots[k].path, g_fb, FB_W, FB_H);
                 }
             input_feed(&in, g_buttons);
+            in.mouse = plat_read_mouse(&in.mx, &in.my);
             game_tick(&g_game, &in, now + (uint32_t)(tick / TICK_HZ));
             if (trace && tick % trace == 0)
                 printf("t=%d state=%d page=%d floor=%d lvl=%d hp=%.0f kills=%d/%d\n", tick, g_game.state, g_game.page,

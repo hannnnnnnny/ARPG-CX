@@ -1,0 +1,11 @@
+// Desktop: sound, keyboard and mouse play.
+SOUND	音效	音效	効果音	효과음
+LOW	低	低	小	낮음
+MEDIUM	中	中	中	중간
+HIGH	高	高	大	높음
+AUTO BATTLE (SPACE)	自动战斗（空格）	自動戰鬥（空白鍵）	オートバトル（スペース）	자동 전투 (스페이스)
+AUTO BATTLE: ON	自动战斗：开	自動戰鬥：開	オートバトル：オン	자동 전투: 켬
+AUTO BATTLE: OFF  (WASD / MOUSE / 1-6)	自动战斗：关（WASD/鼠标/1-6 操作）	自動戰鬥：關（WASD/滑鼠/1-6 操作）	オートバトル：オフ（WASD・マウス・1-6）	자동 전투: 끔 (WASD / 마우스 / 1-6)
+AUTO	自动	自動	オート	자동
+MANUAL	手动	手動	手動	수동
+SLAY %d MORE TO OPEN THE STAIRS	还需击杀%d个才能打开楼梯	還需擊殺%d個才能打開樓梯	あと%d体倒すと階段が開く	계단을 열려면 %d마리 더 처치

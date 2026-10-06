@@ -8,6 +8,8 @@ void input_init(Input *in)
     in->held = in->pressed = in->released = in->blocked = in->raw_prev = 0;
     in->repeat_mask = BTN_UP | BTN_DOWN | BTN_LEFT | BTN_RIGHT;
     in->repeat_timer = 0;
+    in->mouse = false;
+    in->mx = in->my = 0;
 }
 
 void input_feed(Input *in, uint32_t raw)

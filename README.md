@@ -1,7 +1,9 @@
-# ASHEN DEPTHS
+# ASHEN DEPTHS (ARPG-CX)
 
-An original idle / auto-battler action RPG for the **TI-Nspire CX / CX CAS
-(first generation)**, built around the systems of Diablo IV. Your hero
+An original action RPG for **Windows** (keyboard and mouse, sound, crisp
+Chinese text) and the **TI-Nspire CX / CX CAS (first generation)**, built
+around the systems of Diablo IV. Play the hero yourself, or let it fight on
+its own: the idle auto battle takes over whenever you let go. Your hero
 descends endless procedurally generated dungeon floors alone: pathfinding,
 fighting, spending resource on core skills and building it back with basic
 skills, firing cooldowns, looting and taking the stairs. You shape the
@@ -16,8 +18,8 @@ and story are original.
 | Target | State |
 |---|---|
 | Ndless build `AshenDepths.tns` | Compiles with the official Ndless SDK (GCC 14.2), zero warnings |
-| Windows desktop simulator | Builds and runs; every screen checked with the headless renderer |
-| Tests | 313,753 checks pass: loot rules, crafting, skill tree, paragon, paragon mastery and glyph levels, damage pipeline, floor events, bounties and achievements, offline gains, saves (v7 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
+| Windows build `AshenDepthsDesktop.exe` | 640x480 rendering with 12px CJK text, keyboard and mouse play, synthesized sound; every screen checked with the headless renderer at the same resolution |
+| Tests | 313,761 checks pass: manual control (click to attack, stairs quota, auto battle hand-back), loot rules, crafting, skill tree, paragon, paragon mastery and glyph levels, damage pipeline, floor events, bounties and achievements, offline gains, saves (v8 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
 | Physical TI-Nspire CX CAS | Earlier versions ran on the owner's calculator; this version is not yet tested on hardware |
 
 ## Classes (6) and builds (3 each)
@@ -156,8 +158,10 @@ font lacks (it reads the 8px monospaced BDF files of the font release from
 strings that have no translation yet.
 
 CJK text uses the [Fusion Pixel Font](https://github.com/TakWolf/fusion-pixel-font)
-8px (c) TakWolf and contributors, SIL Open Font License 1.1; the licence and
-those of the fonts it builds on are in `assets/fonts/`.
+8px (calculator) and 12px (Windows) (c) TakWolf and contributors, SIL Open
+Font License 1.1; the licences and those of the fonts it builds on are in
+`assets/fonts/` and `assets/fonts12/`. The generator reads the 12px BDF
+files from `.tools/fonts12/` (the 12px monospaced BDF release).
 
 ## Saving
 
@@ -171,16 +175,48 @@ those of the fonts it builds on are in `assets/fonts/`.
 
 ## Controls
 
-| Action | Calculator | Desktop |
+### Playing the hero (Windows)
+
+| Action | Keys and mouse |
+|---|---|
+| Walk | W A S D |
+| Attack a monster / pick up an item / walk there | left click (hold to keep attacking or to follow the cursor) |
+| Core skill at the cursor | right click |
+| Skill bar slots | 1 - 6, or click the slot on the HUD |
+| Potion | Q, or click the potion |
+| Auto battle on / off | Space (also OPTIONS > AUTO BATTLE) |
+
+Any of these hands the hero to you; with auto battle on, it goes back to
+fighting on its own 5 seconds after your last input, so the idle game still
+plays itself. With auto battle off the hero only does what you tell it.
+The stairs open once the floor's kill quota is met. The hovered monster is
+ringed in red; the HUD shows the slot keys and AUTO or MANUAL.
+
+### Menus
+
+| Action | Calculator | Windows |
 |---|---|---|
-| Open menu / next page | TAB or MENU | Tab or M |
+| Open menu / next page | TAB or MENU | Tab or M, or click a tab |
 | Options page | ESC (in battle) | Esc |
-| Navigate | arrows or 8/2/4/6 | arrows or WASD |
-| Select / learn / buy / equip | ENTER, click or 5 | Enter or Space |
+| Navigate | arrows or 8/2/4/6 | arrows, WASD or the mouse wheel |
+| Select / learn / buy / equip | ENTER, click or 5 | Enter, or click a row (again to use it) |
 | Secondary (salvage, upgrade, temper, next board, sheet) | DEL | Delete or X |
 | Third (lock item, skill on bar, glyph, combine gems) | CTRL | Ctrl or L |
-| Back | ESC | Esc |
+| Back | ESC | Esc or right click |
 | FPS overlay | F | F |
+
+### Sound (Windows)
+
+Every effect (hits, crits, kills, each element's spells, loot by rarity,
+level ups, potions, goblins, shrines, chests, achievements, menu clicks) is
+synthesized when the game starts; nothing is loaded from files. OPTIONS >
+SOUND sets OFF / LOW / MEDIUM / HIGH.
+
+### Text (Windows)
+
+The Windows build renders at 640x480: pixel art is doubled, while Chinese,
+Japanese and Korean use the 12px Fusion Pixel Font at full resolution. The
+calculator keeps the 8px font at 320x240.
 
 ## Install on the calculator
 

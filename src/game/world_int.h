@@ -28,6 +28,17 @@ Effect *effect(World *w, FxKind k, int x, int y, int x2, int y2, int r, int dur,
 
 /* world_hero.c / world_cast.c */
 void hero_update(World *w, Profile *p);
+void hero_walk_to(World *w, fx tx, fx ty);
+void hero_primary_attack(World *w, Profile *p, int mi);
+void hero_cooldowns(World *w, Profile *p, const Monster *tgt, bool autocast);
+void hero_pick_up(World *w, Profile *p, int di);
+void hero_act_on_target(World *w, Profile *p);
+void hero_drink_potion(World *w, bool force);
+
+/* world_control.c: the player steering the hero (keyboard and mouse). */
+#define MANUAL_HOLD (5 * TICK_HZ)   /* auto battle resumes after this long without input */
+bool hero_manual(const World *w, const Profile *p);
+void control_update(World *w, Profile *p);
 int  count_near(const World *w, int x, int y, int r);
 int  densest_pack(const World *w, int range, int r, int *count);
 /* A hit carrying skill i's numbers (mult scales the damage). */

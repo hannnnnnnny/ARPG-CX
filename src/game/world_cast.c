@@ -355,8 +355,14 @@ bool cast_skill(World *w, Profile *p, int i, const SkillRT *s, const Monster *tg
     case SB_CORPSE: ok = cast_corpse(w, p, i, s); break;
     default:        ok = false; break;
     }
-    if (ok)
+    if (ok) {
+        static const uint8_t cast_snd[EL_COUNT] = {
+            [EL_PHYS] = SND_CAST_PHYS, [EL_FIRE] = SND_CAST_FIRE, [EL_COLD] = SND_CAST_COLD,
+            [EL_LIGHT] = SND_CAST_LIGHTNING, [EL_POISON] = SND_CAST_POISON, [EL_SHADOW] = SND_CAST_SHADOW,
+        };
         cast_extras(w, s);
+        world_sound(w, cast_snd[s->element % EL_COUNT]);
+    }
     return ok;
 }
 

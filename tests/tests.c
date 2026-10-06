@@ -47,6 +47,8 @@ const char *plat_save_path(void) { return NULL; }
 const char *plat_name(void) { return "TEST"; }
 const char *plat_clock_desc(void) { return "TEST"; }
 const char *const *plat_control_lines(void) { return NULL; }
+bool plat_read_mouse(int *x, int *y) { (void)x; (void)y; return false; }
+void plat_sound(int id, int volume) { (void)id; (void)volume; }
 
 static Profile P, Q;
 static Session S;
@@ -562,6 +564,73 @@ static void test_goals(void)
     }
 }
 
+/* ------------------------------------------------------- manual control */
+
+static void steer(World *w, int mx, int my, bool click, fx tx, fx ty, int cast)
+{
+    memset(&w->cmd, 0, sizeof w->cmd);
+    w->cmd.mx = (int8_t)mx;
+    w->cmd.my = (int8_t)my;
+    w->cmd.click = click;
+    w->cmd.hold = click;
+    w->cmd.tx = tx;
+    w->cmd.ty = ty;
+    w->cmd.cast = (int8_t)cast;
+    w->cmd.active = mx || my || click || cast >= 0;
+}
+
+static int lone_monster(World *w, int dx)
+{
+    int i;
+    for (i = 0; i < w->nmon; i++)
+        w->mon[i].alive = 0;
+    spawn_monster(w, MT_SKELETON, px_to_cell(w->h.x) + dx, px_to_cell(w->h.y), false, false);
+    return w->nmon - 1;
+}
+
+static void test_control(void)
+{
+    World *w = &S.w;
+    fx x0;
+    int t, m;
+    prog_new(&P, 21, CLASS_BARBARIAN);
+    P.auto_battle = 0;
+    memset(&S, 0, sizeof S);
+    session_start(&S, &P);
+    CHECK(hero_manual(w, &P));
+    /* nothing pressed: the hero waits */
+    x0 = w->h.x;
+    for (t = 0; t < 30; t++) { steer(w, 0, 0, false, 0, 0, -1); world_tick(w, &P); }
+    CHECK(w->h.x == x0 && w->kills == 0);
+    /* click a monster: walk over and beat it */
+    m = lone_monster(w, 3);
+    if (!world_walkable(w, px_to_cell(w->mon[m].x), px_to_cell(w->mon[m].y)) || !w->mon[m].alive)
+        m = lone_monster(w, -3);
+    w->mon[m].max_hp = w->mon[m].hp = 1.0;
+    for (t = 0; t < 120 && w->mon[m].alive; t++) {
+        steer(w, 0, 0, t == 0, w->mon[m].x, w->mon[m].y, -1);
+        world_tick(w, &P);
+    }
+    CHECK(!w->mon[m].alive && w->kills == 1);
+    /* the stairs stay shut below the quota */
+    w->h.x = cell_center(w->stairs_x);
+    w->h.y = cell_center(w->stairs_y);
+    steer(w, 0, 0, false, 0, 0, -1);
+    world_tick(w, &P);
+    CHECK(!w->ev_floor_done && w->msg_t > 0);
+    w->kills = w->quota;
+    world_tick(w, &P);
+    CHECK(w->ev_floor_done);
+    /* WASD walks; with auto battle on the AI takes over after MANUAL_HOLD */
+    P.auto_battle = 1;
+    session_start(&S, &P);
+    x0 = w->h.x;
+    for (t = 0; t < 10; t++) { steer(w, 1, 0, false, 0, 0, -1); world_tick(w, &P); }
+    CHECK(w->h.x != x0 && w->ctl.manual_t > 0 && hero_manual(w, &P));
+    for (t = 0; t < MANUAL_HOLD + 2; t++) { steer(w, 0, 0, false, 0, 0, -1); world_tick(w, &P); }
+    CHECK(!hero_manual(w, &P));
+}
+
 /* --------------------------------------------------------------- events */
 
 static int kill_wave(World *w)
@@ -861,6 +930,7 @@ int main(void)
     printf("story\n");         test_story();
     printf("goals\n");         test_goals();
     printf("events\n");        test_events();
+    printf("control\n");       test_control();
     printf("languages\n");     test_languages();
     printf("slots\n");         test_slot_paths();
     printf("sprites\n");       test_sprites();

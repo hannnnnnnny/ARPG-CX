@@ -45,6 +45,8 @@ void prog_new(Profile *p, uint32_t seed, int cls)
     p->auto_craft = 1;
     p->kpm = 2.0;
     p->lang = (uint8_t)lang_get();
+    p->auto_battle = 1;
+    p->sound_vol = 2;
     p->seed = seed ? seed : 0xA5E1u;
     memset(p->bar, NO_SKILL, sizeof p->bar);
     prog_default_look(&p->look, p->cls, p->seed);
@@ -669,6 +671,8 @@ double prog_rebirth(Profile *p, int new_cls)
     p->story_seen = keep.story_seen;   /* the story is told once per profile */
     keep_goals(p, &keep);
     p->show_fps = keep.show_fps;
+    p->auto_battle = keep.auto_battle;
+    p->sound_vol = keep.sound_vol;
     p->low_power = keep.low_power;
     p->total_kills = keep.total_kills;
     p->play_seconds = keep.play_seconds;

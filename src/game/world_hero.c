@@ -99,7 +99,7 @@ static void target_pos(const World *w, fx *tx, fx *ty)
     }
 }
 
-static void walk_to(World *w, fx tx, fx ty)
+void hero_walk_to(World *w, fx tx, fx ty)
 {
     double move = 1.0 + w->st.move_pct / 100.0 + (hero_has(w, BUFF_BERSERK) ? 0.15 : 0.0);
     fx speed = (fx)(FX(1.6) * move), dx, dy, wx = tx, wy = ty;
@@ -190,7 +190,7 @@ static void weapon_swing(World *w, Profile *p, int mi)
         deal_damage(w, p, mi, &h);
 }
 
-static void primary_attack(World *w, Profile *p, int mi)
+void hero_primary_attack(World *w, Profile *p, int mi)
 {
     const Monster *m = &w->mon[mi];
     int idx = choose_primary(w, m);
@@ -208,8 +208,9 @@ static void primary_attack(World *w, Profile *p, int mi)
     weapon_swing(w, p, mi);
 }
 
-/* Defensive, mastery and ultimate skills fire on their own cooldowns. */
-static void cooldown_skills(World *w, Profile *p, const Monster *tgt)
+/* Defensive, mastery and ultimate skills fire on their own cooldowns
+ * (autocast); under manual control they only count down. */
+void hero_cooldowns(World *w, Profile *p, const Monster *tgt, bool autocast)
 {
     int s;
     for (s = 0; s < CLASS_SKILLS; s++) {
@@ -218,7 +219,7 @@ static void cooldown_skills(World *w, Profile *p, const Monster *tgt)
             w->h.skill_cd[s]--;
             continue;
         }
-        if (!rt->usable || rt->cat <= CAT_CORE)
+        if (!autocast || !rt->usable || rt->cat <= CAT_CORE)
             continue;
         if (rt->cost > 0 && w->h.res < rt->cost)
             continue;
@@ -233,7 +234,7 @@ static void cooldown_skills(World *w, Profile *p, const Monster *tgt)
 
 /* ------------------------------------------------------------- the rest */
 
-static void pick_up(World *w, Profile *p, int di)
+void hero_pick_up(World *w, Profile *p, int di)
 {
     Drop *d = &w->dr[di];
     char name[64], buf[96];
@@ -252,7 +253,7 @@ static void pick_up(World *w, Profile *p, int di)
     w->h.idle_ticks = 0;
 }
 
-static void act_on_target(World *w, Profile *p)
+void hero_act_on_target(World *w, Profile *p)
 {
     fx tx, ty;
     int d;
@@ -265,11 +266,11 @@ static void act_on_target(World *w, Profile *p)
                                        : body_line_clear(w, w->h.x, w->h.y - FX_FROM_INT(4), tx, ty, 3);
         if (d <= w->h.engage && clear) {
             if (w->h.atk_cd == 0 && w->h.channel_t == 0)
-                primary_attack(w, p, w->h.target_idx);
+                hero_primary_attack(w, p, w->h.target_idx);
             return;
         }
     } else if (w->h.target_kind == TGT_DROP && (d <= PICKUP_RANGE || w->dr[w->h.target_idx].t > DROP_MAGNET)) {
-        pick_up(w, p, w->h.target_idx);
+        hero_pick_up(w, p, w->h.target_idx);
         w->h.target_kind = TGT_NONE;
         return;
     } else if (w->h.target_kind == TGT_OBJECT && d <= 10) {
@@ -278,12 +279,13 @@ static void act_on_target(World *w, Profile *p)
         return;
     } else if (w->h.target_kind == TGT_STAIRS && d <= 6) {
         w->ev_floor_done = true;
+        world_sound(w, SND_STAIRS);
         return;
     }
     if (w->h.channel_t == 0 || w->h.target_kind != TGT_MON)
-        walk_to(w, tx, ty);
+        hero_walk_to(w, tx, ty);
     else if (d > 12)                     /* whirlwind keeps moving into the pack */
-        walk_to(w, tx, ty);
+        hero_walk_to(w, tx, ty);
 }
 
 static bool target_valid(const World *w)
@@ -317,13 +319,15 @@ static void tick_hero_timers(World *w)
         h->stacks = 0;
 }
 
-static void drink_potion(World *w)
+/* Automatic below 40% life; 'force' (the potion key) drinks at any loss. */
+void hero_drink_potion(World *w, bool force)
 {
-    if (w->h.potion_cd > 0 || w->h.potions <= 0 || w->h.hp >= w->st.max_hp * 0.4)
+    if (w->h.potion_cd > 0 || w->h.potions <= 0 || w->h.hp >= w->st.max_hp * (force ? 1.0 : 0.4))
         return;
     w->h.hp = MIN(w->st.max_hp, w->h.hp + w->st.max_hp * w->st.potion_heal);
     w->h.potions--;
     w->h.potion_cd = POTION_CD;
+    world_sound(w, SND_POTION);
     effect(w, FX_HEAL, hx(w), hy(w), 0, 0, 14, 20, RGB565(255, 80, 90));
     floater(w, hx(w), hy(w) - 16, "POTION", RGB565(255, 120, 130));
 }
@@ -339,7 +343,14 @@ void hero_update(World *w, Profile *p)
     }
     h->hp = MIN(w->st.max_hp, h->hp + w->st.regen / TICK_HZ);
     hero_gain_res(w, w->st.res_regen / TICK_HZ);
-    drink_potion(w);
+    hero_drink_potion(w, false);
+    if (w->cmd.active)
+        w->ctl.manual_t = MANUAL_HOLD;
+    if (hero_manual(w, p)) {
+        h->idle_ticks = 0;                    /* the player is in charge, no failsafe */
+        control_update(w, p);
+        return;
+    }
     /* Failsafe: if nothing was killed or looted for 45 s, the session
      * regenerates the floor. */
     if (++h->idle_ticks > 45 * TICK_HZ) {
@@ -350,7 +361,7 @@ void hero_update(World *w, Profile *p)
      * drops at similar path lengths would otherwise swap forever. */
     if (!target_valid(w) || (w->tick % 10 == 0 && h->target_kind != TGT_DROP))
         choose_target(w);
-    cooldown_skills(w, p, h->target_kind == TGT_MON ? &w->mon[h->target_idx] : NULL);
+    hero_cooldowns(w, p, h->target_kind == TGT_MON ? &w->mon[h->target_idx] : NULL, true);
     if (h->dash_t == 0)
-        act_on_target(w, p);
+        hero_act_on_target(w, p);
 }

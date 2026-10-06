@@ -251,6 +251,7 @@ void title_render(Game *g)
         else
             snprintf(item, sizeof item, "%s", T(items[i]));
         snprintf(buf, sizeof buf, on ? "> %s <" : "%s", item);
+        game_ui_row(116 + i * 12 - 2, 12, on);
         font_draw_centered(116 + i * 12, buf, !enabled ? RGB565(70, 60, 56) : on ? C_SEL : C_TEXT, C_SHADE, 1);
     }
     if (g->has_save) {
@@ -325,6 +326,7 @@ void slots_render(Game *g)
         const SlotInfo *si = &g->slots[i];
         int y = 44 + i * 46;
         bool on = i == g->slot_sel;
+        game_ui_rect(20, y, 280, 40, on);
         gfx_fill_rect(20, y, 280, 40, on ? RGB565(60, 30, 20) : RGB565(20, 12, 14));
         gfx_rect(20, y, 280, 40, on ? C_SEL : RGB565(80, 60, 50));
         snprintf(buf, sizeof buf, T("SLOT %d"), i + 1);

@@ -165,6 +165,7 @@ static void list_row(const Game *g, int row, int y, bool on)
 {
     char name[64], val[12];
     const char *label;
+    game_ui_rect(2, y - 1, 160, 18, on);
     if (on)
         gfx_fill_rect(2, y - 1, 160, 18, C_HIL);
     if (row >= ROW_PRESET) {
@@ -257,6 +258,7 @@ static void upgrade_dialog(const Game *g)
     font_draw(172, 78, d->name, d->color, 1);
     for (r = 0; r < 2; r++) {
         int y = 96 + r * 22;
+        game_ui_rect(36, y - 3, 248, 21, g->upgrade_sel == r);
         if (g->upgrade_sel == r)
             gfx_fill_rect(36, y - 3, 248, 21, C_HIL);
         font_draw(42, y, d->upg[r].name, g->upgrade_sel == r ? C_SEL : C_TEXT, 1);

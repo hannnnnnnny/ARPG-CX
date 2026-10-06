@@ -255,6 +255,7 @@ void deal_damage(World *w, Profile *p, int i, const Hit *h)
     m->aggro = 1;
     if (!h->dot) {
         m->flash = 2;
+        world_sound(w, l.is_crit ? SND_CRIT : SND_HIT);
         log_hit(w, &l);
         on_hit_effects(w, m, h);
     }
@@ -322,7 +323,10 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
         h.dot = true;                         /* thorns never crit */
         deal_damage(w, p, attacker, &h);
     }
+    if (d >= st->max_hp * 0.03)
+        world_sound(w, SND_HURT);
     if (w->h.hp <= 0) {
+        world_sound(w, SND_DEATH);
         w->h.hp = 0;
         w->h.dead_t = 2 * TICK_HZ;
         world_message(w, "YOU HAVE FALLEN... RETREATING", RGB565(255, 80, 80));
@@ -343,6 +347,8 @@ static void announce_drop(World *w, Profile *p, const Item *it)
         world_goal(w, p, GE_ANCESTRAL, 0);
     if (it->rarity == RAR_MYTHIC)
         world_goal(w, p, GE_MYTHIC, 0);
+    world_sound(w, it->rarity >= RAR_UNIQUE ? SND_DROP_UNIQUE : it->rarity == RAR_LEGEND ? SND_DROP_LEGEND
+                 : it->rarity == RAR_RARE ? SND_DROP_RARE : SND_DROP);
     if (it->rarity < RAR_UNIQUE && !it->ancestral)
         return;
     tjoin(buf, sizeof buf - 2, it->ancestral && it->rarity != RAR_MYTHIC ? "ANCESTRAL" : "",
@@ -443,12 +449,14 @@ static void level_up_message(World *w, Profile *p, int levels)
         snprintf(buf, sizeof buf, T("LEVEL UP! NOW LEVEL %d"), p->level);
     world_message(w, buf, RGB565(190, 140, 255));
     bark(&w->bark, BK_LEVEL, (uint32_t)w->tick);
+    world_sound(w, SND_LEVEL);
     effect(w, FX_LEVEL, FX_TO_INT(w->h.x), FX_TO_INT(w->h.y), 0, 0, 20, 24, RGB565(190, 140, 255));
     (void)levels;
 }
 
 static void kill_goals(World *w, Profile *p, const Monster *m)
 {
+    world_sound(w, m->boss ? SND_BOSS_DIE : m->elite ? SND_ELITE_DIE : SND_KILL);
     world_goal(w, p, GE_KILL, m->type);
     if (m->elite)
         world_goal(w, p, GE_ELITE, 0);

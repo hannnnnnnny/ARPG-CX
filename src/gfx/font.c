@@ -138,11 +138,34 @@ static void put_ascii(int x, int y, unsigned ch, uint16_t color, int scale)
     }
 }
 
+#ifdef GFX_HD
+/* Desktop: the 12px glyph at full resolution inside the cell's 16x16
+ * physical pixels (2 px margin), each glyph pixel 'scale' pixels wide. */
+static bool put_cjk_hd(int x, int y, uint32_t cp, uint16_t color, int scale)
+{
+    const uint16_t *g = cjk_glyph_hd(cp);
+    int r, c, i, j;
+    if (!g)
+        return false;
+    for (r = 0; r < 12; r++)
+        for (c = 0; c < 12; c++)
+            if (g[r] & (0x800 >> c))
+                for (j = 0; j < scale; j++)
+                    for (i = 0; i < scale; i++)
+                        gfx_pixel_hd(x, y, (2 + c) * scale + i, (2 + r) * scale + j, color);
+    return true;
+}
+#endif
+
 /* CJK cell: 8 rows, baseline on row 6 like the 5x7 font's last row. */
 static void put_cjk(int x, int y, uint32_t cp, uint16_t color, int scale)
 {
     const uint8_t *g = cjk_glyph(cp);
     int r, c;
+#ifdef GFX_HD
+    if (put_cjk_hd(x, y, cp, color, scale))
+        return;
+#endif
     if (!g) {                                   /* missing glyph: a small box */
         gfx_rect(x, y, 6 * scale, 7 * scale, color);
         return;

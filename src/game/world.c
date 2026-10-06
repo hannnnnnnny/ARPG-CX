@@ -101,6 +101,7 @@ void world_init_floor(World *w, const Profile *p, int floor)
     char msg[sizeof w->msg];
     uint16_t msg_color = w->msg_color;
     BarkState bark = w->bark;
+    uint64_t snd = w->snd;            /* e.g. the stairs sound of the floor just left */
     uint8_t shrine = w->shrine;
     int shrine_t = w->shrine_t;
     memcpy(msg, w->msg, sizeof msg);
@@ -127,8 +128,11 @@ void world_init_floor(World *w, const Profile *p, int floor)
     w->msg_color = msg_color;
     w->msg_t = msg_t;
     w->bark = bark;
+    w->snd = snd;
     w->shrine = shrine;
     w->shrine_t = shrine_t;
+    w->ctl.target = w->ctl.drop = -1;
+    w->ctl.cast = w->cmd.cast = -1;
     events_init(w, p);
 }
 
@@ -264,6 +268,7 @@ void world_tick(World *w, Profile *p)
     world_snapshot_positions(w);
     w->tick++;
     w->ev_died = w->ev_floor_done = w->ev_stuck = false;
+    w->snd = 0;
     if (w->tick % 10 == 1)
         bfs_field(w, w->fh, px_to_cell(w->h.x), px_to_cell(w->h.y));
     hero_update(w, p);

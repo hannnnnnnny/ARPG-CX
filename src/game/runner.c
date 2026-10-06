@@ -11,6 +11,7 @@
 #include "game.h"
 #include "../core/platform.h"
 #include "../gfx/sprites.h"
+#include "../gfx/gfx.h"
 #include "render.h"
 #include <time.h>
 
@@ -19,7 +20,7 @@
 #define MAX_FRAME_DT_US 250000u
 #define MIN_FRAME_US    16000u  /* cap at ~60 FPS: smooth, but no wasted battery */
 
-static uint16_t g_fb[SCREEN_W * SCREEN_H];
+static uint16_t g_fb[FB_W * FB_H];
 static Game     g_game;
 
 typedef struct { uint32_t start, frames, ticks, logic_us, render_us; } PerfWindow;
@@ -47,6 +48,7 @@ static int run_ticks(Input *in, uint32_t *acc)
     uint32_t wall = (uint32_t)time(NULL);
     while (*acc >= US_PER_SEC && steps < MAX_TICKS_FRAME) {
         input_feed(in, plat_read_buttons());
+        in->mouse = plat_read_mouse(&in->mx, &in->my);
         game_tick(&g_game, in, wall);
         *acc -= US_PER_SEC;
         steps++;

@@ -216,6 +216,7 @@ static void enchant_dialog(const Game *g)
     font_draw(24, 72, "CHOOSE THE NEW AFFIX", C_DIM, 1);
     for (r = 0; r < 3; r++) {
         int y = 88 + r * 20;
+        game_ui_rect(20, y - 4, 280, 18, g->ench.pick == r);
         if (g->ench.pick == r)
             gfx_fill_rect(20, y - 4, 280, 18, C_HIL);
         if (r < 2)
@@ -367,6 +368,7 @@ static void slot_rows(const Game *g)
         const Item *it = &g->p.equip[i];
         int y = 20 + i * 19;
         char name[64];
+        game_ui_rect(2, y - 2, 140, 18, i == g->town_sel);
         if (i == g->town_sel)
             gfx_fill_rect(2, y - 2, 140, 18, C_HIL);
         font_draw(6, y, slot_name((Slot)i), C_DIM, 1);

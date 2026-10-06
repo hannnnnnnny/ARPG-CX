@@ -100,6 +100,11 @@ typedef struct {
     int tick;
     bool quit;
     PerfStats perf;
+    /* desktop: pointer, and menu clicks replayed as key presses */
+    bool mouse;
+    int mx, my;
+    int nav_pending;            /* UP (<0) / DOWN (>0) presses still to replay */
+    bool nav_ok;                /* then press OK */
 } Game;
 
 void game_init(Game *g, const char *save_path, uint32_t now);
@@ -112,6 +117,17 @@ static inline bool game_low_power(const Game *g) { return g->p.low_power != 0; }
 static inline bool game_animating(const Game *g) { return g->state == GS_BATTLE; }
 static inline void game_set_perf(Game *g, PerfStats p) { g->perf = p; }
 void game_toast(Game *g, const char *text, uint16_t color);
+
+/* game_control.c: keyboard and mouse play, menu clicks, sound */
+void game_hero_command(Game *g, const Input *in);
+void game_mouse_ui(Game *g, Input *in);
+void game_ui_row(int y, int h, bool on);   /* a clickable list row, from the last frame */
+void game_ui_rect(int x, int y, int w, int h, bool on);
+void game_ui_frame(void);
+void game_sfx(const Game *g, int id);
+void game_ui_sounds(const Game *g, const Input *in);
+void game_world_sounds(const Game *g);
+void game_control_render(const Game *g);
 void game_profile_changed(Game *g);
 
 /* Save slots */

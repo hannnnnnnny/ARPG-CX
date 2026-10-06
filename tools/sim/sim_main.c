@@ -25,6 +25,8 @@ const char *plat_save_path(void) { return NULL; }
 const char *plat_name(void) { return "SIM"; }
 const char *plat_clock_desc(void) { return "SIM"; }
 const char *const *plat_control_lines(void) { return NULL; }
+bool plat_read_mouse(int *x, int *y) { (void)x; (void)y; return false; }
+void plat_sound(int id, int volume) { (void)id; (void)volume; }
 
 static Profile P;
 static Session S;

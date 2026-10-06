@@ -137,6 +137,7 @@ static void goblin_loot(World *w, Profile *p, const Monster *m)
     world_drop_item(w, p, m->x, m->y, RAR_RARE, 6);
     p->gems[kind][CLAMP(w->floor / 12, 0, GEM_TIERS - 1)] += 2;
     world_banner(w, "TREASURE GOBLIN SLAIN!", C_GOLDEN);
+    world_sound(w, SND_GOLD);
     bark(&w->bark, BK_GOBLIN_KILL, (uint32_t)w->tick);
     w->ev.state = ES_DONE;
     world_goal(w, p, GE_GOBLIN, 0);
@@ -152,6 +153,7 @@ static void wave_cleared(World *w, Profile *p)
         world_drop_item(w, p, x, y, RAR_RARE, 4);
         bonus_gold(w, p, 30, FX_TO_INT(x), FX_TO_INT(y) - 16);
         world_banner(w, "THE CURSED CHEST OPENS", C_GOLDEN);
+        world_sound(w, SND_CHEST);
     } else {
         world_drop_item(w, p, x, y, RAR_RARE, 4);
         bonus_gold(w, p, 20, FX_TO_INT(x), FX_TO_INT(y) - 16);
@@ -197,6 +199,7 @@ static void goblin_tick(World *w)
         w->ev.state = ES_RUNNING;
         w->ev.t = GOBLIN_TICKS;
         world_message(w, "A TREASURE GOBLIN!", C_GOLDEN);
+        world_sound(w, SND_GOBLIN);
         bark(&w->bark, BK_GOBLIN, (uint32_t)w->tick);
     } else if (w->ev.state == ES_RUNNING && --w->ev.t <= 0) {
         m->alive = 0;                            /* through its portal */
@@ -229,6 +232,7 @@ static void check_achievements(World *w, Profile *p)
     if (id < 0)
         return;
     world_banner(w, ach_defs[id].name, C_GOLDEN);
+    world_sound(w, SND_ACHIEVE);
     snprintf(buf, sizeof buf, T("ACHIEVEMENT EARNED - RENOWN %d"), renown_tier(p));
     world_message(w, buf, C_GOLDEN);
     bark(&w->bark, BK_ACHIEVE, (uint32_t)w->tick);
@@ -247,6 +251,7 @@ void events_tick(World *w, Profile *p)
         w->ev.state = ES_RUNNING;
         spawn_wave(w, px_to_cell(w->h.x), px_to_cell(w->h.y), 5, 1);
         world_banner(w, "AMBUSH!", RGB565(255, 90, 70));
+        world_sound(w, SND_AMBUSH);
         bark(&w->bark, BK_AMBUSH, (uint32_t)w->tick);
         if (w->ev.wave_left == 0)
             w->ev.state = ES_DONE;
@@ -286,6 +291,7 @@ void events_touch(World *w, Profile *p)
         w->shrine_t = SHRINE_TICKS;
         w->ev.state = ES_DONE;
         world_banner(w, shrine_names[w->shrine], RGB565(140, 220, 255));
+        world_sound(w, SND_SHRINE);
         world_message(w, shrine_desc[w->shrine], RGB565(140, 220, 255));
         effect(w, FX_LEVEL, FX_TO_INT(w->h.x), FX_TO_INT(w->h.y), 0, 0, 20, 24, RGB565(140, 220, 255));
         bark(&w->bark, BK_SHRINE, (uint32_t)w->tick);
@@ -294,6 +300,7 @@ void events_touch(World *w, Profile *p)
         w->ev.state = ES_RUNNING;
         spawn_wave(w, w->ev.cx, w->ev.cy, 6, 2);
         world_message(w, "THE CHEST'S GUARDIANS AWAKE!", C_EVENT);
+        world_sound(w, SND_CHEST);
         bark(&w->bark, BK_CHEST, (uint32_t)w->tick);
         if (w->ev.wave_left == 0)
             wave_cleared(w, p);
@@ -356,5 +363,6 @@ void world_goal(World *w, Profile *p, GoalEvent e, int arg)
         world_message(w, buf, C_GOLDEN);
         world_drop_item(w, p, w->h.x, w->h.y, RAR_RARE, 4);
         bark(&w->bark, BK_BOUNTY, (uint32_t)w->tick);
+        world_sound(w, SND_BOUNTY);
     }
 }

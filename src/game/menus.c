@@ -52,6 +52,7 @@ int menu_scroll(int sel, int rows, int visible)
 
 void menu_row_highlight(int y, int h, bool on)
 {
+    game_ui_row(y - 2, h, on);
     if (on)
         gfx_fill_rect(2, y - 2, SCREEN_W - 4, h, C_HIL);
 }

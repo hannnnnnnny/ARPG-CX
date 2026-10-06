@@ -4,6 +4,11 @@
  * RGB565 is the native format of the TI-Nspire CX LCD (lcd_blit with
  * SCR_320x240_565), so the calculator build presents the buffer with no
  * conversion. The desktop build converts to 32-bit when presenting.
+ *
+ * Game code always works in 320x240 logical pixels. The desktop build
+ * (GFX_HD) renders into a 640x480 buffer: every logical pixel becomes a
+ * 2x2 block, except text, which draws its 12px CJK glyphs at the full
+ * resolution (gfx_pixel_hd) so Chinese stays crisp.
  */
 #ifndef AD_GFX_H
 #define AD_GFX_H
@@ -15,6 +20,14 @@
 
 /* Magenta marks transparent pixels in sprites. Never used as a real colour. */
 #define COLOR_KEY 0xF81F
+
+#ifdef GFX_HD
+#define GFX_S 2
+#else
+#define GFX_S 1
+#endif
+#define FB_W (SCREEN_W * GFX_S)   /* framebuffer size in physical pixels */
+#define FB_H (SCREEN_H * GFX_S)
 
 typedef struct {
     int16_t w, h;
@@ -32,6 +45,8 @@ uint16_t *gfx_target(void);
 
 void gfx_clear(uint16_t c);
 void gfx_pixel(int x, int y, uint16_t c);
+/* One physical pixel: (x, y) logical origin plus (dx, dy) in 1/GFX_S steps. */
+void gfx_pixel_hd(int x, int y, int dx, int dy, uint16_t c);
 void gfx_fill_rect(int x, int y, int w, int h, uint16_t c);
 void gfx_rect(int x, int y, int w, int h, uint16_t c);
 void gfx_hline(int x, int y, int w, uint16_t c);

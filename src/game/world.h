@@ -11,6 +11,7 @@
 #include "stats.h"
 #include "skills.h"
 #include "bark.h"
+#include "../core/sound.h"
 #include "../core/fixed.h"
 #include "../core/rng.h"
 
@@ -123,6 +124,30 @@ typedef struct { uint8_t alive; fx x, y; int16_t t; } Orb;  /* health potion on 
 
 typedef enum { TGT_NONE, TGT_MON, TGT_DROP, TGT_STAIRS, TGT_OBJECT } TargetKind;
 
+/* What the player asks of the hero this tick (set by the game layer from
+ * keyboard and mouse; all zero on the calculator and in simulations). */
+typedef struct {
+    bool active;          /* any steering input this tick */
+    int8_t mx, my;        /* WASD direction, -1..1 */
+    bool click;           /* left button went down this tick */
+    bool hold;            /* left button held */
+    fx tx, ty;            /* cursor in world pixels */
+    int8_t cast;          /* skill bar slot to cast, -1 none */
+    bool potion;
+} HeroCommand;
+
+/* Manual control state, kept while the player steers. */
+typedef struct {
+    int manual_t;         /* ticks of manual control left (auto battle resumes at 0) */
+    int target;           /* monster to attack, -1 none */
+    int drop;             /* drop to pick up, -1 none */
+    bool dest;            /* walking to (dx, dy) */
+    fx dx, dy;
+    int8_t cast;          /* queued bar slot, -1 none */
+    int16_t cast_t;       /* ticks the queued cast keeps trying */
+    int16_t stairs_msg_t;
+} ControlRT;
+
 /* One event per floor at most (events.c). */
 typedef enum { EV_NONE, EV_GOBLIN, EV_SHRINE, EV_AMBUSH, EV_CHEST, EV_FALLEN, EV_COUNT } FloorEventKind;
 typedef enum { SH_BLESSED, SH_LETHAL, SH_GREED, SH_WISDOM, SH_FRENZY, SH_PROTECT, SH_COUNT } ShrineKind;
@@ -216,6 +241,8 @@ typedef struct {
     HitLog last_big;
     HitStats hs;               /* this floor's hit statistics */
     FloorEvent ev;
+    HeroCommand cmd;
+    ControlRT ctl;
     /* Carried across floors: the shrine blessing and the remarks. */
     uint8_t shrine;            /* ShrineKind of the active blessing */
     int shrine_t;              /* ticks left, 0 = none */
@@ -225,6 +252,7 @@ typedef struct {
     /* Events for the game layer, cleared each tick. */
     bool ev_died, ev_floor_done, ev_stuck;
     int ev_lore;               /* lost page found: page + 1 (the session queues it) */
+    uint64_t snd;              /* SoundId bits of this tick, played by the game layer */
 } World;
 
 void world_init_floor(World *w, const Profile *p, int floor);
@@ -232,6 +260,7 @@ void world_tick(World *w, Profile *p);
 void world_refresh_stats(World *w, const Profile *p);
 void world_message(World *w, const char *text, uint16_t color);
 void world_banner(World *w, const char *text, uint16_t color);
+static inline void world_sound(World *w, int id) { w->snd |= (uint64_t)1 << id; }
 static inline bool world_shrine(const World *w, int kind) { return w->shrine_t > 0 && w->shrine == kind; }
 /* Remember current positions as "previous" (start of tick / after spawning). */
 void world_snapshot_positions(World *w);

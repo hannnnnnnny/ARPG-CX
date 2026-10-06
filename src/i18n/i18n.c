@@ -83,6 +83,33 @@ static const uint8_t *find_glyph(int lang, uint32_t cp)
     return NULL;
 }
 
+#ifdef GFX_HD
+static const uint16_t *find_glyph_hd(int lang, uint32_t cp)
+{
+    const CjkGlyphHD *g = i18n_glyphs_hd[lang];
+    int lo = 0, hi = i18n_glyph_count_hd[lang] - 1;
+    while (lo <= hi) {
+        int mid = (lo + hi) / 2;
+        if (g[mid].cp == cp)
+            return g[mid].rows;
+        if (g[mid].cp < cp)
+            lo = mid + 1;
+        else
+            hi = mid - 1;
+    }
+    return NULL;
+}
+
+const uint16_t *cjk_glyph_hd(uint32_t cp)
+{
+    const uint16_t *g = find_glyph_hd(g_lang, cp);
+    int l;
+    for (l = 0; !g && l < LANG_COUNT; l++)
+        g = find_glyph_hd(l, cp);
+    return g;
+}
+#endif
+
 const uint8_t *cjk_glyph(uint32_t cp)
 {
     const uint8_t *g = find_glyph(g_lang, cp);

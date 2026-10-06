@@ -15,3 +15,4 @@ platform/nspire/*.tns
 screenshots/
 !tests/fixtures/*.sav
 shots/
+!dist/*.exe

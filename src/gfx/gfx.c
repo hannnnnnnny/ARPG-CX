@@ -11,17 +11,38 @@ void gfx_clear(uint16_t c)
 {
     int i;
     if (c == 0) {
-        memset(g_fb, 0, SCREEN_W * SCREEN_H * sizeof(uint16_t));
+        memset(g_fb, 0, FB_W * FB_H * sizeof(uint16_t));
         return;
     }
-    for (i = 0; i < SCREEN_W * SCREEN_H; i++)
+    for (i = 0; i < FB_W * FB_H; i++)
         g_fb[i] = c;
+}
+
+/* One logical pixel, already clipped: a GFX_S x GFX_S block. */
+static inline void put(int x, int y, uint16_t c)
+{
+#if GFX_S == 1
+    g_fb[y * FB_W + x] = c;
+#else
+    uint16_t *p = g_fb + y * GFX_S * FB_W + x * GFX_S;
+    int i, j;
+    for (j = 0; j < GFX_S; j++, p += FB_W)
+        for (i = 0; i < GFX_S; i++)
+            p[i] = c;
+#endif
 }
 
 void gfx_pixel(int x, int y, uint16_t c)
 {
     if ((unsigned)x < SCREEN_W && (unsigned)y < SCREEN_H)
-        g_fb[y * SCREEN_W + x] = c;
+        put(x, y, c);
+}
+
+void gfx_pixel_hd(int x, int y, int dx, int dy, uint16_t c)
+{
+    int px = x * GFX_S + dx, py = y * GFX_S + dy;
+    if ((unsigned)px < FB_W && (unsigned)py < FB_H)
+        g_fb[py * FB_W + px] = c;
 }
 
 /* Clip a rectangle to the screen. Returns false if nothing remains. */
@@ -34,13 +55,20 @@ static bool clip_rect(int *x, int *y, int *w, int *h)
     return *w > 0 && *h > 0;
 }
 
+/* Logical rectangle (already clipped) to physical pixels. */
+static void to_phys(int *x, int *y, int *w, int *h)
+{
+    *x *= GFX_S; *y *= GFX_S; *w *= GFX_S; *h *= GFX_S;
+}
+
 void gfx_fill_rect(int x, int y, int w, int h, uint16_t c)
 {
     int i, j;
     if (!clip_rect(&x, &y, &w, &h))
         return;
+    to_phys(&x, &y, &w, &h);
     for (j = 0; j < h; j++) {
-        uint16_t *row = g_fb + (y + j) * SCREEN_W + x;
+        uint16_t *row = g_fb + (y + j) * FB_W + x;
         for (i = 0; i < w; i++)
             row[i] = c;
     }
@@ -62,8 +90,9 @@ void gfx_dim_rect(int x, int y, int w, int h)
     int i, j;
     if (!clip_rect(&x, &y, &w, &h))
         return;
+    to_phys(&x, &y, &w, &h);
     for (j = 0; j < h; j++) {
-        uint16_t *row = g_fb + (y + j) * SCREEN_W + x;
+        uint16_t *row = g_fb + (y + j) * FB_W + x;
         /* Shift each 565 channel right by one: mask drops the bits that
          * would bleed into the neighbouring channel. */
         for (i = 0; i < w; i++)
@@ -87,7 +116,6 @@ void gfx_blit(const Sprite *s, int x, int y, unsigned flags)
     for (j = 0; j < h; j++) {
         int srow = sy0 + j;
         const uint16_t *src;
-        uint16_t *dst = g_fb + (dy + j) * SCREEN_W + dx;
         if (flags & BLIT_FLIP_Y)
             srow = s->h - 1 - srow;
         src = s->px + srow * s->w;
@@ -97,14 +125,14 @@ void gfx_blit(const Sprite *s, int x, int y, unsigned flags)
             for (i = 0; i < w; i++, p--) {
                 uint16_t c = *p;
                 if (c != COLOR_KEY)
-                    dst[i] = (flags & BLIT_WHITE) ? 0xFFFF : c;
+                    put(dx + i, dy + j, (flags & BLIT_WHITE) ? 0xFFFF : c);
             }
         } else {
             const uint16_t *p = src + sx0;
             for (i = 0; i < w; i++) {
                 uint16_t c = p[i];
                 if (c != COLOR_KEY)
-                    dst[i] = (flags & BLIT_WHITE) ? 0xFFFF : c;
+                    put(dx + i, dy + j, (flags & BLIT_WHITE) ? 0xFFFF : c);
             }
         }
     }
@@ -115,18 +143,19 @@ void gfx_blit_tile(const uint16_t *px, int x, int y, bool opaque)
     int j, i;
     /* Fully on-screen opaque tiles are the overwhelmingly common case:
      * 16 row copies of 32 bytes each. */
+#if GFX_S == 1
     if (opaque && x >= 0 && y >= 0 && x + TILE_SIZE <= SCREEN_W && y + TILE_SIZE <= SCREEN_H) {
         uint16_t *dst = g_fb + y * SCREEN_W + x;
         for (j = 0; j < TILE_SIZE; j++, dst += SCREEN_W, px += TILE_SIZE)
             memcpy(dst, px, TILE_SIZE * sizeof(uint16_t));
         return;
     }
-    if (!opaque && x >= 0 && y >= 0 && x + TILE_SIZE <= SCREEN_W && y + TILE_SIZE <= SCREEN_H) {
-        uint16_t *dst = g_fb + y * SCREEN_W + x;
-        for (j = 0; j < TILE_SIZE; j++, dst += SCREEN_W, px += TILE_SIZE)
+#endif
+    if (x >= 0 && y >= 0 && x + TILE_SIZE <= SCREEN_W && y + TILE_SIZE <= SCREEN_H) {
+        for (j = 0; j < TILE_SIZE; j++, px += TILE_SIZE)
             for (i = 0; i < TILE_SIZE; i++)
-                if (px[i] != COLOR_KEY)
-                    dst[i] = px[i];
+                if (opaque || px[i] != COLOR_KEY)
+                    put(x + i, y + j, px[i]);
         return;
     }
     {
@@ -191,8 +220,9 @@ void gfx_blend_rect(int x, int y, int w, int h, uint16_t c)
     uint16_t half = (uint16_t)((c >> 1) & 0x7BEF);
     if (!clip_rect(&x, &y, &w, &h))
         return;
+    to_phys(&x, &y, &w, &h);
     for (j = 0; j < h; j++) {
-        uint16_t *row = g_fb + (y + j) * SCREEN_W + x;
+        uint16_t *row = g_fb + (y + j) * FB_W + x;
         /* 50% mix: halve both colours per channel, then add */
         for (i = 0; i < w; i++)
             row[i] = (uint16_t)(((row[i] >> 1) & 0x7BEF) + half);

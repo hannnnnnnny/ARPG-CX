@@ -26,6 +26,13 @@ typedef struct {
     uint8_t  rows[8];                  /* 8x8, bit 7 = leftmost pixel */
 } CjkGlyph;
 
+/* Desktop (GFX_HD): the same characters from the 12px font, drawn at the
+ * doubled resolution inside the 16x16 pixels of an 8x8 cell. */
+typedef struct {
+    uint32_t cp;
+    uint16_t rows[12];                 /* 12x12, bit 11 = leftmost pixel */
+} CjkGlyphHD;
+
 extern const I18nEntry i18n_strings[];
 extern const int i18n_count;
 extern const CjkGlyph *const i18n_glyphs[LANG_COUNT];
@@ -40,6 +47,11 @@ const char *T(const char *en);
 bool lang_compact(void);               /* no spaces between words (zh, ja) */
 bool lang_modifier_first(void);        /* "OF THE BEAR BOOTS" order (zh, ja, ko) */
 const uint8_t *cjk_glyph(uint32_t cp); /* NULL if not in the current font subset */
+#ifdef GFX_HD
+extern const CjkGlyphHD *const i18n_glyphs_hd[LANG_COUNT];
+extern const int i18n_glyph_count_hd[LANG_COUNT];
+const uint16_t *cjk_glyph_hd(uint32_t cp);
+#endif
 /* T(a) and T(b) joined: "A B" in English and Korean, "AB" in zh / ja. */
 void tjoin(char *out, size_t cap, const char *a, const char *b);
 

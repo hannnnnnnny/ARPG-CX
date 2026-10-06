@@ -1,4 +1,5 @@
 #include "game.h"
+#include "../core/sound.h"
 #include "render.h"
 #include "build.h"
 #include "paragon.h"
@@ -14,6 +15,8 @@
 
 void game_toast(Game *g, const char *text, uint16_t color)
 {
+    if (color == RGB565(240, 90, 80))          /* the menus' "bad" colour: refused */
+        game_sfx(g, SND_UI_ERROR);
     snprintf(g->toast, sizeof g->toast, "%s", text);
     g->toast_color = color;
     g->toast_t = 2 * TICK_HZ;
@@ -150,16 +153,27 @@ static void battle_story(Game *g, Input *in)
     }
 }
 
+static void toggle_auto(Game *g)
+{
+    g->p.auto_battle = !g->p.auto_battle;
+    game_toast(g, g->p.auto_battle ? "AUTO BATTLE: ON" : "AUTO BATTLE: OFF  (WASD / MOUSE / 1-6)",
+               RGB565(120, 200, 255));
+    game_sfx(g, SND_UI_OK);
+}
+
 static void battle_tick(Game *g, Input *in, uint32_t now)
 {
     session_tick(&g->s, &g->p);
+    game_world_sounds(g);
     subtitle_tick(g);
     if (++g->autosave_t >= AUTOSAVE_TICKS)
         game_save(g, now);
     battle_story(g, in);
     if (g->state != GS_BATTLE)
         return;
-    if (in_tab(in) || in_ok(in)) {
+    if (in_pressed(in, BTN_AUTO)) {
+        toggle_auto(g);
+    } else if (in_tab(in) || in_ok(in)) {
         g->state = GS_MENU;
         g->page = PG_HERO;
         input_block_held(in);
@@ -173,6 +187,12 @@ static void battle_tick(Game *g, Input *in, uint32_t now)
 void game_tick(Game *g, Input *in, uint32_t now)
 {
     g->tick++;
+    g->mouse = in->mouse;
+    g->mx = in->mx;
+    g->my = in->my;
+    game_mouse_ui(g, in);
+    game_ui_sounds(g, in);
+    game_hero_command(g, in);
     if (g->toast_t > 0)
         g->toast_t--;
     if (in_pressed(in, BTN_DEBUG))
@@ -218,6 +238,7 @@ static void render_toast(const Game *g)
 
 void game_render(Game *g)
 {
+    game_ui_frame();
     switch (g->state) {
     case GS_TITLE:        title_render(g); break;
     case GS_SLOTS:        slots_render(g); break;
@@ -229,6 +250,7 @@ void game_render(Game *g)
         render_world(&g->s.w, &g->p);
         render_hud(&g->s.w, &g->p);
         subtitle_render(g);
+        game_control_render(g);
         break;
     case GS_MENU:         menu_render(g); break;
     }

@@ -82,6 +82,7 @@ static void class_row(const Game *g, int i)
     bool on = i == g->class_sel;
     prog_default_look(&look, i, 77u + (uint32_t)i * 13u);
     preview_look(&l, i, &look);
+    game_ui_rect(8, y - 3, 112, 24, on);
     if (on)
         gfx_fill_rect(8, y - 3, 112, 24, C_HIL);
     gfx_rect(8, y - 3, 112, 24, on ? C_SEL : RGB565(80, 60, 50));
@@ -265,6 +266,7 @@ static void create_rows(const Game *g)
         int y = 40 + i * 16;
         uint16_t sw;
         bool on = i == g->create_sel;
+        game_ui_rect(118, y - 3, 196, 14, on);
         if (on)
             gfx_fill_rect(118, y - 3, 196, 14, C_HIL);
         font_draw(124, y, i == CR_BEGIN && g->create_edit_only ? "[ DONE ]" : labels[i], on ? C_SEL : C_TEXT, 1);

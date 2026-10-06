@@ -325,6 +325,12 @@ static void draw_floaters(const World *w)
         }
 }
 
+void render_camera(int *x, int *y)
+{
+    *x = cam_x;
+    *y = cam_y;
+}
+
 void render_world(const World *w, const Profile *p)
 {
     tiles_build(w->theme); /* no-op unless the depth theme changed */
