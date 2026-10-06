@@ -35,15 +35,16 @@ All releases: [Releases](https://github.com/hannnnnnnny/ARPG-CX/releases).
 ## Promo video (宣传视频)
 
 <p align="center">
-  <a href="https://github.com/hannnnnnnny/ARPG-CX/blob/main/docs/media/promo.mp4"><img src="docs/media/promo_poster.jpg" width="270" alt="Promo video: click to play"></a>
-  <br><em>32 s, 1080x1920, with the game's own sound effects.
-  <a href="https://github.com/hannnnnnnny/ARPG-CX/blob/main/docs/media/promo.mp4">Play</a> · <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo.mp4">Download mp4</a></em>
+  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo.mp4"><img src="docs/media/promo.gif" width="300" alt="Promo video preview"></a>
+  <br><em>32 s, 1080x1920. The preview above is silent:
+  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo.mp4"><b>download the mp4 with sound</b></a></em>
 </p>
 
 Every shot is recorded from the game itself and scored with its synthesized
 effects (`python tools/media/make_video.py` in ARPG-CX rebuilds it).
 
-> 中文：点击上图观看 32 秒竖屏宣传视频（有声）；画面全部为游戏实机录制，音效来自游戏本身的合成音效。
+> 中文：上图为宣传视频的无声预览，点击图片或"download the mp4 with sound"下载 32 秒竖屏有声完整版；
+> 画面全部为游戏实机录制，音效来自游戏本身的合成音效。
 
 ## Demo
 
