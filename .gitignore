@@ -16,3 +16,5 @@ screenshots/
 !tests/fixtures/*.sav
 shots/
 !dist/*.exe
+# Release zips are uploaded to GitHub releases, not committed
+dist/*.zip

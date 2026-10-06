@@ -17,6 +17,21 @@ and story are original.
 > 鼠标点击攻击、1-6 技能、Q 喝药、空格切换自动挂机）、合成音效、12px 清晰中文字体；
 > 同一份代码也能编译成 TI-Nspire CX 计算器版。下方动图与截图均为游戏本身渲染的真实画面。
 
+## Download (一键下载)
+
+<p align="center">
+  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/AshenDepths-Windows.zip"><img src="https://img.shields.io/badge/%E4%B8%80%E9%94%AE%E4%B8%8B%E8%BD%BD-Windows%20%2B%20TI--Nspire%20zip-e8590c?style=for-the-badge&logo=windows" alt="Download zip"></a>
+</p>
+
+**[AshenDepths-Windows.zip](https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/AshenDepths-Windows.zip)**
+(about 0.8 MB): `AshenDepthsDesktop.exe` (unzip and double-click, no install)
+plus `AshenDepths.tns` for the calculator. Windows may say "Windows protected
+your PC" because the exe is unsigned: choose *More info* then *Run anyway*.
+All releases: [Releases](https://github.com/hannnnnnnny/ARPG-CX/releases).
+
+> 中文：点上面的按钮直接下载 zip，解压后双击 `AshenDepthsDesktop.exe` 就能玩，无需安装；
+> 若提示"Windows 已保护你的电脑"，点"更多信息"→"仍要运行"。zip 里同时附带计算器版 `AshenDepths.tns`。
+
 ## Demo
 
 <p align="center">
