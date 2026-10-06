@@ -124,7 +124,7 @@ def shot(pick, width):
 
 def page_cover():
     img = background(1)
-    pill(img, (W / 2, 70), "原创独立游戏 · 免费 · 源码公开", 32, anchor="m")
+    pill(img, (W / 2, 70), "原创独立游戏 · 免费开源", 32, anchor="m")
     glow_text(img, (W / 2, 230), "在计算器上", 128, GOLD, glow=FIRE)
     glow_text(img, (W / 2, 390), "做了个暗黑4", 140, ORANGE, glow=FIRE)
     text(img, (W / 2, 505), "TI-Nspire CX 计算器版 + Windows 电脑版", 40, BONE, "mm")
@@ -255,7 +255,7 @@ def page_platforms():
 def page_download():
     img = background(7)
     glow_text(img, (W / 2, 130), "免费下载", 120, GOLD, glow=FIRE)
-    text(img, (W / 2, 250), "免费 · 源码公开 · 无广告 · 无内购", 44, BONE, "mm")
+    text(img, (W / 2, 250), "MIT 开源 · 无广告 · 无内购", 44, BONE, "mm")
     steps = (("1", "GitHub 搜索", "hannnnnnnny/ARPG-CX"),
              ("2", "点 README 里的", "「一键下载」橙色按钮"),
              ("3", "解压，双击", "AshenDepthsDesktop.exe"))

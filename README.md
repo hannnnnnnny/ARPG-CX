@@ -319,3 +319,11 @@ build/ad_sim.exe 2          # 2 idle hours for each of the 18 builds
 
 Curves and prices live in `src/game/balance.c`; skill numbers in
 `src/game/skills.c`; aspects and uniques in `src/game/aspects.c`.
+
+## License
+
+Code, pixel art and story: [MIT](LICENSE) (c) 2026 Yi Han. The bundled pixel
+fonts keep their own SIL Open Font License 1.1 (see `assets/fonts*/`).
+
+> 中文：代码、像素美术与剧情采用 MIT 许可证开源，可自由使用、修改和分发，保留版权声明即可；
+> 内置像素字体沿用各自的 SIL OFL 1.1 许可证。

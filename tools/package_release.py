@@ -57,6 +57,7 @@ def main():
             z.write(EXE, "AshenDepths/AshenDepthsDesktop.exe")
         z.write(TNS, "AshenDepths/AshenDepths.tns")
         z.writestr("AshenDepths/README-说明.txt", guide.replace("\n", "\r\n"))
+        z.write(ROOT / "LICENSE", "AshenDepths/LICENSE.txt")
         for src, arc in license_files():
             z.write(src, "AshenDepths/" + arc)
     print(out, out.stat().st_size)
