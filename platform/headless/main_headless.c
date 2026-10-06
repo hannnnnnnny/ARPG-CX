@@ -3,7 +3,10 @@
  *
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
- *               [--lang 0-4]
+ *               [--lang 0-4] [--record START:COUNT:EVERY:PREFIX]
+ *
+ * --record writes COUNT frames, one every EVERY ticks from tick START, as
+ * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
  * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
@@ -27,6 +30,7 @@
 
 typedef struct { uint32_t buttons; int ticks; int mx, my; } Step;
 typedef struct { int tick; const char *path; } Shot;
+typedef struct { int start, count, every; const char *prefix; } Record;
 
 static uint16_t g_fb[FB_W * FB_H];
 static Game g_game;
@@ -92,6 +96,36 @@ static int parse_script(const char *p, Step *steps)
     return n;
 }
 
+static void parse_record(const char *arg, Record *r)
+{
+    const char *p = arg;
+    int *v[3] = { &r->start, &r->count, &r->every }, i;
+    for (i = 0; i < 3 && p; i++) {
+        *v[i] = atoi(p);
+        p = strchr(p, ':');
+        if (p)
+            p++;
+    }
+    r->prefix = p;
+    if (r->every < 1)
+        r->every = 1;
+}
+
+/* One frame of the recording, if this tick is one of them. */
+static void record_frame(const Record *r, int tick)
+{
+    char path[400];
+    int n;
+    if (!r->prefix || tick < r->start || (tick - r->start) % r->every)
+        return;
+    n = (tick - r->start) / r->every;
+    if (n >= r->count)
+        return;
+    game_render(&g_game);
+    snprintf(path, sizeof path, "%s%04d.png", r->prefix, n);
+    png_write_rgb565(path, g_fb, FB_W, FB_H);
+}
+
 static void fast_forward(double hours, uint32_t now)
 {
     long t;
@@ -110,6 +144,7 @@ int main(int argc, char **argv)
 {
     static Step steps[MAX_STEPS];
     Shot shots[MAX_SHOTS];
+    Record rec = { 0, 0, 1, NULL };
     int nsteps = 0, nshots = 0, i, s, tick = 0, trace = 0, cls = 0;
     double fast = 0;
     int preset = 0, lang = -1;
@@ -126,6 +161,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--new")) fresh = true;
         else if (!strcmp(argv[i], "--class") && i + 1 < argc) cls = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--record") && i + 1 < argc) parse_record(argv[++i], &rec);
         else if (!strcmp(argv[i], "--preset") && i + 1 < argc) preset = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--shot") && i + 1 < argc && nshots < MAX_SHOTS) {
             char *arg = argv[++i], *colon = strchr(arg, ':');
@@ -159,6 +195,7 @@ int main(int argc, char **argv)
         }
         for (i = 0; i < n; i++, tick++) {
             int k;
+            record_frame(&rec, tick);
             for (k = 0; k < nshots; k++)
                 if (shots[k].tick == tick) {
                     game_render(&g_game);

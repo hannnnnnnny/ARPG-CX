@@ -27,7 +27,10 @@ def literals():
         text = re.sub(r'#include.*', '', text)
         for m in LIT.finditer(text):
             s = m.group(1).encode('ascii', 'replace').decode('unicode_escape')   # C escapes
-            if re.search(r'[A-Z]{2}', s) and not ART.match(s):
+            # pixel-art rows are long and use '.' for transparency; a short
+            # word like "LONG" only looks like one
+            is_art = ART.match(s) and ('.' in s or len(s) >= 8)
+            if re.search(r'[A-Z]{2}', s) and not is_art:
                 found.setdefault(s, os.path.basename(path))
                 if s.startswith('ASPECT OF '):        # legendary item names use the tail
                     found.setdefault(s[7:], os.path.basename(path))

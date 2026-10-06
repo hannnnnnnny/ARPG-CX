@@ -13,6 +13,41 @@ gains when you come back.
 The systems follow Diablo IV's design. All code, pixel art, names, items
 and story are original.
 
+> 中文：原创 ARPG（暗黑破坏神 4 式系统）。Windows 版支持键盘鼠标亲自操作（WASD 移动、
+> 鼠标点击攻击、1-6 技能、Q 喝药、空格切换自动挂机）、合成音效、12px 清晰中文字体；
+> 同一份代码也能编译成 TI-Nspire CX 计算器版。下方动图与截图均为游戏本身渲染的真实画面。
+
+## Demo
+
+<p align="center">
+  <img src="docs/media/desktop_play.gif" width="640" alt="Taking control: Space for manual, WASD, skill keys, clicking monsters">
+  <br><em>Auto battle, then Space for manual play: WASD, skill keys 1-6, clicking the monster under the cursor (red ring)</em>
+</p>
+
+<table>
+  <tr>
+    <td><img src="docs/media/desktop_menus.gif" width="400" alt="Menus driven by the mouse"></td>
+    <td><img src="docs/media/desktop_battle.gif" width="400" alt="Necromancer battle at 640x480"></td>
+  </tr>
+  <tr>
+    <td align="center"><em>Menus with the mouse: tabs, rows, options</em></td>
+    <td align="center"><em>640x480 rendering with 12px Chinese text</em></td>
+  </tr>
+</table>
+
+| Title | Battle | Hero |
+|---|---|---|
+| ![Title](docs/media/desktop_title.png) | ![Battle](docs/media/desktop_battle.png) | ![Hero](docs/media/desktop_hero.png) |
+| **Skills** | **Goals** | **Options (sound, auto battle)** |
+| ![Skills](docs/media/desktop_skills.png) | ![Goals](docs/media/desktop_goals.png) | ![Options](docs/media/desktop_options.png) |
+
+Every frame is rendered by the game's own code at 640x480 through the
+headless runner built with the same `GFX_HD` renderer and 12px font as
+`AshenDepthsDesktop.exe`; scripted input drives it and the cursor arrow is
+painted on afterwards. The synthesized sound effects can't be shown in a
+GIF: run the exe from `dist/`. `python tools/media/make_media.py`
+regenerates everything after a build.
+
 ## Status
 
 | Target | State |
