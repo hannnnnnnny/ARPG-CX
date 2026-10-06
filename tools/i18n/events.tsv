@@ -1,0 +1,164 @@
+// Floor events, champions, shrines, remarks (barks), bounties, achievements, GOALS page.
+GOALS	目标	目標	目標	목표
+ALDRIC	奥德里克	奧德里克	アルドリク	알드릭
+%s: %s	%s：%s	%s：%s	%s：%s	%s: %s
+TREASURE GOBLIN	宝藏哥布林	寶藏哥布林	宝物ゴブリン	보물 고블린
+A TREASURE GOBLIN!	宝藏哥布林！	寶藏哥布林！	宝物ゴブリンだ！	보물 고블린이다!
+TREASURE GOBLIN SLAIN!	宝藏哥布林已击杀！	寶藏哥布林已擊殺！	宝物ゴブリン撃破！	보물 고블린 처치!
+THE GOBLIN ESCAPED	哥布林逃走了	哥布林逃走了	ゴブリンに逃げられた	고블린이 달아났다
+AMBUSH!	伏击！	伏擊！	待ち伏せ！	매복!
+AMBUSH REPELLED!	伏击已击退！	伏擊已擊退！	待ち伏せを撃退！	매복 격퇴!
+THE CHEST'S GUARDIANS AWAKE!	宝箱的守卫苏醒了！	寶箱的守衛甦醒了！	宝箱の守護者が目覚めた！	상자의 수호자가 깨어났다!
+THE CURSED CHEST OPENS	受诅咒的宝箱打开了	受詛咒的寶箱打開了	呪われた宝箱が開いた	저주받은 상자가 열렸다
+FOUND A LOST PAGE	找到一张遗失的书页	找到一張遺失的書頁	失われたページを見つけた	잃어버린 쪽을 찾았다
+BOUNTY COMPLETE: %s	悬赏完成：%s	懸賞完成：%s	依頼達成：%s	현상금 완료: %s
+ACHIEVEMENT EARNED - RENOWN %d	达成成就 - 声望 %d	達成成就 - 聲望 %d	実績達成 - 名声 %d	업적 달성 - 명성 %d
+FAST	迅捷	迅捷	俊敏	신속
+STURDY	坚韧	堅韌	頑強	강인
+VAMPIRIC	吸血	吸血	吸血	흡혈
+VOLATILE	爆裂	爆裂	爆発	폭발
+WARDED	结界	結界	結界	결계
+FRENZIED	疯狂	瘋狂	凶暴	광포
+BLESSED	祝福	祝福	祝福	축복
+LETHAL	致命	致命	致命	치명
+ENLIGHTENED	启迪	啟迪	啓示	깨달음
+BLESSED SHRINE	祝福神龛	祝福神龕	祝福の祠	축복의 성소
+LETHAL SHRINE	致命神龛	致命神龕	致命の祠	치명의 성소
+GREED SHRINE	贪婪神龛	貪婪神龕	強欲の祠	탐욕의 성소
+ENLIGHTENED SHRINE	启迪神龛	啟迪神龕	啓示の祠	깨달음의 성소
+FRENZY SHRINE	狂乱神龛	狂亂神龕	狂乱の祠	광란의 성소
+PROTECTION SHRINE	庇护神龛	庇護神龕	守護の祠	보호의 성소
++50% DAMAGE FOR 40 SECONDS	伤害+50%，持续40秒	傷害+50%，持續40秒	40秒間ダメージ+50%	40초간 피해 +50%
+EVERY HIT IS CRITICAL FOR 40 SECONDS	40秒内每次攻击都暴击	40秒內每次攻擊都暴擊	40秒間すべて会心	40초간 모든 공격 극대화
+TRIPLE GOLD FOR 40 SECONDS	40秒内金币三倍	40秒內金幣三倍	40秒間ゴールド3倍	40초간 골드 3배
+TRIPLE EXPERIENCE FOR 40 SECONDS	40秒内经验三倍	40秒內經驗三倍	40秒間経験値3倍	40초간 경험치 3배
++50% ATTACK SPEED FOR 40 SECONDS	攻击速度+50%，持续40秒	攻擊速度+50%，持續40秒	40秒間攻撃速度+50%	40초간 공격 속도 +50%
+HALF DAMAGE TAKEN FOR 40 SECONDS	40秒内受到伤害减半	40秒內受到傷害減半	40秒間被ダメージ半減	40초간 받는 피해 절반
+DEEPER THAN ANY KEEPER HAS GONE.	比任何守护者走得都深。	比任何守護者走得都深。	どの番人よりも深くへ来た。	어떤 수호자보다 깊이 왔다.
+THE TORCH BURNS COLDER HERE. GO ON.	火把在这里烧得更冷了。继续。	火把在這裡燒得更冷了。繼續。	ここでは松明が冷たい。進め。	여기선 횃불이 차갑다. 계속 가라.
+NEW GROUND. NOBODY HAS MAPPED THIS.	新的地界，没人画过这里的地图。	新的地界，沒人畫過這裡的地圖。	未踏の地だ。誰も地図にしていない。	새로운 땅. 아무도 지도에 없다.
+THIS ONE REMEMBERS OLDER WARS.	这件记得更古老的战争。	這件記得更古老的戰爭。	これは古い戦を覚えている。	이건 더 오래된 전쟁을 기억한다.
+ANCESTRAL. IT HUMS IN MY HAND.	先祖装备，在我手中嗡鸣。	先祖裝備，在我手中嗡鳴。	祖先の品だ。手の中で唸る。	선조 장비다. 손에서 울린다.
+FORGED BEFORE CINDERMERE HAD A NAME.	在辛德米尔有名字之前就已铸成。	在辛德米爾有名字之前就已鑄成。	シンダーミアに名がつく前の品だ。	신더미어에 이름이 생기기 전에 벼려졌다.
+NOW THAT IS A FIND.	这可真是好东西。	這可真是好東西。	これは掘り出し物だ。	이건 대단한 발견이다.
+I KNOW THIS ONE FROM THE OLD SONGS.	我在古老的歌谣里听过它。	我在古老的歌謠裡聽過它。	古い歌で聞いたことがある。	옛 노래에서 들어 본 물건이다.
+KEEP THAT ONE CLOSE.	好好留着它。	好好留著它。	大事に持っておけ。	그건 잘 간직해라.
+BY THE BELLS... A MYTHIC.	以钟声起誓……神话装备。	以鐘聲起誓……神話裝備。	鐘にかけて……神話級だ。	종에 맹세코... 신화 장비다.
+FEW KEEPERS EVER SAW ONE OF THOSE.	很少有守护者见过这种东西。	很少有守護者見過這種東西。	それを見た番人はほとんどいない。	그걸 본 수호자는 거의 없다.
+I AM NEVER LETTING GO OF THIS.	我绝不会放手。	我絕不會放手。	これは絶対に手放さない。	이건 절대 놓지 않겠다.
+NOT YET... NOT HERE.	还不行……不能在这里。	還不行……不能在這裡。	まだだ……ここではない。	아직은... 여기선 안 돼.
+TOO CLOSE. FAR TOO CLOSE.	太险了，实在太险了。	太險了，實在太險了。	危なかった。危なすぎる。	아슬아슬했다. 너무 아슬아슬해.
+BREATHE. THE TORCH STILL BURNS.	呼吸。火把还在燃烧。	呼吸。火把還在燃燒。	息をしろ。松明はまだ燃えている。	숨 쉬어라. 횃불은 아직 탄다.
+GET UP. THE DEPTHS WILL WAIT.	起来。深渊会等你。	起來。深淵會等你。	立て。深淵は待ってくれる。	일어나라. 심연은 기다려 준다.
+EVERY KEEPER FELL ONCE. RISE.	每个守护者都倒下过。站起来。	每個守護者都倒下過。站起來。	番人は皆一度は倒れた。立て。	모든 수호자는 한 번은 쓰러졌다. 일어나라.
+THE TORCH BRINGS YOU BACK. AGAIN.	火把又一次把你带了回来。	火把又一次把你帶了回來。	松明がまたお前を連れ戻す。	횃불이 또 너를 데려온다.
+ONE MORE FOR THE JOURNAL.	日志里又多了一笔。	日誌裡又多了一筆。	日誌にもう一行。	일지에 하나 더.
+THAT ONE HAD A NAME. NOW IT HAS AN END.	它有名字，如今也有了结局。	它有名字，如今也有了結局。	名のある敵だった。今は終わりだ。	이름이 있던 놈이다. 이제 끝이 있다.
+WELL DONE. THE SEAL HOLDS A LITTLE LONGER.	干得好。封印又能多撑一会儿。	幹得好。封印又能多撐一會兒。	よくやった。封印は少し長くもつ。	잘했다. 봉인이 조금 더 버틴다.
+A GOBLIN! AND A FAT SACK!	哥布林！还背着鼓鼓的袋子！	哥布林！還背著鼓鼓的袋子！	ゴブリンだ！袋がぱんぱんだ！	고블린이다! 자루가 빵빵해!
+YOU ARE NOT GETTING AWAY.	你跑不掉的。	你跑不掉的。	逃がさないぞ。	못 도망간다.
+QUICKLY, BEFORE IT OPENS A PORTAL!	快，在它打开传送门之前！	快，在它打開傳送門之前！	急げ、ポータルを開く前に！	빨리, 차원문을 열기 전에!
+GOLD EVERYWHERE!	满地都是金币！	滿地都是金幣！	金貨だらけだ！	사방이 골드다!
+THE SACK IS MINE NOW.	袋子现在归我了。	袋子現在歸我了。	袋はもう俺のものだ。	이제 자루는 내 거다.
+THAT WAS WORTH THE CHASE.	这趟追得值。	這趟追得值。	追った甲斐があった。	쫓아간 보람이 있었다.
+IT GOT AWAY... WITH MY GOLD.	它跑了……带着我的金币。	它跑了……帶著我的金幣。	逃げられた……俺の金ごと。	도망쳤다... 내 골드를 들고.
+NEXT TIME, LITTLE THIEF.	下次再说，小贼。	下次再說，小賊。	次こそだ、小さな泥棒め。	다음엔 안 놓친다, 꼬마 도둑.
+TOO SLOW. IT WILL BE BACK.	太慢了。它还会回来的。	太慢了。它還會回來的。	遅すぎた。また来るだろう。	너무 느렸다. 다시 올 거다.
+AN OLD SHRINE. BORROW ITS FIRE.	古老的神龛。借用它的火吧。	古老的神龕。借用它的火吧。	古い祠だ。その火を借りろ。	오래된 성소다. 그 불을 빌려라.
+THE GODS STILL LISTEN DOWN HERE.	神明在这下面依然倾听。	神明在這下面依然傾聽。	神々はここでも耳を傾けている。	신들은 이 아래서도 듣고 있다.
+I FEEL IT. LET THEM COME.	我感觉到了。让它们来吧。	我感覺到了。讓它們來吧。	感じる。来るなら来い。	느껴진다. 덤벼 봐라.
+IT IS A TRAP!	是陷阱！	是陷阱！	罠だ！	함정이다!
+THEY WERE WAITING FOR ME.	它们一直在等我。	它們一直在等我。	待ち伏せていたのか。	나를 기다리고 있었군.
+BEHIND YOU!	小心身后！	小心身後！	後ろだ！	뒤를 조심해!
+A CURSED CHEST. ITS GUARDS WAKE AT A TOUCH.	受诅咒的宝箱，一碰守卫就会醒。	受詛咒的寶箱，一碰守衛就會醒。	呪われた宝箱だ。触れば守護者が目覚める。	저주받은 상자다. 건드리면 수호자가 깬다.
+SOMETHING INSIDE IS SCRATCHING.	里面有东西在抓挠。	裡面有東西在抓撓。	中で何かが引っかいている。	안에서 뭔가 긁고 있다.
+ONLY ONE WAY TO OPEN IT.	只有一种办法能打开它。	只有一種辦法能打開它。	開ける方法はひとつだけだ。	여는 방법은 하나뿐이다.
+SOMEONE CAME THIS FAR BEFORE ME.	在我之前有人到过这里。	在我之前有人到過這裡。	俺より先にここまで来た者がいる。	나보다 먼저 여기까지 온 자가 있다.
+A NOTE, STILL IN THEIR HAND.	一张字条，还握在他们手里。	一張字條，還握在他們手裡。	手にまだ書き付けを握っている。	손에 아직 쪽지가 쥐어져 있다.
+READ IT. THE DEAD REMEMBER.	读一读。死者记得一切。	讀一讀。死者記得一切。	読め。死者は覚えている。	읽어라. 죽은 자는 기억한다.
+THAT ONE IS STRONGER THAN THE REST.	那个比其他的都强。	那個比其他的都強。	あいつは他より強い。	저놈은 다른 놈들보다 강하다.
+A CHAMPION. GOOD.	勇士怪。正好。	勇士怪。正好。	チャンピオンか。いいだろう。	챔피언이군. 좋다.
+CAREFUL. THE HEART HAS TOUCHED THAT ONE.	小心。那个被心脏触碰过。	小心。那個被心臟觸碰過。	気をつけろ。心臓に触れられた奴だ。	조심해라. 심장에 닿은 놈이다.
+BOUNTY DONE. THE TOWN WILL PAY.	悬赏完成，镇上会付钱的。	懸賞完成，鎮上會付錢的。	依頼達成だ。町が払ってくれる。	현상금 완료. 마을이 값을 치를 거다.
+ANOTHER NOTICE OFF THE BOARD.	告示板上又少了一张。	告示板上又少了一張。	掲示板の貼り紙がまた一枚減った。	게시판에서 공고가 하나 줄었다.
+THEY WILL SING ABOUT THIS. MAYBE.	他们会为此歌唱的。也许吧。	他們會為此歌唱的。也許吧。	歌になるかもな。たぶん。	노래로 불릴지도. 아마도.
+YOUR NAME GROWS IN CINDERMERE.	你的名字在辛德米尔传开了。	你的名字在辛德米爾傳開了。	シンダーミアでお前の名が広まる。	신더미어에 네 이름이 퍼진다.
+RENOWN. THEY SPEAK OF YOU NOW.	声望。如今人们都在谈论你。	聲望。如今人們都在談論你。	名声だ。皆がお前を語っている。	명성이다. 이제 모두 너를 말한다.
+THE OLD KEEPERS WOULD BE PROUD.	历代守护者会为你骄傲。	歷代守護者會為你驕傲。	歴代の番人も誇りに思うだろう。	옛 수호자들이 자랑스러워할 거다.
+STRONGER.	更强了。	更強了。	強くなった。	더 강해졌다.
+I CAN FEEL THE ASH IN MY BLOOD.	我能感觉到血里的灰烬。	我能感覺到血裡的灰燼。	血の中に灰を感じる。	피 속에서 재가 느껴진다.
+THE DEPTHS ARE TEACHING ME.	深渊在教导我。	深淵在教導我。	深淵が俺を鍛えている。	심연이 나를 가르치고 있다.
+THE BELLS RANG TWICE TODAY. A GOOD SIGN.	今天钟响了两次，是个好兆头。	今天鐘響了兩次，是個好兆頭。	今日は鐘が二度鳴った。吉兆だ。	오늘 종이 두 번 울렸다. 좋은 징조다.
+HOW DEEP DOES THIS GO?	这到底有多深？	這到底有多深？	どこまで深いんだ？	대체 얼마나 깊은 거지?
+I CAN HEAR THE HEART FROM HERE.	我在这里都能听见心跳。	我在這裡都能聽見心跳。	ここからでも心臓の音が聞こえる。	여기서도 심장 소리가 들린다.
+HUNT: %s	狩猎：%s	狩獵：%s	討伐：%s	사냥: %s
+SLAY CHAMPIONS	击杀勇士怪	擊殺勇士怪	チャンピオンを倒す	챔피언 처치
+CLEAR FLOORS	通关楼层	通關樓層	階層を突破	층 돌파
+SLAY A TREASURE GOBLIN	击杀一只宝藏哥布林	擊殺一隻寶藏哥布林	宝物ゴブリンを倒す	보물 고블린 처치
+KNEEL AT SHRINES	参拜神龛	參拜神龕	祠に祈る	성소에서 기도
+SURVIVE FLOOR EVENTS	挺过楼层事件	挺過樓層事件	階層イベントを乗り切る	층 이벤트 돌파
+FIND LEGENDARY ITEMS	寻找传奇物品	尋找傳奇物品	レジェンダリーを見つける	전설 아이템 찾기
+DEFEAT A GUARDIAN	击败一名守护者	擊敗一名守護者	ガーディアンを倒す	수호자 처치
+REACH FLOOR %s	到达第%s层	到達第%s層	%s階に到達	%s층 도달
+REACH LEVEL %s	达到%s级	達到%s級	レベル%sに到達	레벨 %s 달성
+REACH PARAGON %s	达到巅峰%s级	達到巔峰%s級	パラゴン%sに到達	정복자 %s 달성
+SLAY %s MONSTERS	击杀%s只怪物	擊殺%s隻怪物	魔物を%s体倒す	괴물 %s마리 처치
+SLAY %s CHAMPIONS	击杀%s只勇士怪	擊殺%s隻勇士怪	チャンピオンを%s体倒す	챔피언 %s마리 처치
+SLAY %s TREASURE GOBLINS	击杀%s只宝藏哥布林	擊殺%s隻寶藏哥布林	宝物ゴブリンを%s体倒す	보물 고블린 %s마리 처치
+USE %s SHRINES	参拜%s座神龛	參拜%s座神龕	祠を%s回使う	성소 %s회 사용
+SURVIVE %s FLOOR EVENTS	挺过%s次楼层事件	挺過%s次樓層事件	階層イベントを%s回乗り切る	층 이벤트 %s회 돌파
+COMPLETE %s BOUNTIES	完成%s个悬赏	完成%s個懸賞	依頼を%s件達成	현상금 %s개 완료
+FIND %s LOST PAGES	找到%s张遗失的书页	找到%s張遺失的書頁	失われたページを%s枚見つける	잃어버린 쪽 %s장 찾기
+LEARN %s ASPECTS	习得%s个威能	習得%s個威能	威能を%s個覚える	위상 %s개 습득
+FIND %s ANCESTRAL ITEMS	找到%s件先祖物品	找到%s件先祖物品	祖先の品を%s個見つける	선조 아이템 %s개 찾기
+FIND AN ANCESTRAL ITEM	找到一件先祖物品	找到一件先祖物品	祖先の品を見つける	선조 아이템 찾기
+FIND A MYTHIC UNIQUE	找到一件神话暗金	找到一件神話暗金	神話級ユニークを見つける	신화 고유 아이템 찾기
+FINISH ACT V	完成第五幕	完成第五幕	第五幕をクリア	제5막 완료
+FINISH ACT X	完成第十幕	完成第十幕	第十幕をクリア	제10막 완료
+REBIRTH ONCE	转生一次	轉生一次	一度転生する	한 번 환생
+REBIRTH %s TIMES	转生%s次	轉生%s次	%s回転生する	%s번 환생
+PLAY FOR %s HOURS	游玩%s小时	遊玩%s小時	%s時間プレイ	%s시간 플레이
+INTO THE DARK	踏入黑暗	踏入黑暗	闇の中へ	어둠 속으로
+DEEPER STILL	更深一层	更深一層	さらに深く	더 깊이
+TORMENTED	折磨之境	折磨之境	苦痛の地	고통의 땅
+THE GLASS DEPTHS	玻璃深处	玻璃深處	硝子の深淵	유리의 심연
+HEART OF CINDER	余烬之心	餘燼之心	燃え殻の心臓	잿불 심장
+BEYOND ALL MAPS	地图之外	地圖之外	地図の果て	지도 너머
+SEASONED	老练	老練	熟練	노련함
+MASTER OF ARMS	武艺大师	武藝大師	武芸の達人	무예의 달인
+LEGEND OF CINDERMERE	辛德米尔的传奇	辛德米爾的傳奇	シンダーミアの伝説	신더미어의 전설
+SLAYER	屠戮者	屠戮者	殺戮者	학살자
+BUTCHER	屠夫	屠夫	屠殺人	도살자
+SCOURGE	天灾	天災	災厄	재앙
+EXTINCTION	灭绝	滅絕	絶滅	멸절
+CHAMPION HUNTER	勇士猎手	勇士獵手	チャンピオン狩り	챔피언 사냥꾼
+BANE OF CHAMPIONS	勇士克星	勇士剋星	チャンピオンの天敵	챔피언의 천적
+GOLD RUSH	淘金热	淘金熱	ゴールドラッシュ	골드 러시
+GOBLIN BANE	哥布林克星	哥布林剋星	ゴブリンの天敵	고블린의 천적
+PILGRIM	朝圣者	朝聖者	巡礼者	순례자
+DEVOTEE	虔信者	虔信者	信奉者	신봉자
+TRAP SPRINGER	触发陷阱者	觸發陷阱者	罠踏み	함정 발동자
+UNSHAKEN	不可动摇	不可動搖	不動	흔들림 없음
+BOUNTY HUNTER	赏金猎人	賞金獵人	賞金稼ぎ	현상금 사냥꾼
+TOWN HERO	小镇英雄	小鎮英雄	町の英雄	마을의 영웅
+LIVING LEGEND	活着的传奇	活著的傳奇	生ける伝説	살아 있는 전설
+ARCHIVIST	档案员	檔案員	記録官	기록 보관인
+KEEPER OF PAGES	书页守护者	書頁守護者	ページの番人	쪽의 수호자
+ASPECT SEEKER	威能探求者	威能探求者	威能の探求者	위상 탐구자
+MASTER OF ASPECTS	威能大师	威能大師	威能の達人	위상의 달인
+ANCESTRAL BLOOD	先祖之血	先祖之血	祖先の血	선조의 피
+HEIRLOOMS	传家之宝	傳家之寶	家宝	가보
+THE ASH SETTLES	灰烬落定	灰燼落定	灰は鎮まる	재가 가라앉다
+THE LAST KEEPER	最后的守护者	最後的守護者	最後の番人	마지막 수호자
+REBORN	重生	重生	再誕	재탄생
+ETERNAL	永恒	永恆	永遠	영원
+DEVOTED	执着	執著	献身	헌신
+RENOWN %d	声望 %d	聲望 %d	名声 %d	명성 %d
+ACHIEVEMENTS	成就	成就	実績	업적
+ACHIEVEMENTS %d/%d	成就 %d/%d	成就 %d/%d	実績 %d/%d	업적 %d/%d
++%d%% DAMAGE  +%d%% LIFE  (NEXT TIER: %d MORE)	伤害+%d%%  生命+%d%%（下一级还差%d个）	傷害+%d%%  生命+%d%%（下一級還差%d個）	ダメージ+%d%%  ライフ+%d%%（次まであと%d）	피해 +%d%%  생명력 +%d%% (다음 단계까지 %d개)
+BOUNTIES (AUTOMATIC)	悬赏（自动进行）	懸賞（自動進行）	依頼（自動）	현상금 (자동)
+EACH BOUNTY PAYS GOLD, MATERIALS AND AN ITEM.	每个悬赏奖励金币、材料和一件物品。	每個懸賞獎勵金幣、材料和一件物品。	依頼の報酬は金・素材・アイテム。	현상금마다 골드, 재료, 아이템 지급.
+UP/DOWN: SCROLL   ESC: BATTLE	上下:滚动  ESC:战斗	上下:捲動  ESC:戰鬥	上下:スクロール  ESC:戦闘	위아래:스크롤  ESC:전투
+LOST PAGES %d/%d	遗失的书页 %d/%d	遺失的書頁 %d/%d	失われたページ %d/%d	잃어버린 쪽 %d/%d
+PARAGON	巅峰	巔峰	パラゴン	정복자

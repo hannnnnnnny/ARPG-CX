@@ -142,6 +142,7 @@ static void draw_monster(const World *w, const Monster *m)
     if (m->freeze)
         gfx_rect(x - size / 2, top, size, size, RGB565(140, 210, 255));
     status_marks(w, m, x, top);
+    render_monster_extras(w, m, x, top);
     if (m->hp < m->max_hp)
         draw_hp_bar(x - size / 3, top - 3, size * 2 / 3, m->hp / m->max_hp,
                     m->vuln ? RGB565(200, 110, 255) : m->boss ? RGB565(255, 120, 40) : RGB565(220, 40, 40));
@@ -331,6 +332,7 @@ void render_world(const World *w, const Profile *p)
     draw_map(w);
     draw_ground_items(w);
     draw_grounds(w);
+    render_event_object(w, cam_x, cam_y);
     draw_entities(w, p);
     draw_overlays(w);
     draw_floaters(w);

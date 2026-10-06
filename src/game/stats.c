@@ -1,4 +1,5 @@
 #include "stats.h"
+#include "goals.h"
 #include "balance.h"
 #include "items.h"
 #include "paragon.h"
@@ -43,6 +44,10 @@ static void add_elixir_and_upgrades(BuildRT *b, const Profile *p)
     build_add_mod(b, MOD_XP, 0, 20.0 * p->up[UP_WISDOM]);
     build_add_mod(b, MOD_ATK_SPD, 0, 5.0 * p->up[UP_HASTE]);
     build_add_mod(b, MOD_MOVE, 0, 5.0 * p->up[UP_HASTE]);
+    if (renown_tier(p) > 0) {
+        build_add_mod(b, MOD_X_ALL, 0, RENOWN_DMG_PCT * renown_tier(p));
+        build_add_mod(b, MOD_LIFE_PCT, 0, RENOWN_DMG_PCT * renown_tier(p));
+    }
 }
 
 static void core_stats(Stats *st, const Profile *p)

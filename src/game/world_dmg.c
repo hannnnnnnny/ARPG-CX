@@ -7,6 +7,7 @@
 #include "progress.h"
 #include "items.h"
 #include "build.h"
+#include "events.h"
 #include "../core/bignum.h"
 #include "../i18n/i18n.h"
 #include "../gfx/gfx.h"
@@ -88,12 +89,16 @@ static double multipliers(const World *w, const Monster *m, const Hit *h)
     }
     if (hero_has(w, BUFF_BERSERK)) x *= 1.0 + w->h.buff_val[BUFF_BERSERK] / 100.0;
     if (hero_has(w, BUFF_ULT)) x *= 1.0 + w->h.buff_val[BUFF_ULT] / 100.0;
+    if (world_shrine(w, SH_BLESSED)) x *= 1.5;
+    if ((m->champ & CH_WARDED) && champion_warded(w, m)) x *= 0.15;
     return x * key_mult(w, m, h);
 }
 
 static double crit_chance(const World *w, const Monster *m, const Hit *h)
 {
     double c = w->st.crit + h->crit_add;
+    if (world_shrine(w, SH_LETHAL))
+        return 1.0;
     if (hero_has(w, BUFF_CRIT))
         c += w->h.buff_val[BUFF_CRIT] / 100.0;
     if (has_key(&w->st.b, KP_DEADEYE) && m->hp >= m->max_hp * 0.8)
@@ -293,6 +298,10 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
         d *= 1.0 - st->dr_close;
     if (hero_has(w, BUFF_UNSTOP))
         d *= 1.0 - w->h.buff_val[BUFF_UNSTOP] / 100.0;
+    if (world_shrine(w, SH_PROTECT))
+        d *= 0.5;
+    if (attacker >= 0 && (w->mon[attacker].champ & CH_VAMPIRIC))
+        w->mon[attacker].hp = MIN(w->mon[attacker].max_hp, w->mon[attacker].hp + d);
     if (w->h.barrier > 0) {
         double a = MIN(w->h.barrier, d);
         w->h.barrier -= a;
@@ -317,42 +326,63 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
         w->h.hp = 0;
         w->h.dead_t = 2 * TICK_HZ;
         world_message(w, "YOU HAVE FALLEN... RETREATING", RGB565(255, 80, 80));
+        bark(&w->bark, BK_DEATH, (uint32_t)w->tick);
+    } else if (w->h.hp < st->max_hp * 0.25) {
+        bark(&w->bark, BK_LOW_HP, (uint32_t)w->tick);
     }
 }
 
 /* ------------------------------------------------------------ rewards */
 
-static void announce_drop(World *w, const Item *it)
+static void announce_drop(World *w, Profile *p, const Item *it)
 {
     char buf[80];
+    if (it->rarity >= RAR_LEGEND)
+        world_goal(w, p, GE_LEGENDARY, 0);
+    if (it->ancestral)
+        world_goal(w, p, GE_ANCESTRAL, 0);
+    if (it->rarity == RAR_MYTHIC)
+        world_goal(w, p, GE_MYTHIC, 0);
     if (it->rarity < RAR_UNIQUE && !it->ancestral)
         return;
     tjoin(buf, sizeof buf - 2, it->ancestral && it->rarity != RAR_MYTHIC ? "ANCESTRAL" : "",
           rarity_name((Rarity)it->rarity));
     strcat(buf, "!");
     world_banner(w, buf, rarity_color((Rarity)it->rarity));
+    bark(&w->bark, it->rarity == RAR_MYTHIC ? BK_MYTHIC : it->rarity == RAR_UNIQUE ? BK_UNIQUE : BK_ANCESTRAL,
+         (uint32_t)w->tick);
 }
 
-static void drop_item(World *w, const Profile *p, const Monster *m)
+Drop *world_drop_item(World *w, Profile *p, fx x, fx y, Rarity min, int luck)
 {
-    int i, chance = m->boss ? 100 : m->elite ? 40 : 7;
+    int i;
+    for (i = 0; i < MAX_DROP; i++)
+        if (!w->dr[i].alive) {
+            Drop *d = &w->dr[i];
+            d->alive = 1;
+            d->t = 0;
+            d->x = x + FX_FROM_INT(rng_range(&w->rng, -8, 8));
+            d->y = y + FX_FROM_INT(rng_range(&w->rng, -8, 8));
+            if (!world_walkable(w, px_to_cell(d->x), px_to_cell(d->y))) {
+                d->x = x;                         /* never scatter loot into a wall */
+                d->y = y;
+            }
+            item_roll(&d->item, &w->rng, w->floor, p->up[UP_FORTUNE] + luck, min, p->cls);
+            announce_drop(w, p, &d->item);
+            return d;
+        }
+    return NULL;
+}
+
+static void drop_item(World *w, Profile *p, const Monster *m)
+{
+    int chance = m->boss ? 100 : m->elite ? 40 : 7;
     Rarity min = m->boss ? RAR_RARE : m->elite ? RAR_MAGIC : RAR_COMMON;
     int count = m->boss ? 3 : 1, k;
     for (k = 0; k < count; k++) {
         if (rng_range(&w->rng, 0, 99) >= chance)
             return;
-        for (i = 0; i < MAX_DROP; i++)
-            if (!w->dr[i].alive) {
-                Drop *d = &w->dr[i];
-                d->alive = 1;
-                d->t = 0;
-                d->x = m->x + FX_FROM_INT(rng_range(&w->rng, -8, 8));
-                d->y = m->y + FX_FROM_INT(rng_range(&w->rng, -8, 8));
-                item_roll(&d->item, &w->rng, w->floor, p->up[UP_FORTUNE] + (m->boss ? 6 : m->elite ? 2 : 0), min,
-                          p->cls);
-                announce_drop(w, &d->item);
-                break;
-            }
+        world_drop_item(w, p, m->x, m->y, min, m->boss ? 6 : m->elite ? 2 : 0);
     }
 }
 
@@ -412,21 +442,34 @@ static void level_up_message(World *w, Profile *p, int levels)
     else
         snprintf(buf, sizeof buf, T("LEVEL UP! NOW LEVEL %d"), p->level);
     world_message(w, buf, RGB565(190, 140, 255));
+    bark(&w->bark, BK_LEVEL, (uint32_t)w->tick);
     effect(w, FX_LEVEL, FX_TO_INT(w->h.x), FX_TO_INT(w->h.y), 0, 0, 20, 24, RGB565(190, 140, 255));
     (void)levels;
+}
+
+static void kill_goals(World *w, Profile *p, const Monster *m)
+{
+    world_goal(w, p, GE_KILL, m->type);
+    if (m->elite)
+        world_goal(w, p, GE_ELITE, 0);
+    if (m->boss) {
+        world_goal(w, p, GE_BOSS, 0);
+        bark(&w->bark, BK_BOSS_DOWN, (uint32_t)w->tick);
+    }
 }
 
 void kill_rewards(World *w, Profile *p, Monster *m)
 {
     double mult = m->boss ? 25.0 : m->elite ? 3.0 : 1.0;
+    double gold = world_shrine(w, SH_GREED) ? 3.0 : 1.0, xp = world_shrine(w, SH_WISDOM) ? 3.0 : 1.0;
     int levels;
     m->alive = 0;
     w->kills++;
     w->minute_kills++;
     w->h.idle_ticks = 0;
     p->total_kills += 1;
-    prog_add_gold(p, kill_gold(w->floor) * mult * (1.0 + w->st.gold_pct / 100.0));
-    levels = prog_add_xp(p, kill_xp(w->floor) * mult * (1.0 + w->st.xp_pct / 100.0));
+    prog_add_gold(p, kill_gold(w->floor) * mult * gold * (1.0 + w->st.gold_pct / 100.0));
+    levels = prog_add_xp(p, kill_xp(w->floor) * mult * xp * (1.0 + w->st.xp_pct / 100.0));
     effect(w, FX_PUFF, FX_TO_INT(m->x), FX_TO_INT(m->y), 0, 0, m->boss ? 20 : 8, 10, RGB565(200, 200, 200));
     corpse_add(w, m->x, m->y);
     p->souls += m->boss ? 5 : m->elite ? 1 : 0;   /* forgotten souls for the blacksmith */
@@ -437,4 +480,6 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     kill_buffs(w, p, m);
     if (levels > 0)
         level_up_message(w, p, levels);
+    kill_goals(w, p, m);
+    events_on_kill(w, p, m);
 }

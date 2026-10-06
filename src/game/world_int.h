@@ -43,6 +43,10 @@ void hero_gain_res(World *w, double amount);
 void deal_damage(World *w, Profile *p, int i, const Hit *h);
 void hurt_hero(World *w, Profile *p, double raw, int element, int attacker);
 void kill_rewards(World *w, Profile *p, Monster *m);
+/* A loot drop near (x, y); NULL when the floor's drop pool is full. */
+Drop *world_drop_item(World *w, Profile *p, fx x, fx y, Rarity min, int luck);
+/* Warded champions shrug off most damage 1.2 s out of every 4 s. */
+static inline bool champion_warded(const World *w, const Monster *m) { return (w->tick + (int)(m - w->mon) * 37) % 120 < 36; }
 void tick_dots(World *w, Profile *p, int i);
 
 /* world_mon.c */

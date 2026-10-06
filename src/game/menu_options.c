@@ -5,6 +5,7 @@
 #include "menu_int.h"
 #include "balance.h"
 #include "paragon.h"
+#include "story.h"
 #include "../gfx/font.h"
 #include "../core/bignum.h"
 #include "../i18n/i18n.h"
@@ -78,10 +79,11 @@ enum {
     OPT_LOOK, OPT_JOURNAL, OPT_RESET_PARA, OPT_POWER, OPT_FPS, OPT_SAVE, OPT_EXIT, OPT_COUNT
 };
 #define OPT_VISIBLE 12
+#define JOURNAL_VISIBLE 11
 
 static void journal_tick(Game *g, Input *in)
 {
-    int ev[16], n = journal_events(&g->p, ev);
+    int ev[JOURNAL_MAX], n = journal_events(&g->p, ev);
     menu_move(in, &g->journal_sel, MAX(n, 1));
     if (in_back(in)) {
         g->journal = false;
@@ -183,16 +185,20 @@ static void damage_legend(void)
 
 static void journal_render(Game *g)
 {
-    int ev[16], n = journal_events(&g->p, ev), i;
+    int ev[JOURNAL_MAX], n = journal_events(&g->p, ev), i;
+    int sel = g->journal_sel % MAX(n, 1), top = menu_scroll(sel, n, JOURNAL_VISIBLE);
+    char buf[64];
+    snprintf(buf, sizeof buf, T("LOST PAGES %d/%d"), story_lore_found(&g->p), LORE_COUNT);
     font_draw(6, 20, "JOURNAL - CHAPTERS SO FAR", C_SEL, 1);
+    font_draw(SCREEN_W - 6 - font_text_width(buf, 1), 20, buf, C_DIM, 1);
     if (n == 0)
         font_draw(6, 36, "NOTHING YET. DESCEND!", C_DIM, 1);
-    for (i = 0; i < n; i++) {
+    for (i = top; i < n && i < top + JOURNAL_VISIBLE; i++) {
         const char *title;
-        int y = 34 + i * 14;
+        int y = 34 + (i - top) * 14;
         story_page(ev[i], &title);
-        menu_row_highlight(y, 13, i == g->journal_sel % MAX(n, 1));
-        font_draw(12, y, title, ev[i] >= STORY_VICTORY ? C_SEL : C_TEXT, 1);
+        menu_row_highlight(y, 13, i == sel);
+        font_draw(12, y, title, ev[i] >= STORY_LORE ? RGB565(200, 170, 120) : ev[i] >= STORY_VICTORY ? C_SEL : C_TEXT, 1);
     }
     menu_footer(g, "ENTER: READ   ESC: BACK");
 }

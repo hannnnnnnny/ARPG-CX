@@ -5,6 +5,7 @@
  * loots and takes the stairs.
  */
 #include "world_int.h"
+#include "events.h"
 #include "balance.h"
 #include "progress.h"
 #include "skills.h"
@@ -16,6 +17,7 @@
 #include <stdio.h>
 
 #define PICKUP_RANGE 10
+#define DROP_MAGNET (20 * TICK_HZ)   /* loot this old is collected from anywhere (failsafe) */
 #define FAR 32000
 #define POTION_CD (TICK_HZ * 3 / 2)
 
@@ -37,7 +39,7 @@ static int nearest_monster(const World *w)
         int d;
         if (!m->alive)
             continue;
-        d = mon_path_dist(w, m) - (m->aggro ? 3 : 0);
+        d = mon_path_dist(w, m) - (m->aggro ? 3 : 0) - (m->goblin ? 8 : 0);   /* chase the goblin first */
         if (d < bd) {
             bd = d;
             best = i;
@@ -60,14 +62,25 @@ static int nearest_drop(const World *w)
     return best;
 }
 
+static int object_dist(const World *w)
+{
+    return events_object_pending(w) ? w->fh[w->ev.cy][w->ev.cx] : FAR;
+}
+
+/* Loot first, then a nearby event object, then monsters (the whole event
+ * wave even past the quota), then the floor's object, then the stairs. */
 static void choose_target(World *w)
 {
-    int m = nearest_monster(w), d = nearest_drop(w);
-    if (d >= 0 && (m < 0 || w->fh[px_to_cell(w->dr[d].y)][px_to_cell(w->dr[d].x)] + 2
-                            < mon_path_dist(w, &w->mon[m]))) {
+    int m = nearest_monster(w), d = nearest_drop(w), od = object_dist(w);
+    int md = m >= 0 ? mon_path_dist(w, &w->mon[m]) : FAR;
+    if (d >= 0 && w->fh[px_to_cell(w->dr[d].y)][px_to_cell(w->dr[d].x)] + 2 < md) {
         w->h.target_kind = TGT_DROP;
         w->h.target_idx = d;
-    } else if (m >= 0 && (w->kills < w->quota || mon_path_dist(w, &w->mon[m]) < 8)) {
+    } else if (od < FAR && (od + 4 < md || (m < 0 || (w->kills >= w->quota && md >= 8)))
+               && !events_wave_active(w)) {
+        w->h.target_kind = TGT_OBJECT;
+        w->h.target_idx = 0;
+    } else if (m >= 0 && (w->kills < w->quota || md < 8 || events_wave_active(w))) {
         w->h.target_kind = TGT_MON;
         w->h.target_idx = m;
     } else {
@@ -81,6 +94,7 @@ static void target_pos(const World *w, fx *tx, fx *ty)
     switch (w->h.target_kind) {
     case TGT_MON:  *tx = w->mon[w->h.target_idx].x; *ty = w->mon[w->h.target_idx].y; break;
     case TGT_DROP: *tx = w->dr[w->h.target_idx].x; *ty = w->dr[w->h.target_idx].y; break;
+    case TGT_OBJECT: *tx = cell_center(w->ev.cx); *ty = cell_center(w->ev.cy); break;
     default:       *tx = cell_center(w->stairs_x); *ty = cell_center(w->stairs_y); break;
     }
 }
@@ -125,6 +139,8 @@ static double hero_aps(const World *w)
         aps *= 1.0 + w->h.buff_val[BUFF_SPEED] / 100.0;
     if (hero_has(w, BUFF_ULT))
         aps *= 1.25;
+    if (world_shrine(w, SH_FRENZY))
+        aps *= 1.5;
     return MIN(aps, 6.0);
 }
 
@@ -252,8 +268,12 @@ static void act_on_target(World *w, Profile *p)
                 primary_attack(w, p, w->h.target_idx);
             return;
         }
-    } else if (w->h.target_kind == TGT_DROP && d <= PICKUP_RANGE) {
+    } else if (w->h.target_kind == TGT_DROP && (d <= PICKUP_RANGE || w->dr[w->h.target_idx].t > DROP_MAGNET)) {
         pick_up(w, p, w->h.target_idx);
+        w->h.target_kind = TGT_NONE;
+        return;
+    } else if (w->h.target_kind == TGT_OBJECT && d <= 10) {
+        events_touch(w, p);
         w->h.target_kind = TGT_NONE;
         return;
     } else if (w->h.target_kind == TGT_STAIRS && d <= 6) {
@@ -272,6 +292,7 @@ static bool target_valid(const World *w)
     case TGT_MON:    return w->mon[w->h.target_idx].alive;
     case TGT_DROP:   return w->dr[w->h.target_idx].alive;
     case TGT_STAIRS: return true;
+    case TGT_OBJECT: return events_object_pending(w);
     default:         return false;
     }
 }
@@ -325,7 +346,9 @@ void hero_update(World *w, Profile *p)
         w->ev_stuck = true;
         return;
     }
-    if (!target_valid(w) || w->tick % 10 == 0)
+    /* Re-plan every 10 ticks, but once walking to loot finish the trip: two
+     * drops at similar path lengths would otherwise swap forever. */
+    if (!target_valid(w) || (w->tick % 10 == 0 && h->target_kind != TGT_DROP))
         choose_target(w);
     cooldown_skills(w, p, h->target_kind == TGT_MON ? &w->mon[h->target_idx] : NULL);
     if (h->dash_t == 0)

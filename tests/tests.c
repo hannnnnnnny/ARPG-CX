@@ -19,6 +19,9 @@
 #include "../src/game/skills.h"
 #include "../src/game/build.h"
 #include "../src/game/story.h"
+#include "../src/game/goals.h"
+#include "../src/game/events.h"
+#include "../src/game/bark.h"
 #include "../src/game/game.h"
 #include "../src/game/stats.h"
 #include "../src/game/world_int.h"
@@ -396,12 +399,18 @@ static void test_save(void)
     P.gold = 1.5e30;
     P.look.hair = 4;
     P.lang = LANG_KO;
+    P.ach = 0x10000000Fu;
+    P.lore = 0x8001u;
+    P.story_seen = 1u << 21;
+    P.n_goblins = 3;
+    P.bounty[1].have = 1;
     n = save_serialize(&P, buf, sizeof buf);
     CHECK(n > 1000 && n < SAVE_MAX_BYTES);
     CHECK(save_deserialize(&Q, buf, n) == SAVE_OK);
     CHECK(save_serialize(&Q, buf2, sizeof buf2) == n && !memcmp(buf, buf2, n));   /* lossless */
     CHECK(Q.gold == P.gold && Q.look.hair == 4 && Q.gems[GEM_SKULL][3] == 7 && Q.codex[2] == 401);
-    CHECK(Q.lang == LANG_KO);
+    CHECK(Q.lang == LANG_KO && Q.ach == P.ach && Q.lore == P.lore && Q.story_seen == P.story_seen);
+    CHECK(Q.n_goblins == 3 && !memcmp(Q.bounty, P.bounty, sizeof P.bounty));
     CHECK(Q.paragon_level == P.paragon_level && !memcmp(Q.para, P.para, sizeof P.para));
     for (i = 0; i < n; i += 13) { /* any flipped byte is caught */
         buf[i] ^= 0x41;
@@ -432,11 +441,148 @@ static void test_migration(void)
 
 static void test_story(void)
 {
-    char name[32];
-    CHECK(story_act(1) == 0 && story_act(10) == 0 && story_act(11) == 1 && story_act(50) == 4 && story_act(51) == -1);
-    CHECK(story_is_act_start(21) && !story_is_act_start(22) && story_is_act_boss(40) && !story_is_act_boss(60));
+    char name[64];
+    int i;
+    CHECK(story_act(1) == 0 && story_act(10) == 0 && story_act(11) == 1 && story_act(50) == 4);
+    CHECK(story_act(51) == 5 && story_act(100) == 9 && story_act(101) == -1);
+    CHECK(story_is_act_start(21) && !story_is_act_start(22) && story_is_act_boss(40) && story_is_act_boss(60));
+    CHECK(!story_is_act_boss(110));
     story_boss_name(name, sizeof name, 10);
     CHECK(!strcmp(name, "MORDRAIN THE BONE WARDEN"));
+    story_boss_name(name, sizeof name, 100);
+    CHECK(!strcmp(name, "THE HOLLOW GOD"));
+    /* v4/v5 story bits keep their meaning; acts VI-X use new bits */
+    memset(&P, 0, sizeof P);
+    P.story_seen = (1u << 0) | (1u << 5) | (1u << 10);
+    CHECK(story_event_seen(&P, STORY_INTRO) && story_event_seen(&P, STORY_VICTORY) && story_event_seen(&P, STORY_EPILOGUE));
+    CHECK(!story_event_seen(&P, STORY_INTRO + 5) && !story_event_seen(&P, STORY_FINALE));
+    for (i = 0; i < STORY_LORE; i++)
+        if (i < ACT_COUNT || (i >= STORY_VICTORY && i < STORY_VICTORY + ACT_COUNT) || i == STORY_FINALE)
+            story_mark_seen(&P, i);
+    CHECK(P.story_seen == 0x3FFFFFu);                     /* 22 distinct bits */
+    for (i = 0; i < LORE_COUNT; i++) {
+        int page = story_unread_lore(&P, (uint32_t)i * 7u);
+        CHECK(page >= 0 && !story_event_seen(&P, STORY_LORE + page));
+        story_mark_seen(&P, STORY_LORE + page);
+    }
+    CHECK(story_lore_found(&P) == LORE_COUNT && story_unread_lore(&P, 3) < 0);
+}
+
+/* ---------------------------------------------------------------- goals */
+
+static void test_goals(void)
+{
+    Rng r;
+    int i, slot = -1, done = 0, guard = 0;
+    rng_seed(&r, 5);
+    prog_new(&P, 77, CLASS_ROGUE);
+    for (i = 0; i < BOUNTY_SLOTS; i++) {                   /* three distinct, valid bounties */
+        CHECK(P.bounty[i].kind != BT_NONE && bounty_sane(&P.bounty[i]));
+        CHECK(P.bounty[i].kind != P.bounty[(i + 1) % BOUNTY_SLOTS].kind);
+    }
+    P.bounty[0].kind = BT_ELITES; P.bounty[0].need = 3; P.bounty[0].have = 0;
+    while (!done && guard++ < 10)
+        done = goals_note(&P, GE_ELITE, 0);
+    CHECK(done == 1 && guard == 3 && P.n_elites == 3);
+    slot = 0;
+    CHECK(goals_complete(&P, slot, &r) > 0 && P.n_bounties == 1 && P.bounty[0].have == 0 && P.gold > 0);
+    CHECK(bounty_sane(&P.bounty[0]) && P.bounty[0].kind != BT_NONE);
+    /* achievements and renown */
+    CHECK(goals_check_achievements(&P) < 0 && renown_tier(&P) == 0);
+    P.best_floor = 30; P.total_kills = 12000; P.n_goblins = 1; P.level = 25;
+    CHECK(goals_check_achievements(&P) == 0);              /* INTO THE DARK first */
+    CHECK(ach_count(&P) == 6 && renown_tier(&P) == 1);     /* floors 10 + 25, level 20, kills 1k + 10k, goblin */
+    CHECK(goals_check_achievements(&P) < 0);               /* nothing twice */
+    {
+        static Stats a, b;
+        uint64_t ach = P.ach;
+        P.ach = 0;
+        stats_compute(&a, &P);
+        P.ach = ach;
+        stats_compute(&b, &P);
+        CHECK(b.max_hp > a.max_hp * 1.01);                 /* renown adds life */
+    }
+}
+
+/* --------------------------------------------------------------- events */
+
+static int kill_wave(World *w)
+{
+    int i, n = 0;
+    for (i = 0; i < w->nmon; i++)
+        if (w->mon[i].alive && w->mon[i].wave) {
+            kill_rewards(w, &P, &w->mon[i]);
+            n++;
+        }
+    return n;
+}
+
+static int bit_count(unsigned v)
+{
+    int n = 0;
+    for (; v; v >>= 1)
+        n += v & 1u;
+    return n;
+}
+
+static void test_event_kinds(void)
+{
+    int f, i, seen[EV_COUNT] = { 0 }, bad = 0;
+    prog_new(&P, 9, CLASS_BARBARIAN);
+    for (f = 2; f < 300; f++) {
+        memset(&S, 0, sizeof S);
+        world_init_floor(&S.w, &P, f);
+        seen[S.w.ev.kind]++;
+        bad += S.w.boss_floor && S.w.ev.kind != EV_NONE;
+        for (i = 0; i < S.w.nmon; i++) {
+            const Monster *m = &S.w.mon[i];
+            bad += m->elite ? bit_count(m->champ) != (f >= 30 ? 2 : 1) : m->champ != 0;
+        }
+    }
+    CHECK(bad == 0);
+    for (i = EV_GOBLIN; i < EV_COUNT; i++)
+        CHECK(seen[i] > 5);
+    CHECK(seen[EV_NONE] > 60 && seen[EV_NONE] < 200);
+}
+
+static int legendary_drops(const World *w)
+{
+    int i, n = 0;
+    for (i = 0; i < MAX_DROP; i++)
+        n += w->dr[i].alive && w->dr[i].item.rarity >= RAR_LEGEND;
+    return n;
+}
+
+static void test_events(void)
+{
+    World *w = &S.w;
+    int i;
+    double gold;
+    test_event_kinds();
+    /* shrine: touching blesses the hero and counts for the goals */
+    memset(&S, 0, sizeof S);
+    world_init_floor(w, &P, 12);
+    w->ev.kind = EV_SHRINE; w->ev.state = ES_WAITING; w->ev.shrine = SH_GREED;
+    events_touch(w, &P);
+    CHECK(w->shrine_t == SHRINE_TICKS && world_shrine(w, SH_GREED) && P.n_shrines == 1 && w->ev.state == ES_DONE);
+    world_init_floor(w, &P, 13);
+    CHECK(world_shrine(w, SH_GREED));                      /* the blessing outlasts the floor */
+    /* cursed chest: guardians, then loot */
+    w->ev.kind = EV_CHEST; w->ev.state = ES_WAITING;
+    w->ev.cx = px_to_cell(w->h.x); w->ev.cy = px_to_cell(w->h.y);
+    for (i = 0; i < MAX_DROP; i++)
+        w->dr[i].alive = 0;
+    events_touch(w, &P);
+    CHECK(w->ev.state == ES_RUNNING && w->ev.wave_left > 0 && events_wave_active(w));
+    CHECK(kill_wave(w) > 0 && w->ev.state == ES_DONE && P.n_events == 1);
+    CHECK(legendary_drops(w) >= 1);                        /* the chest's legendary */
+    /* treasure goblin: pays out when caught */
+    spawn_monster(w, MT_IMP, px_to_cell(w->h.x), px_to_cell(w->h.y), false, false);
+    w->mon[w->nmon - 1].goblin = 1;
+    w->ev.kind = EV_GOBLIN; w->ev.state = ES_RUNNING;
+    gold = P.gold;
+    kill_rewards(w, &P, &w->mon[w->nmon - 1]);
+    CHECK(P.n_goblins == 1 && P.gold > gold && w->ev.state == ES_DONE);
 }
 
 /* ------------------------------------------------------------- languages */
@@ -495,19 +641,32 @@ static void check_translations(int lang)
     CHECK(bad_fmt == 0 && missing == 0);
 }
 
+static int too_wide(const char *const *lines, int n, int scale)
+{
+    int i, wide = 0;
+    for (i = 0; i < n && lines[i]; i++)
+        wide += font_text_width(lines[i], scale) > SCREEN_W - 8;
+    return wide;
+}
+
+/* Story pages, lost pages and remarks fit the screen in every language. */
 static void check_story_fits(int lang)
 {
-    int act, i, wide = 0;
+    int act, i, k, wide = 0;
+    char buf[200];
     lang_set(lang);
     for (act = 0; act < ACT_COUNT; act++) {
-        for (i = 0; i < STORY_LINES && act_defs[act].intro[i]; i++)
-            wide += font_text_width(act_defs[act].intro[i], 1) > SCREEN_W - 8;
-        for (i = 0; i < STORY_LINES && act_defs[act].victory[i]; i++)
-            wide += font_text_width(act_defs[act].victory[i], 1) > SCREEN_W - 8;
-        wide += font_text_width(act_defs[act].title, 2) > SCREEN_W - 8;
+        wide += too_wide(act_defs[act].intro, STORY_LINES, 1) + too_wide(act_defs[act].victory, STORY_LINES, 1);
+        wide += too_wide(&act_defs[act].title, 1, 2);
     }
-    for (i = 0; i < STORY_LINES && epilogue[i]; i++)
-        wide += font_text_width(epilogue[i], 1) > SCREEN_W - 8;
+    wide += too_wide(epilogue, STORY_LINES, 1) + too_wide(finale, STORY_LINES, 1);
+    for (i = 0; i < LORE_COUNT; i++)
+        wide += too_wide(lore_pages[i].lines, 4, 1) + too_wide(&lore_pages[i].title, 1, 2);
+    for (i = 0; i < BK_COUNT; i++)
+        for (k = 0; k < BARK_VARIANTS; k++) {
+            snprintf(buf, sizeof buf, T("%s: %s"), T("ALDRIC"), T(bark_lines[i][k].text));
+            wide += font_text_width(buf, 1) > SCREEN_W - 12;
+        }
     CHECK(wide == 0);
 }
 
@@ -530,6 +689,7 @@ static void test_languages(void)
     CHECK(!strcmp(buf, "ANCESTRAL LEGENDARY"));
     lang_set(99);
     CHECK(lang_get() < LANG_COUNT);                                             /* out-of-range rejected */
+    check_story_fits(LANG_EN);
     for (lang = LANG_ZHS; lang < LANG_COUNT; lang++) {
         check_translations(lang);
         check_story_fits(lang);
@@ -616,7 +776,8 @@ static void test_idle_simulation(void)
         CHECK(P.best_floor >= 45);
         CHECK(S.stuck_resets <= 6);
         CHECK(P.gold == P.gold && S.w.h.hp == S.w.h.hp); /* no NaN */
-        CHECK(story_seen(P.story_seen, 0) && story_seen(P.story_seen, 5));
+        CHECK(story_event_seen(&P, STORY_INTRO) && story_event_seen(&P, STORY_VICTORY));
+        CHECK(P.n_bounties > 0 && ach_count(&P) > 0);       /* goals tick along during idle play */
     }
 }
 
@@ -639,6 +800,8 @@ int main(void)
     printf("save\n");          test_save();
     printf("migration\n");     test_migration();
     printf("story\n");         test_story();
+    printf("goals\n");         test_goals();
+    printf("events\n");        test_events();
     printf("languages\n");     test_languages();
     printf("slots\n");         test_slot_paths();
     printf("sprites\n");       test_sprites();

@@ -28,7 +28,7 @@ static int card_wrap(int x, int y, const char *s, int w, uint16_t c)
     return font_draw_wrapped_clip(x, y, s, w, c, g_card_max);
 }
 
-static const char *const page_names[PG_COUNT] = { "HERO", "BAG", "SKILLS", "BOARD", "TOWN", "EMBERS", "OPTION" };
+static const char *const page_names[PG_COUNT] = { "HERO", "BAG", "SKILLS", "BOARD", "TOWN", "GOALS", "EMBERS", "OPTION" };
 
 bool menu_move(const Input *in, int *sel, int rows)
 {
@@ -218,6 +218,7 @@ void menu_tick(Game *g, Input *in, uint32_t now)
     case PG_SKILLS:  skills_tick(g, in); break;
     case PG_PARAGON: paragon_tick(g, in); break;
     case PG_TOWN:    town_tick(g, in); break;
+    case PG_GOALS:   goals_tick(g, in); break;
     case PG_EMBERS:  embers_tick(g, in); break;
     default:         options_tick(g, in, now); break;
     }
@@ -246,6 +247,7 @@ void menu_render(Game *g)
     case PG_SKILLS:  skills_render(g); break;
     case PG_PARAGON: paragon_render(g); break;
     case PG_TOWN:    town_render(g); break;
+    case PG_GOALS:   goals_render(g); break;
     case PG_EMBERS:  embers_render(g); break;
     default:         options_render(g); break;
     }

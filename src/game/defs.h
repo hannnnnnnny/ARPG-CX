@@ -162,6 +162,12 @@ typedef struct {
 
 typedef enum { ELIX_NONE, ELIX_FORTITUDE, ELIX_PRECISION, ELIX_ADVANTAGE, ELIX_IRONBARB, ELIX_WISDOM, ELIX_COUNT } ElixirKind;
 
+/* ------------------------------------------------------------ goals */
+
+#define BOUNTY_SLOTS 3
+/* An auto-tracked bounty (see goals.h); kind 0 = empty slot. */
+typedef struct { uint8_t kind, arg; uint16_t need, have; } Bounty;
+
 /* ---------------------------------------------------------- profile */
 
 #define ASPECT_MAX 64        /* codex capacity (aspects defined in aspects.c) */
@@ -198,11 +204,16 @@ typedef struct {
     uint8_t  elixir;                   /* ElixirKind */
     uint32_t elixir_secs;              /* seconds left */
     /* meta */
-    uint16_t story_seen;               /* see story.h */
+    uint32_t story_seen;               /* see story.h */
     double   embers;
     uint8_t  up[UP_COUNT];
     int      rebirths;
     int      best_floor_ever;
+    /* goals: bounties, achievements (renown), lost pages, counters */
+    Bounty   bounty[BOUNTY_SLOTS];
+    uint64_t ach;                      /* achievement bits (goals.h) */
+    uint32_t lore;                     /* lost pages found (story.h) */
+    uint32_t n_goblins, n_shrines, n_events, n_elites, n_bounties, n_ancestral, n_mythic;
     /* options */
     uint8_t  auto_equip;
     uint8_t  salvage_upto;             /* auto-salvage rarities <= this; 255 = off */

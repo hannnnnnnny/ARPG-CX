@@ -3,6 +3,7 @@
 #include "progress.h"
 #include "skills.h"
 #include "build.h"
+#include "events.h"
 #include "../gfx/gfx.h"
 #include <string.h>
 #include <stdio.h>
@@ -38,6 +39,8 @@ void spawn_monster(World *w, int type, int cx, int cy, bool elite, bool boss)
     m->max_hp = 22.0 * s * (boss ? 25.0 : mon_defs[type].hp * (elite ? 3.0 : 1.0));
     m->hp = m->max_hp;
     m->dmg = 6.0 * s * (boss ? 2.2 : mon_defs[type].dmg * (elite ? 1.6 : 1.0));
+    if (elite)
+        champion_roll(w, m);
     m->anim = (int16_t)rng_range(&w->rng, 0, 63);
     m->atk_cd = (int16_t)rng_range(&w->rng, 0, mon_defs[type].atk_ticks);
     m->slam_cd = 90;
@@ -97,6 +100,9 @@ void world_init_floor(World *w, const Profile *p, int floor)
     int minute_ticks = w->minute_ticks, minute_kills = w->minute_kills, msg_t = w->msg_t;
     char msg[sizeof w->msg];
     uint16_t msg_color = w->msg_color;
+    BarkState bark = w->bark;
+    uint8_t shrine = w->shrine;
+    int shrine_t = w->shrine_t;
     memcpy(msg, w->msg, sizeof msg);
     memset(w, 0, sizeof *w);
     rng_seed(&w->rng, seed ^ (uint32_t)floor * 2654435761u);
@@ -120,6 +126,10 @@ void world_init_floor(World *w, const Profile *p, int floor)
     memcpy(w->msg, msg, sizeof msg);
     w->msg_color = msg_color;
     w->msg_t = msg_t;
+    w->bark = bark;
+    w->shrine = shrine;
+    w->shrine_t = shrine_t;
+    events_init(w, p);
 }
 
 void world_message(World *w, const char *text, uint16_t color)
@@ -262,6 +272,8 @@ void world_tick(World *w, Profile *p)
     projectiles_update(w, p);
     grounds_update(w, p);
     orbs_update(w);
+    events_tick(w, p);
+    bark_tick(&w->bark, (uint32_t)w->tick);
     age_visuals(w);
     if (w->tick % 4 == 0)
         reveal(w);

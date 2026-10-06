@@ -3,6 +3,7 @@
 #include "save_legacy.h"
 #include "build.h"
 #include "skills.h"
+#include "goals.h"
 #include "../i18n/i18n.h"
 #include <stdio.h>
 #include <string.h>
@@ -10,8 +11,10 @@
 /* v1-v3: the original three-class game (converted by save_legacy.c).
  * v4: six classes, Diablo IV style items, skill tree, paragon, codex,
  * crafting materials, gems, elixirs and the hero's appearance.
- * v5: display language. */
-#define SAVE_VERSION 5
+ * v5: display language.
+ * v6: acts VI-X (32-bit story bits), bounties, achievements, lost pages
+ * and the event counters. */
+#define SAVE_VERSION 6
 
 uint32_t save_crc32(const uint8_t *data, size_t n)
 {
@@ -158,6 +161,31 @@ static void read_crafting(Reader *r, Profile *p)
     p->potion_lvl = r8(r); p->elixir = r8(r); p->elixir_secs = r32(r);
 }
 
+static void write_goals(Writer *w, const Profile *p)
+{
+    int i;
+    for (i = 0; i < BOUNTY_SLOTS; i++) {
+        w8(w, p->bounty[i].kind); w8(w, p->bounty[i].arg); w16(w, p->bounty[i].need); w16(w, p->bounty[i].have);
+    }
+    w32(w, (uint32_t)p->ach); w32(w, (uint32_t)(p->ach >> 32)); w32(w, p->lore);
+    w32(w, p->n_goblins); w32(w, p->n_shrines); w32(w, p->n_events); w32(w, p->n_elites);
+    w32(w, p->n_bounties); w32(w, p->n_ancestral); w32(w, p->n_mythic);
+}
+
+static void read_goals(Reader *r, Profile *p)
+{
+    int i;
+    uint32_t lo;
+    for (i = 0; i < BOUNTY_SLOTS; i++) {
+        p->bounty[i].kind = r8(r); p->bounty[i].arg = r8(r); p->bounty[i].need = r16(r); p->bounty[i].have = r16(r);
+    }
+    lo = r32(r);
+    p->ach = lo | ((uint64_t)r32(r) << 32);
+    p->lore = r32(r);
+    p->n_goblins = r32(r); p->n_shrines = r32(r); p->n_events = r32(r); p->n_elites = r32(r);
+    p->n_bounties = r32(r); p->n_ancestral = r32(r); p->n_mythic = r32(r);
+}
+
 static void write_body(Writer *w, const Profile *p)
 {
     int i;
@@ -169,13 +197,14 @@ static void write_body(Writer *w, const Profile *p)
     for (i = 0; i < BAG_SIZE; i++) write_item(w, &p->bag[i]);
     write_tree(w, p);
     write_crafting(w, p);
-    w16(w, p->story_seen); wf(w, p->embers);
+    w32(w, p->story_seen); wf(w, p->embers);
     for (i = 0; i < UP_COUNT; i++) w8(w, p->up[i]);
     w32(w, (uint32_t)p->rebirths); w32(w, (uint32_t)p->best_floor_ever);
     w8(w, p->auto_equip); w8(w, p->salvage_upto); w8(w, p->mode); w8(w, p->auto_skills);
     w8(w, p->auto_paragon); w8(w, p->auto_craft); w8(w, p->dmg_numbers); w8(w, p->story_pause);
     w8(w, p->show_fps); w8(w, p->low_power); w8(w, p->lang);
     w32(w, p->save_time); wf(w, p->kpm); wf(w, p->total_kills); wf(w, p->play_seconds); w32(w, p->seed);
+    write_goals(w, p);
 }
 
 static void read_body(Reader *r, Profile *p)
@@ -189,7 +218,8 @@ static void read_body(Reader *r, Profile *p)
     for (i = 0; i < BAG_SIZE; i++) read_item(r, &p->bag[i]);
     read_tree(r, p);
     read_crafting(r, p);
-    p->story_seen = r16(r); p->embers = rf(r);
+    p->story_seen = r->version >= 6 ? r32(r) : r16(r);
+    p->embers = rf(r);
     for (i = 0; i < UP_COUNT; i++) p->up[i] = r8(r);
     p->rebirths = (int)r32(r); p->best_floor_ever = (int)r32(r);
     p->auto_equip = r8(r); p->salvage_upto = r8(r); p->mode = r8(r); p->auto_skills = r8(r);
@@ -197,6 +227,8 @@ static void read_body(Reader *r, Profile *p)
     p->show_fps = r8(r); p->low_power = r8(r);
     p->lang = r->version >= 5 ? r8(r) : (uint8_t)lang_get();
     p->save_time = r32(r); p->kpm = rf(r); p->total_kills = rf(r); p->play_seconds = rf(r); p->seed = r32(r);
+    if (r->version >= 6)
+        read_goals(r, p);           /* older saves start with empty bounty slots */
 }
 
 static bool tree_sane(const Profile *p)
@@ -226,6 +258,9 @@ static bool profile_sane(const Profile *p)
         return false;
     if (p->lang >= LANG_COUNT)
         return false;
+    for (i = 0; i < BOUNTY_SLOTS; i++)
+        if (!bounty_sane(&p->bounty[i]))
+            return false;
     if (p->mode > MODE_FARM || p->dmg_numbers >= DMGNUM_COUNT || p->elixir >= ELIX_COUNT || p->iron < 0
         || p->souls < 0)
         return false;

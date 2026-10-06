@@ -13,12 +13,10 @@ typedef struct {
     int floors_cleared;
     int deaths;
     int stuck_resets;   /* failsafe floor regenerations (should stay ~0) */
-    int story_pending;  /* STORY_* event at the head of the queue, -1 = none */
+    int story_pending;  /* STORY_* event (story.h) at the head of the queue, -1 = none */
     int story_queue[8]; /* further events waiting their turn */
     int story_count;
 } Session;
-
-enum { STORY_INTRO = 0, STORY_VICTORY = 10, STORY_EPILOGUE = 20 };
 
 void session_start(Session *s, Profile *p);
 void session_tick(Session *s, Profile *p);
@@ -27,6 +25,5 @@ void session_profile_changed(Session *s, const Profile *p);
 /* Call once the pending story page has been shown: marks it seen and
  * advances the queue. */
 void session_story_shown(Session *s, Profile *p);
-int  story_seen_bit(int event);
 
 #endif

@@ -40,6 +40,8 @@ void paragon_tick(Game *g, Input *in);
 void paragon_render(Game *g);
 void town_tick(Game *g, Input *in);
 void town_render(Game *g);
+void goals_tick(Game *g, Input *in);
+void goals_render(Game *g);
 void embers_tick(Game *g, Input *in);
 void embers_render(Game *g);
 void options_tick(Game *g, Input *in, uint32_t now);

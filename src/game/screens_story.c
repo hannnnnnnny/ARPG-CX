@@ -22,9 +22,13 @@
 
 const char *const *story_page(int id, const char **title)
 {
+    if (id >= STORY_LORE) {
+        *title = lore_pages[(id - STORY_LORE) % LORE_COUNT].title;
+        return lore_pages[(id - STORY_LORE) % LORE_COUNT].lines;
+    }
     if (id >= STORY_EPILOGUE) {
-        *title = "EPILOGUE";
-        return epilogue;
+        *title = id == STORY_FINALE ? "FINALE" : "EPILOGUE";
+        return id == STORY_FINALE ? finale : epilogue;
     }
     if (id >= STORY_VICTORY) {
         *title = act_defs[(id - STORY_VICTORY) % ACT_COUNT].boss_name;
@@ -127,16 +131,25 @@ void story_render(Game *g)
 
 /* -------------------------------------------------------------- journal */
 
-int journal_events(const Profile *p, int out[16])
+static int add_seen(const Profile *p, int ev, int *out, int n)
 {
-    int n = 0, act;
+    if (story_event_seen(p, ev))
+        out[n++] = ev;
+    return n;
+}
+
+/* Chapters in story order, then the lost pages found so far. */
+int journal_events(const Profile *p, int out[JOURNAL_MAX])
+{
+    int n = 0, act, i;
     for (act = 0; act < ACT_COUNT; act++) {
-        if (story_seen(p->story_seen, story_seen_bit(STORY_INTRO + act)))
-            out[n++] = STORY_INTRO + act;
-        if (story_seen(p->story_seen, story_seen_bit(STORY_VICTORY + act)))
-            out[n++] = STORY_VICTORY + act;
+        n = add_seen(p, STORY_INTRO + act, out, n);
+        n = add_seen(p, STORY_VICTORY + act, out, n);
+        if (act == CAMPAIGN_ACTS - 1)
+            n = add_seen(p, STORY_EPILOGUE, out, n);
     }
-    if (story_seen(p->story_seen, story_seen_bit(STORY_EPILOGUE)))
-        out[n++] = STORY_EPILOGUE;
+    n = add_seen(p, STORY_FINALE, out, n);
+    for (i = 0; i < LORE_COUNT; i++)
+        n = add_seen(p, STORY_LORE + i, out, n);
     return n;
 }

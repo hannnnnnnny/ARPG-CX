@@ -31,6 +31,10 @@ void fx_draw_proj(const Proj *pj, int x, int y);
 void fx_draw_weapon(int kind, int mat, int x, int y, int face, int attack_t, uint16_t accent, int tick);
 void fx_draw_offhand(int kind, int mat, int x, int y, int face, int tick);
 
+/* render_event.c: floor event objects, goblin sack, champion plates. */
+void render_event_object(const World *w, int cam_x, int cam_y);
+void render_monster_extras(const World *w, const Monster *m, int x, int top);
+
 /* Shared drawing helpers (render_fx.c). */
 int  fx_hash(int a, int b);
 int  fx_cx(int x, int r, int phase);

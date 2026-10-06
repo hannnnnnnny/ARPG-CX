@@ -10,6 +10,7 @@
 #include "defs.h"
 #include "stats.h"
 #include "skills.h"
+#include "bark.h"
 #include "../core/fixed.h"
 #include "../core/rng.h"
 
@@ -42,8 +43,15 @@ typedef struct {
 
 extern const MonDef mon_defs[MT_COUNT];
 
+/* Champion affixes (elites): one below floor 30, two from there on. */
+enum { CH_FAST = 1, CH_STURDY = 2, CH_VAMPIRIC = 4, CH_VOLATILE = 8, CH_WARDED = 16, CH_FRENZIED = 32 };
+#define CH_KINDS 6
+
 typedef struct {
     uint8_t alive, type, elite, boss, aggro;
+    uint8_t champ;       /* CH_* bits */
+    uint8_t goblin;      /* treasure goblin: flees, then portals away */
+    uint8_t wave;        /* part of an event wave (ambush, cursed chest) */
     int8_t  face;
     fx      x, y;
     fx      px, py;      /* position at the previous tick (render interpolation) */
@@ -113,7 +121,18 @@ typedef struct {
 typedef struct { uint8_t alive; fx x, y; int16_t t; } Corpse;
 typedef struct { uint8_t alive; fx x, y; int16_t t; } Orb;  /* health potion on the ground */
 
-typedef enum { TGT_NONE, TGT_MON, TGT_DROP, TGT_STAIRS } TargetKind;
+typedef enum { TGT_NONE, TGT_MON, TGT_DROP, TGT_STAIRS, TGT_OBJECT } TargetKind;
+
+/* One event per floor at most (events.c). */
+typedef enum { EV_NONE, EV_GOBLIN, EV_SHRINE, EV_AMBUSH, EV_CHEST, EV_FALLEN, EV_COUNT } FloorEventKind;
+typedef enum { SH_BLESSED, SH_LETHAL, SH_GREED, SH_WISDOM, SH_FRENZY, SH_PROTECT, SH_COUNT } ShrineKind;
+typedef enum { ES_WAITING, ES_RUNNING, ES_DONE } EventState;
+typedef struct {
+    uint8_t kind, state, shrine;  /* FloorEventKind, EventState, ShrineKind */
+    int16_t t;                    /* goblin: ticks left before its portal */
+    int cx, cy;                   /* the object's cell (shrine, chest, fallen adventurer) */
+    int wave_left;                /* event monsters still alive */
+} FloorEvent;
 
 /* Last notable hit, broken down by damage bucket (HERO > COMBAT page). */
 typedef struct {
@@ -196,10 +215,16 @@ typedef struct {
     int banner_t;
     HitLog last_big;
     HitStats hs;               /* this floor's hit statistics */
+    FloorEvent ev;
+    /* Carried across floors: the shrine blessing and the remarks. */
+    uint8_t shrine;            /* ShrineKind of the active blessing */
+    int shrine_t;              /* ticks left, 0 = none */
+    BarkState bark;
     /* Kill-rate tracking for offline gains. */
     int minute_ticks, minute_kills;
     /* Events for the game layer, cleared each tick. */
     bool ev_died, ev_floor_done, ev_stuck;
+    int ev_lore;               /* lost page found: page + 1 (the session queues it) */
 } World;
 
 void world_init_floor(World *w, const Profile *p, int floor);
@@ -207,6 +232,7 @@ void world_tick(World *w, Profile *p);
 void world_refresh_stats(World *w, const Profile *p);
 void world_message(World *w, const char *text, uint16_t color);
 void world_banner(World *w, const char *text, uint16_t color);
+static inline bool world_shrine(const World *w, int kind) { return w->shrine_t > 0 && w->shrine == kind; }
 /* Remember current positions as "previous" (start of tick / after spawning). */
 void world_snapshot_positions(World *w);
 double world_max_res(const World *w);

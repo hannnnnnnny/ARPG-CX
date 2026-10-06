@@ -5,6 +5,7 @@
 #include "world_int.h"
 #include "balance.h"
 #include "skills.h"
+#include "events.h"
 #include "../gfx/gfx.h"
 #include <string.h>
 
@@ -58,6 +59,12 @@ static void monster_act(World *w, Profile *p, Monster *m)
     int reach = m->boss ? 26 : 16;
     fx speed = m->boss ? FX(0.6) : d->speed;
     bool los = line_of_sight(w, m->x, m->y, w->h.x, w->h.y);
+    if (m->goblin) {
+        events_goblin_act(w, m);
+        return;
+    }
+    if (m->champ & CH_FAST)
+        speed = speed * 8 / 5;
     if (m->chill > 0)
         speed /= 2;
     if (m->atk_cd > 0)
@@ -66,7 +73,7 @@ static void monster_act(World *w, Profile *p, Monster *m)
         boss_slam(w, p, m);
     if ((d->ranged && dist < 100 && los) || dist <= reach) {
         if (m->atk_cd <= 0) {
-            m->atk_cd = (int16_t)d->atk_ticks;
+            m->atk_cd = (int16_t)(m->champ & CH_FRENZIED ? d->atk_ticks * 3 / 5 : d->atk_ticks);
             if (d->ranged && dist > reach)
                 enemy_shot(w, m);
             else

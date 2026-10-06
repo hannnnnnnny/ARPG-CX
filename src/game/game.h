@@ -3,7 +3,7 @@
  *
  *   TITLE -> SLOTS -> CLASS SELECT -> CREATE (look + name) -> BATTLE
  *   TITLE -> CONTINUE / LOAD -> (offline report) -> BATTLE
- *   BATTLE <-> MENU [HERO|BAG|SKILLS|BOARD|TOWN|EMBERS|OPTIONS]
+ *   BATTLE <-> MENU [HERO|BAG|SKILLS|BOARD|TOWN|GOALS|EMBERS|OPTIONS]
  *   EMBERS: rebirth -> CLASS SELECT (next life's class) -> BATTLE
  *
  * The dungeon keeps running while menus are open: it is an idle game. The
@@ -21,7 +21,7 @@
 typedef enum {
     GS_TITLE, GS_SLOTS, GS_CLASS_SELECT, GS_CREATE, GS_OFFLINE, GS_STORY, GS_BATTLE, GS_MENU
 } GameState;
-typedef enum { PG_HERO, PG_BAG, PG_SKILLS, PG_PARAGON, PG_TOWN, PG_EMBERS, PG_OPTIONS, PG_COUNT } MenuPage;
+typedef enum { PG_HERO, PG_BAG, PG_SKILLS, PG_PARAGON, PG_TOWN, PG_GOALS, PG_EMBERS, PG_OPTIONS, PG_COUNT } MenuPage;
 typedef enum {
     CF_NONE, CF_NEW_GAME, CF_REBIRTH, CF_SALVAGE_ALL, CF_RESET_SKILLS, CF_SWITCH_PRESET, CF_RESET_PARAGON,
     CF_DELETE_SLOT
@@ -142,7 +142,8 @@ void story_render(Game *g);
 void subtitle_tick(Game *g);
 void subtitle_render(const Game *g);
 const char *const *story_page(int id, const char **title);
-int  journal_events(const Profile *p, int out[16]);
+#define JOURNAL_MAX 48   /* every story event: STORY_EVENT_END */
+int  journal_events(const Profile *p, int out[JOURNAL_MAX]);
 /* menus*.c */
 void menu_tick(Game *g, Input *in, uint32_t now);
 void menu_render(Game *g);

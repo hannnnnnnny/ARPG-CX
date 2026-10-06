@@ -1,4 +1,5 @@
 #include "progress.h"
+#include "goals.h"
 #include "aspects.h"
 #include "balance.h"
 #include "build.h"
@@ -53,6 +54,7 @@ void prog_new(Profile *p, uint32_t seed, int cls)
     /* A starting kit so the first floor is a fight, not a slaughter. */
     item_roll_slot(&p->equip[SLOT_WEAPON], &r, 1, 0, RAR_COMMON, SLOT_WEAPON, p->cls);
     item_roll_slot(&p->equip[SLOT_CHEST], &r, 1, 0, RAR_COMMON, SLOT_CHEST, p->cls);
+    goals_refill(p, &r);
 }
 
 /* ------------------------------------------------------------ experience */
@@ -604,6 +606,22 @@ bool prog_can_rebirth(const Profile *p)
     return p->best_floor >= REBIRTH_MIN_FLOOR;
 }
 
+/* Bounties, renown, lost pages and the event counters belong to the
+ * player, not to one life. */
+static void keep_goals(Profile *p, const Profile *keep)
+{
+    memcpy(p->bounty, keep->bounty, sizeof p->bounty);
+    p->ach = keep->ach;
+    p->lore = keep->lore;
+    p->n_goblins = keep->n_goblins;
+    p->n_shrines = keep->n_shrines;
+    p->n_events = keep->n_events;
+    p->n_elites = keep->n_elites;
+    p->n_bounties = keep->n_bounties;
+    p->n_ancestral = keep->n_ancestral;
+    p->n_mythic = keep->n_mythic;
+}
+
 double prog_rebirth(Profile *p, int new_cls)
 {
     Profile keep = *p;
@@ -627,6 +645,7 @@ double prog_rebirth(Profile *p, int new_cls)
     p->dmg_numbers = keep.dmg_numbers;
     p->story_pause = keep.story_pause;
     p->story_seen = keep.story_seen;   /* the story is told once per profile */
+    keep_goals(p, &keep);
     p->show_fps = keep.show_fps;
     p->low_power = keep.low_power;
     p->total_kills = keep.total_kills;

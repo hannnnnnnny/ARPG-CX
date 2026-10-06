@@ -8,6 +8,7 @@
 #include "skills.h"
 #include "build.h"
 #include "progress.h"
+#include "events.h"
 #include "../data/icons.h"
 #include "../gfx/font.h"
 #include "../gfx/tiles.h"
@@ -138,8 +139,12 @@ static int buff_tag(int x, const char *text, uint16_t c)
 static void draw_buffs(const World *w)
 {
     const HeroRT *h = &w->h;
-    char buf[20];
+    char buf[48];
     int x = 4;
+    if (w->shrine_t > 0) {
+        snprintf(buf, sizeof buf, "%s %d", T(shrine_tag(w->shrine)), w->shrine_t / TICK_HZ);
+        x = buff_tag(x, buf, RGB565(140, 220, 255));
+    }
     if (h->buff_t[BUFF_ULT]) x = buff_tag(x, "ULTIMATE", w->accent);
     if (h->buff_t[BUFF_BERSERK]) x = buff_tag(x, "BERSERKING", RGB565(255, 80, 70));
     if (h->buff_t[BUFF_UNSTOP]) x = buff_tag(x, "UNSTOPPABLE", RGB565(255, 170, 60));
@@ -176,6 +181,41 @@ static void draw_status(const World *w, const Profile *p)
         gfx_dim_rect((SCREEN_W - tw) / 2 - 3, 24, tw + 6, 11);
         font_draw((SCREEN_W - tw) / 2, 26, w->msg, w->msg_color, 1);
     }
+}
+
+/* The bounty nearest completion, under the status line on the right. */
+static void draw_bounty(const Profile *p)
+{
+    const Bounty *best = NULL;
+    char t[64], buf[96];
+    int i, tw;
+    for (i = 0; i < BOUNTY_SLOTS; i++) {
+        const Bounty *b = &p->bounty[i];
+        if (b->kind != BT_NONE && b->need > 0 && (!best || b->have * best->need > best->have * b->need))
+            best = b;
+    }
+    if (!best)
+        return;
+    bounty_text(t, sizeof t, best);
+    snprintf(buf, sizeof buf, "%s %d/%d", t, best->have, best->need);
+    tw = MIN(font_text_width(buf, 1), 150);
+    gfx_dim_rect(SCREEN_W - tw - 6, 12, tw + 3, 9);
+    font_draw_fit(SCREEN_W - tw - 4, 13, buf, tw, RGB565(230, 200, 120));
+}
+
+/* Aldric (through the torch) or the hero, just above the subtitles. */
+static void draw_bark(const World *w, const Profile *p)
+{
+    const BarkLine *l = w->bark.line;
+    char buf[160];
+    int tw;
+    if (w->bark.t <= 0 || !l)
+        return;
+    snprintf(buf, sizeof buf, T("%s: %s"), l->speaker == SPK_ALDRIC ? T("ALDRIC") : p->look.name, T(l->text));
+    tw = MIN(font_text_width(buf, 1), SCREEN_W - 12);
+    gfx_dim_rect((SCREEN_W - tw) / 2 - 3, 148, tw + 6, 11);
+    font_draw_fit((SCREEN_W - tw) / 2, 150, buf, tw,
+                  l->speaker == SPK_ALDRIC ? RGB565(255, 190, 120) : RGB565(170, 215, 255));
 }
 
 static void draw_banner(const World *w)
@@ -215,6 +255,8 @@ void render_hud(const World *w, const Profile *p)
     draw_skills(w, p);
     draw_info(w, p);
     draw_status(w, p);
+    draw_bounty(p);
+    draw_bark(w, p);
     if (w->boss_floor)
         draw_boss_bar(w);
     draw_banner(w);

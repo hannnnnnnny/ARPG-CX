@@ -17,7 +17,7 @@ and story are original.
 |---|---|
 | Ndless build `AshenDepths.tns` | Compiles with the official Ndless SDK (GCC 14.2), zero warnings |
 | Windows desktop simulator | Builds and runs; every screen checked with the headless renderer |
-| Tests | 313,598 checks pass: loot rules, crafting, skill tree, paragon, damage pipeline, saves (v5 plus real v1/v3 saves converted), every translation's format and glyphs, 200 connected floors, 2-hour idle runs for all 6 classes |
+| Tests | 313,660 checks pass: loot rules, crafting, skill tree, paragon, damage pipeline, floor events, bounties and achievements, saves (v6 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
 | Physical TI-Nspire CX CAS | Earlier versions ran on the owner's calculator; this version is not yet tested on hardware |
 
 ## Classes (6) and builds (3 each)
@@ -91,9 +91,34 @@ the look later; SHOW HELM hides the helm.
 
 ## Story
 
-An original five-act campaign (Cindermere under the ash). The story plays
-as subtitles over the battle; nothing waits for a key press. OPTIONS >
-STORY switches to full pages, OPTIONS > JOURNAL rereads chapters.
+An original ten-act campaign (Cindermere under the ash): acts I-V end with
+the epilogue on floor 50, acts VI-X (the Torment campaign) with the finale
+on floor 100. Sixteen lost pages lie beside fallen adventurers on the
+floors. The story plays as subtitles over the battle; nothing waits for a
+key press. OPTIONS > STORY switches to full pages, OPTIONS > JOURNAL
+rereads chapters and pages.
+
+Brother Aldric speaks through the torch he gave the hero, and the hero
+answers: one-line remarks on goblins, mythics, near deaths, records and
+more, with cooldowns so they stay special.
+
+## Floor events
+
+Most floors hold one event: a treasure goblin (flees, portals away after
+12 s; catch it for gold, gems and two rares), a shrine (40 s blessing:
+damage, always-crit, triple gold or experience, attack speed, half damage
+taken), an ambush, a cursed chest (beat its guardians for a legendary) or a
+fallen adventurer with a lost page. Elites are champions with one or two
+affixes (fast, sturdy, vampiric, volatile, warded, frenzied) and a name
+plate.
+
+## Goals
+
+The GOALS page tracks three automatic bounties (hunt a monster type, slay
+champions, clear floors, find legendaries...); a finished bounty pays gold,
+materials and an item and is replaced at once. 37 achievements raise the
+hero's renown every 4 earned: +2% damage and life per tier, kept through
+rebirths.
 
 ## Languages
 
@@ -120,7 +145,7 @@ those of the fonts it builds on are in `assets/fonts/`.
   floors, embers, story and options carry over; old gear is re-forged into
   new items of the same slot, rarity and item level; skill points are
   refunded and the closest build is rebuilt. Converted saves cannot be
-  opened by the old version any more (current format: v5).
+  opened by the old version any more (current format: v6).
 * Autosave every 2 minutes and on exit; CRC-checked, written atomically.
 
 ## Controls
