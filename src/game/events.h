@@ -27,6 +27,7 @@ void events_touch(World *w, Profile *p);
 bool events_wave_active(const World *w);
 void events_goblin_act(World *w, Monster *m);
 
+int  champion_affixes(int floor);
 void champion_roll(World *w, Monster *m);
 void champion_name(char *out, size_t cap, const Monster *m);
 const char *shrine_name(int kind);

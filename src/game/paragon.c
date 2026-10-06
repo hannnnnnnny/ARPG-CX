@@ -229,7 +229,7 @@ void paragon_refund(Profile *p)
 
 /* -------------------------------------------------------------- glyphs */
 
-int glyph_radius(int level) { return level >= 15 ? 4 : 3; }
+int glyph_radius(int level) { return level >= 46 ? 5 : level >= 15 ? 4 : 3; }
 
 int glyph_stat_in_radius(const Profile *p, int board)
 {

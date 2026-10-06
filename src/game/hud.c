@@ -172,8 +172,15 @@ static void draw_status(const World *w, const Profile *p)
         snprintf(buf, sizeof buf, T("FLOOR %d  %d/%d"), w->floor, MIN(w->kills, w->quota), w->quota);
     gfx_dim_rect(0, 0, SCREEN_W, 11);
     font_draw(4, 2, buf, C_TEXT, 1);
-    snprintf(buf, sizeof buf, "%s%s%s  %s", w->floor >= TORMENT_FLOOR ? T("TORMENT") : "",
-             w->floor >= TORMENT_FLOOR ? "  " : "", T(theme_name(w->theme)), T(p->mode == MODE_FARM ? "FARM" : "PUSH"));
+    {
+        char tier[24] = "", roman[8];
+        if (w->floor >= TORMENT_FLOOR) {
+            torment_name(roman, sizeof roman, w->floor);
+            snprintf(tier, sizeof tier, T("TORMENT %s"), roman);
+        }
+        snprintf(buf, sizeof buf, "%s%s%s  %s", tier, tier[0] ? "  " : "", T(theme_name(w->theme)),
+                 T(p->mode == MODE_FARM ? "FARM" : "PUSH"));
+    }
     font_draw(SCREEN_W - 4 - font_text_width(buf, 1), 2, buf, p->mode == MODE_FARM ? RGB565(120, 200, 255) : C_DIM, 1);
     draw_buffs(w);
     if (w->msg_t > 0) {

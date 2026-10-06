@@ -1,5 +1,6 @@
 #include "balance.h"
 #include <math.h>
+#include <stdio.h>
 
 double floor_scale(int floor)
 {
@@ -10,8 +11,14 @@ double floor_scale(int floor)
 double monster_scale(int floor)
 {
     /* Monsters outgrow gear a little on every floor: that gap is the idle
-     * "wall" that crafting, skills, paragon and rebirth push through. */
-    return floor_scale(floor) * pow(1.05, (double)MAX(floor, 1) - 1.0);
+     * "wall" that crafting, skills, paragon and rebirth push through. Past
+     * the campaign the endless sources (paragon mastery, glyph levels,
+     * renown, embers) carry the descent, and GAP_LATE sets its pace: tuned
+     * with the long-run simulator so every build keeps descending for 300+
+     * hours, reaching about floor 300. */
+    int f = MAX(floor, 1);
+    return floor_scale(f) * pow(GAP_EARLY, (double)(MIN(f, GAP_SPLIT) - 1))
+         * pow(GAP_LATE, (double)MAX(f - GAP_SPLIT, 0));
 }
 
 double xp_to_next(int level)
@@ -19,11 +26,36 @@ double xp_to_next(int level)
     return 25.0 * pow(1.13, (double)(MIN(MAX(level, 1), LEVEL_CAP) - 1));
 }
 
-double paragon_xp(int paragon_level)
+/* Torment floors cleared to take a glyph from 'level' to the next. */
+int glyph_floors(int level)
 {
-    /* Each paragon level asks a little more than the last, so the boards
-     * keep filling for many hours instead of in one evening. */
-    return xp_to_next(LEVEL_CAP) * pow(1.035, (double)MAX(paragon_level, 0));
+    return 3 + MAX(level, 1) / 2;
+}
+
+void torment_name(char *out, size_t cap, int floor)
+{
+    static const char *const roman[] = {
+        "", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X",
+        "XI", "XII", "XIII", "XIV", "XV", "XVI", "XVII", "XVIII", "XIX", "XX",
+    };
+    int t = torment_tier(floor);
+    if (t < (int)(sizeof roman / sizeof roman[0]))
+        snprintf(out, cap, "%s", roman[t]);
+    else
+        snprintf(out, cap, "%d", t);
+}
+
+int torment_tier(int floor)
+{
+    return floor < TORMENT_FLOOR ? 0 : 1 + (floor - TORMENT_FLOOR) / TORMENT_TIER_FLOORS;
+}
+
+double paragon_kills(int paragon_level)
+{
+    /* Paragon levels cost kills, not raw experience: going deeper must not
+     * speed up the levels that make you go deeper (a runaway loop), so the
+     * late game climbs with play time, a little slower every level. */
+    return PARA_BASE + PARA_STEP * (double)MAX(paragon_level, 0);
 }
 
 double kill_xp(int floor)   { return 6.0 * floor_scale(floor); }

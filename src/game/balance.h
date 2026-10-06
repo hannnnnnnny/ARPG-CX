@@ -15,7 +15,14 @@
 double floor_scale(int floor);
 double monster_scale(int floor);
 double xp_to_next(int level);
-double paragon_xp(int paragon_level);  /* experience for the next paragon level */
+/* Kill-equivalents (experience / kill_xp of the floor) per paragon level. */
+#ifndef PARA_BASE
+#define PARA_BASE 40.0
+#endif
+#ifndef PARA_STEP
+#define PARA_STEP 2.2
+#endif
+double paragon_kills(int paragon_level);
 double kill_xp(int floor);
 double kill_gold(int floor);
 double ember_reward(int best_floor);
@@ -48,7 +55,27 @@ int    floor_monsters(int floor);
 static inline bool is_boss_floor(int floor) { return floor % 10 == 0; }
 
 #define REBIRTH_MIN_FLOOR 20
-#define OFFLINE_BASE_HOURS 8
+#define OFFLINE_BASE_HOURS 24
+#define OFFLINE_PATIENCE_HOURS 4       /* per PATIENCE rank */
 #define TORMENT_FLOOR 51               /* past the campaign: ancestral loot, glyph levels */
+#define TORMENT_TIER_FLOORS 50         /* Torment I = 51-100, II = 101-150, ... */
+#define GAP_EARLY 1.05                 /* monster lead over gear per floor up to GAP_SPLIT, then GAP_LATE */
+#define GAP_SPLIT 100
+#ifndef GAP_LATE
+#define GAP_LATE 1.06                 /* overridable for balance experiments */
+#endif
+
+/* Paragon mastery: every paragon level past MASTERY_FROM adds this much
+ * damage and life (compounding), the endless engine of the late game. */
+#define MASTERY_FROM 100
+#ifndef MASTERY_PCT
+#define MASTERY_PCT 1.0
+#endif
+static inline int paragon_mastery(int paragon_level) { return paragon_level > MASTERY_FROM ? paragon_level - MASTERY_FROM : 0; }
+
+/* Torment tier of a floor: 0 before floor 51, then I, II, ... every 50. */
+int    torment_tier(int floor);
+void   torment_name(char *out, size_t cap, int floor);   /* "I", "II", ... */
+int    glyph_floors(int level);
 
 #endif

@@ -136,7 +136,7 @@ typedef struct {
 #define BOARD_N 15           /* boards are 15 x 15 tiles */
 #define BOARD_BYTES ((BOARD_N * BOARD_N + 7) / 8)
 #define GLYPH_COUNT 12       /* 2 per class */
-#define GLYPH_MAX_LEVEL 21
+#define GLYPH_MAX_LEVEL 100
 
 /* ---------------------------------------------------- rebirth shop */
 
@@ -196,6 +196,7 @@ typedef struct {
     uint8_t  para[PARAGON_BOARDS][BOARD_BYTES];
     uint8_t  glyph[PARAGON_BOARDS];    /* socketed glyph id + 1, 0 = none */
     uint8_t  glyph_lvl[GLYPH_COUNT];
+    uint16_t glyph_xp[GLYPH_COUNT];    /* Torment floors toward the next level */
     /* crafting */
     uint16_t codex[ASPECT_MAX];        /* best roll + 1 for each known aspect, 0 = unknown */
     double   iron, souls;              /* salvage materials */
@@ -212,7 +213,7 @@ typedef struct {
     /* goals: bounties, achievements (renown), lost pages, counters */
     Bounty   bounty[BOUNTY_SLOTS];
     uint64_t ach;                      /* achievement bits (goals.h) */
-    uint32_t lore;                     /* lost pages found (story.h) */
+    uint64_t lore;                     /* lost pages found (story.h) */
     uint32_t n_goblins, n_shrines, n_events, n_elites, n_bounties, n_ancestral, n_mythic;
     /* options */
     uint8_t  auto_equip;

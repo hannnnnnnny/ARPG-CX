@@ -17,7 +17,7 @@ and story are original.
 |---|---|
 | Ndless build `AshenDepths.tns` | Compiles with the official Ndless SDK (GCC 14.2), zero warnings |
 | Windows desktop simulator | Builds and runs; every screen checked with the headless renderer |
-| Tests | 313,660 checks pass: loot rules, crafting, skill tree, paragon, damage pipeline, floor events, bounties and achievements, saves (v6 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
+| Tests | 313,753 checks pass: loot rules, crafting, skill tree, paragon, paragon mastery and glyph levels, damage pipeline, floor events, bounties and achievements, offline gains, saves (v7 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
 | Physical TI-Nspire CX CAS | Earlier versions ran on the owner's calculator; this version is not yet tested on hardware |
 
 ## Classes (6) and builds (3 each)
@@ -91,10 +91,11 @@ the look later; SHOW HELM hides the helm.
 
 ## Story
 
-An original ten-act campaign (Cindermere under the ash): acts I-V end with
-the epilogue on floor 50, acts VI-X (the Torment campaign) with the finale
-on floor 100. Sixteen lost pages lie beside fallen adventurers on the
-floors. The story plays as subtitles over the battle; nothing waits for a
+An original fifteen-act story (Cindermere under the ash): acts I-V end
+with the epilogue on floor 50, acts VI-X (the Torment campaign) with the
+finale on floor 100, and acts XI-XV (the deep) take a whole Torment tier
+each, down to floor 350. Forty lost pages lie beside fallen adventurers;
+the last twenty-four only turn up below floor 100, one every ten floors. The story plays as subtitles over the battle; nothing waits for a
 key press. OPTIONS > STORY switches to full pages, OPTIONS > JOURNAL
 rereads chapters and pages.
 
@@ -116,9 +117,29 @@ plate.
 
 The GOALS page tracks three automatic bounties (hunt a monster type, slay
 champions, clear floors, find legendaries...); a finished bounty pays gold,
-materials and an item and is replaced at once. 37 achievements raise the
-hero's renown every 4 earned: +2% damage and life per tier, kept through
-rebirths.
+materials and an item and is replaced at once. 64 achievements, from the
+first hour to the three-hundredth, raise the hero's renown every 4 earned:
++2% damage and life per tier, kept through rebirths.
+
+## The long road (300+ hours)
+
+The campaign is fast: acts I-X take about four hours. After that the game
+is built to keep giving for hundreds of hours, offline time included:
+
+* Torment tiers every 50 floors (I at 51, II at 101, ...): a banner, a new
+  story chapter, richer loot and champions with up to four affixes.
+* Paragon mastery: every paragon level past 100 adds 1% damage and life
+  (compounding). Paragon levels cost kills, not raw experience, so going
+  deeper cannot snowball; the hero keeps descending, a little slower each
+  hour.
+* Glyphs level to 100 from every Torment floor cleared (radius grows at
+  15 and 46); MIGHT in the ember shop compounds (x1.12 a rank).
+* Offline gains cover up to 24 hours (+4 per PATIENCE rank) and count as
+  time played.
+
+Measured with the long-run simulator for all 18 builds (idle, no rebirth):
+every 25 hours still adds floors, and after 300 hours the builds stand
+between floors 280 and 345, so the last chapter is still ahead for most.
 
 ## Languages
 
@@ -145,7 +166,7 @@ those of the fonts it builds on are in `assets/fonts/`.
   floors, embers, story and options carry over; old gear is re-forged into
   new items of the same slot, rarity and item level; skill points are
   refunded and the closest build is rebuilt. Converted saves cannot be
-  opened by the old version any more (current format: v6).
+  opened by the old version any more (current format: v7).
 * Autosave every 2 minutes and on exit; CRC-checked, written atomically.
 
 ## Controls

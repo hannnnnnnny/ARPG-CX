@@ -3,8 +3,9 @@
  *
  *   bounties      three auto-tracked tasks ("hunt 60 ghouls"); a finished
  *                 one pays out and is replaced at once
- *   achievements  37 milestones; every 4 earned raise the hero's renown,
- *                 which adds damage and life permanently
+ *   achievements  64 milestones from the first hour to the three-hundredth;
+ *                 every 4 earned raise the hero's renown, which adds damage
+ *                 and life permanently
  *
  * Pure profile logic (no world access) so it is unit-tested directly.
  */
@@ -24,7 +25,7 @@ typedef enum {
     GE_KILL, GE_ELITE, GE_FLOOR, GE_GOBLIN, GE_SHRINE, GE_EVENT, GE_LEGENDARY, GE_BOSS, GE_ANCESTRAL, GE_MYTHIC
 } GoalEvent;
 
-#define ACH_COUNT 37
+#define ACH_COUNT 64
 #define RENOWN_PER_TIER 4
 #define RENOWN_DMG_PCT 2.0    /* damage and life per renown tier */
 

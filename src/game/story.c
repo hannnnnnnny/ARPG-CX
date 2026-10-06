@@ -5,6 +5,7 @@
  * Lines are at most 50 characters so they fit the 320 px screen.
  */
 #include "story.h"
+#include "balance.h"
 #include "world.h"
 #include "../i18n/i18n.h"
 #include <stdio.h>
@@ -121,6 +122,61 @@ const ActDef act_defs[ACT_COUNT] = {
         "THE HEART IS STILL. THE SEAL IS WHOLE.",
         "NO KEEPER WAS NEEDED THIS TIME.",
         "YOU WERE ENOUGH.", NULL } },
+    { "ACT XI - SUNKEN THRONE",
+      { "BELOW THE STILLED HEART LIES A CITY",
+        "OLDER THAN CINDERMERE, BUILT BY THE STRANGER",
+        "WHO CHOSE TO STAY. ITS PEOPLE NEVER DIED.",
+        "THEY WAITED, KNEELING, FOR A NEW RULER.",
+        "THEY HAVE DECIDED IT SHOULD BE YOU.", NULL },
+      "THE PALE REGENT", MT_CULTIST,
+      { "THE PALE REGENT LAUGHS AS HE FALLS.",
+        "\"THE HEART WAS NEVER A GOD. IT WAS A DOOR.",
+        "AND SOMETHING ON THE OTHER SIDE",
+        "HAS STARTED TO KNOCK.\"", NULL } },
+    { "ACT XII - THE ASHEN SEA",
+      { "THE STONE GIVES WAY TO A SEA OF ASH,",
+        "GREY WAVES WITHOUT A SOUND.",
+        "BOATS OF BONE DRIFT PAST, EMPTY.",
+        "WITH EVERY STEP THE KNOCKING GROWS LOUDER,",
+        "AND THE TORCH IN YOUR HAND BURNS LOW.", NULL },
+      "THE FERRYMAN OF ASH", MT_SKELETON,
+      { "THE FERRYMAN SINKS WITH HIS BOAT.",
+        "HIS LAST COIN IS STAMPED WITH A GEAR,",
+        "THE MARK OF THE DWARF-KINGS.",
+        "THEY CAME THIS WAY LONG BEFORE YOU.", NULL } },
+    { "ACT XIII - CLOCKWORK DEEP",
+      { "VAST ENGINES TURN IN THE DARK,",
+        "BUILT BY DWARVES WHO NEVER WENT HOME.",
+        "EVERY GEAR PUSHES AGAINST THE DOOR,",
+        "HOLDING IT SHUT. SOME HAVE STOPPED.",
+        "THE ORACLE THAT RUNS THEM IS AFRAID.", NULL },
+      "THE IRON ORACLE", MT_GOLEM,
+      { "THE ORACLE'S LAST GEAR GRINDS TO A HALT.",
+        "\"WE DID NOT BUILD THE DOOR TO KEEP IT CLOSED.",
+        "WE BUILT IT TO KEEP SOMETHING OUT:",
+        "THE NAMELESS TIDE.\"", NULL } },
+    { "ACT XIV - NAMELESS TIDE",
+      { "HERE THE DARK IS ALIVE. IT EATS THE LIGHT,",
+        "THE SOUND, THE NAMES OF THINGS.",
+        "YOUR TORCH IS THE ONLY FIRE LEFT,",
+        "AND THE TIDE LEANS TOWARD IT, HUNGRY.",
+        "A HERALD WALKS AHEAD OF THE WAVE.", NULL },
+      "THE TIDE'S HERALD", MT_BAT,
+      { "THE HERALD DISSOLVES INTO THE DARK.",
+        "THE TIDE PULLS BACK, JUST FOR A MOMENT,",
+        "AND THERE IT IS: THE DOOR ITSELF,",
+        "STANDING OPEN.", NULL } },
+    { "ACT XV - THE OTHER SIDE",
+      { "BEYOND THE DOOR LIES CINDERMERE,",
+        "BUT HERE THE ASH NEVER FELL.",
+        "THE BELLS RING. THE MARKET IS FULL.",
+        "AND IN THE CRYPT A KEEPER WAITS",
+        "WHO WEARS YOUR FACE, AND SAID YES.", NULL },
+      "THE KEEPER WHO STAYED", MT_CULTIST,
+      { "YOUR OTHER SELF SMILES AND STEPS ASIDE.",
+        "\"GO BACK. CLOSE THE DOOR. KEEP WALKING.\"",
+        "THE DOOR SHUTS BEHIND YOU WITH A SIGH.",
+        "THE DEPTHS NEVER END. NEITHER DO YOU.", NULL } },
 };
 
 const char *const epilogue[STORY_LINES] = {
@@ -141,34 +197,44 @@ const char *const finale[STORY_LINES] = {
     NULL, NULL,
 };
 
+/* Acts I-X take ten floors each; the chapters of the deep (XI-XV) take a
+ * Torment tier of fifty floors each, from floor 101 to 350. */
 int story_act(int floor)
 {
-    if (floor < 1 || floor > ACT_COUNT * 10)
+    if (floor < 1 || floor > DEEP_LAST_FLOOR)
         return -1;
-    return (floor - 1) / 10;
+    if (floor <= CAMPAIGN_FLOORS)
+        return (floor - 1) / 10;
+    return 10 + (floor - CAMPAIGN_FLOORS - 1) / TORMENT_TIER_FLOORS;
 }
 
 bool story_is_act_start(int floor)
 {
-    return floor >= 1 && floor <= ACT_COUNT * 10 && floor % 10 == 1;
+    if (floor < 1 || floor > DEEP_LAST_FLOOR)
+        return false;
+    return floor <= CAMPAIGN_FLOORS ? floor % 10 == 1 : (floor - CAMPAIGN_FLOORS - 1) % TORMENT_TIER_FLOORS == 0;
 }
 
 bool story_is_act_boss(int floor)
 {
-    return floor >= 10 && floor <= ACT_COUNT * 10 && floor % 10 == 0;
+    if (floor < 10 || floor > DEEP_LAST_FLOOR)
+        return false;
+    return floor <= CAMPAIGN_FLOORS ? floor % 10 == 0 : (floor - CAMPAIGN_FLOORS) % TORMENT_TIER_FLOORS == 0;
 }
 
 /* story_seen bits keep the v4/v5 layout (0-4 intros, 5-9 victories,
- * 10 epilogue) and add 11-15 intros VI-X, 16-20 victories VI-X, 21 finale. */
+ * 10 epilogue), then 11-15 intros VI-X, 16-20 victories VI-X, 21 finale,
+ * 22-26 intros XI-XV and 27-31 victories XI-XV. */
 static int seen_bit(int ev)
 {
+    int a;
     if (ev == STORY_FINALE)   return 21;
     if (ev == STORY_EPILOGUE) return 10;
     if (ev >= STORY_VICTORY) {
-        int a = ev - STORY_VICTORY;
-        return a < CAMPAIGN_ACTS ? 5 + a : 16 + a - CAMPAIGN_ACTS;
+        a = ev - STORY_VICTORY;
+        return a < CAMPAIGN_ACTS ? 5 + a : a < 10 ? 16 + a - CAMPAIGN_ACTS : 27 + a - 10;
     }
-    return ev < CAMPAIGN_ACTS ? ev : 11 + ev - CAMPAIGN_ACTS;
+    return ev < CAMPAIGN_ACTS ? ev : ev < 10 ? 11 + ev - CAMPAIGN_ACTS : 22 + ev - 10;
 }
 
 bool story_event_seen(const Profile *p, int ev)
@@ -182,28 +248,37 @@ void story_mark_seen(Profile *p, int ev)
 {
     if (ev >= STORY_LORE) {
         if (ev < STORY_EVENT_END)
-            p->lore |= 1u << (ev - STORY_LORE);
+            p->lore |= (uint64_t)1 << (ev - STORY_LORE);
         return;
     }
-    p->story_seen |= 1u << seen_bit(ev);
+    p->story_seen |= (uint32_t)1 << seen_bit(ev);
 }
 
 int story_lore_found(const Profile *p)
 {
     int i, n = 0;
     for (i = 0; i < LORE_COUNT; i++)
-        n += (p->lore >> i) & 1u;
+        n += (int)((p->lore >> i) & 1u);
     return n;
+}
+
+/* The first sixteen pages lie in the campaign; the rest one every ten
+ * floors from floor 100 down. */
+int story_lore_floor(int page)
+{
+    return page < 16 ? 0 : CAMPAIGN_FLOORS + (page - 16) * 10;
 }
 
 int story_unread_lore(const Profile *p, uint32_t roll)
 {
-    int left = LORE_COUNT - story_lore_found(p), i, k;
+    int deepest = MAX(p->best_floor, p->best_floor_ever), left = 0, i, k;
+    for (i = 0; i < LORE_COUNT; i++)
+        left += !((p->lore >> i) & 1u) && story_lore_floor(i) <= deepest;
     if (left <= 0)
         return -1;
     k = (int)(roll % (uint32_t)left);
     for (i = 0; i < LORE_COUNT; i++)
-        if (!((p->lore >> i) & 1u) && k-- == 0)
+        if (!((p->lore >> i) & 1u) && story_lore_floor(i) <= deepest && k-- == 0)
             return i;
     return -1;
 }

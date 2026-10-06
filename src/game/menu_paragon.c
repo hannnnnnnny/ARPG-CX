@@ -5,8 +5,11 @@
  */
 #include "menu_int.h"
 #include "paragon.h"
+#include "balance.h"
 #include "../gfx/font.h"
+#include "../core/bignum.h"
 #include "../i18n/i18n.h"
+#include <math.h>
 #include <stdio.h>
 
 #define CELL 9
@@ -103,6 +106,21 @@ static void node_info(const Game *g, int x, int y)
     font_draw_wrapped(x, y, buf, 160, node_color(n->type, true));
 }
 
+/* Paragon mastery: the endless late-game bonus past paragon 100. */
+static void mastery_info(const Profile *p, int x, int y)
+{
+    char buf[96], mult[16];
+    int m = paragon_mastery(p->paragon_level);
+    if (m <= 0) {
+        snprintf(buf, sizeof buf, T("MASTERY STARTS AT PARAGON %d"), MASTERY_FROM);
+        font_draw_fit(x, y, buf, 160, C_DIM);
+        return;
+    }
+    fmt_num(mult, sizeof mult, pow(1.0 + MASTERY_PCT / 100.0, m));
+    snprintf(buf, sizeof buf, T("MASTERY %d: DAMAGE AND LIFE X%s"), m, mult);
+    font_draw_fit(x, y, buf, 160, RGB565(255, 200, 90));
+}
+
 void paragon_render(Game *g)
 {
     static const char *const names[PARAGON_BOARDS] = { "STARTING BOARD", "BOARD II", "BOARD III", "BOARD IV" };
@@ -116,6 +134,8 @@ void paragon_render(Game *g)
     font_draw(x, 42, buf, prog_paragon_available(&g->p) ? C_GOOD : C_DIM, 1);
     if (g->p.level < PARAGON_START)
         font_draw_wrapped(x, 54, "PARAGON POINTS START AT LEVEL 50.", 160, C_DIM);
+    else
+        mastery_info(&g->p, x, 54);
     node_info(g, x, 70);
     glyph_info(g, x, 120);
     snprintf(buf, sizeof buf, T("AUTO: %s (OPTIONS)"), T(g->p.auto_paragon ? "ON" : "OFF"));

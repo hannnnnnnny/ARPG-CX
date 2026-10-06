@@ -64,21 +64,30 @@ int prog_paragon_available(const Profile *p)
     return paragon_points_for(p->level, p->paragon_level) - paragon_spent(p);
 }
 
+/* Below the cap p->xp is experience; at the cap it counts kill-equivalents
+ * toward the next paragon level (see paragon_kills). */
 double prog_xp_needed(const Profile *p)
 {
-    return p->level < LEVEL_CAP ? xp_to_next(p->level) : paragon_xp(p->paragon_level);
+    return p->level < LEVEL_CAP ? xp_to_next(p->level) : paragon_kills(p->paragon_level);
+}
+
+static double xp_units(const Profile *p, double xp)
+{
+    return p->level < LEVEL_CAP ? xp : xp / kill_xp(MAX(p->floor, 1));
 }
 
 int prog_add_xp(Profile *p, double xp)
 {
     int levels = 0;
-    p->xp += xp;
+    p->xp += xp_units(p, xp);
     /* Cap iterations so a corrupt or huge value can never freeze the game. */
     while (p->xp >= prog_xp_needed(p) && levels < 1000) {
         p->xp -= prog_xp_needed(p);
         if (p->level < LEVEL_CAP) {
             p->level++;
             p->skill_points++;
+            if (p->level == LEVEL_CAP)
+                p->xp = xp_units(p, p->xp);   /* leftover experience into kills */
         } else {
             p->paragon_level++;
         }
@@ -572,6 +581,17 @@ bool prog_respec_paragon(Profile *p)
 
 /* -------------------------------------------------------------- floors */
 
+static void glyph_gain(Profile *p, int g, int floors)
+{
+    if (p->glyph_lvl[g] >= GLYPH_MAX_LEVEL)
+        return;
+    p->glyph_xp[g] = (uint16_t)(p->glyph_xp[g] + floors);
+    while (p->glyph_lvl[g] < GLYPH_MAX_LEVEL && p->glyph_xp[g] >= glyph_floors(p->glyph_lvl[g])) {
+        p->glyph_xp[g] = (uint16_t)(p->glyph_xp[g] - glyph_floors(p->glyph_lvl[g]));
+        p->glyph_lvl[g] = (uint8_t)MAX(p->glyph_lvl[g] + 1, 2);
+    }
+}
+
 void prog_floor_cleared(Profile *p, bool boss)
 {
     int b;
@@ -579,11 +599,12 @@ void prog_floor_cleared(Profile *p, bool boss)
         p->floor++;
     p->best_floor = MAX(p->best_floor, p->floor);
     p->best_floor_ever = MAX(p->best_floor_ever, p->best_floor);
-    /* Torment guardians empower the socketed glyphs (the pit, idle style). */
-    if (boss && p->floor > TORMENT_FLOOR)
+    /* Every Torment floor feeds the socketed glyphs (the pit, idle style);
+     * a guardian counts three times. */
+    if (p->floor > TORMENT_FLOOR)
         for (b = 0; b < PARAGON_BOARDS; b++)
-            if (p->glyph[b] && p->glyph_lvl[(p->glyph[b] - 1) % GLYPH_COUNT] < GLYPH_MAX_LEVEL)
-                p->glyph_lvl[(p->glyph[b] - 1) % GLYPH_COUNT]++;
+            if (p->glyph[b])
+                glyph_gain(p, (p->glyph[b] - 1) % GLYPH_COUNT, boss ? 3 : 1);
 }
 
 void prog_died(Profile *p)
@@ -633,6 +654,7 @@ double prog_rebirth(Profile *p, int new_cls)
     p->look = keep.look;
     memcpy(p->codex, keep.codex, sizeof p->codex);
     memcpy(p->glyph_lvl, keep.glyph_lvl, sizeof p->glyph_lvl);
+    memcpy(p->glyph_xp, keep.glyph_xp, sizeof p->glyph_xp);
     p->embers = keep.embers + gained;
     memcpy(p->up, keep.up, sizeof p->up);
     p->rebirths = keep.rebirths + 1;
@@ -668,7 +690,7 @@ bool prog_buy_upgrade(Profile *p, UpgradeId id)
 
 uint32_t prog_offline_cap_seconds(const Profile *p)
 {
-    return (uint32_t)(OFFLINE_BASE_HOURS + 2 * p->up[UP_PATIENCE]) * 3600u;
+    return (uint32_t)(OFFLINE_BASE_HOURS + OFFLINE_PATIENCE_HOURS * p->up[UP_PATIENCE]) * 3600u;
 }
 
 static void offline_loot(Profile *p, OfflineReport *rep, int n)
@@ -708,6 +730,7 @@ bool prog_offline(Profile *p, uint32_t now, OfflineReport *rep)
     prog_add_gold(p, rep->gold);
     rep->levels = prog_add_xp(p, rep->xp);
     p->total_kills += rep->kills;
+    p->play_seconds += rep->seconds;      /* offline hours count as time with the hero */
     p->elixir_secs = rep->seconds >= p->elixir_secs ? 0 : p->elixir_secs - rep->seconds;
     offline_loot(p, rep, (int)MIN(rep->kills * 0.06, 40.0));
     p->save_time = now;

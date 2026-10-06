@@ -1,6 +1,7 @@
 /*
- * story_lore.c - the sixteen lost pages (ORIGINAL text), found beside
- * fallen adventurers on the floors and kept in the journal.
+ * story_lore.c - the forty lost pages (ORIGINAL text), found beside
+ * fallen adventurers on the floors and kept in the journal. The last
+ * twenty-four only turn up below floor 100 (story_lore_floor).
  */
 #include "story.h"
 
@@ -37,4 +38,53 @@ const LorePage lore_pages[LORE_COUNT] = {
                           "AND ONE STRANGER WHO CHOSE TO STAY.", NULL } },
     { "AN UNSENT LETTER", { "IF YOU READ THIS, YOU WENT DEEPER THAN I DID.",
                             "TELL THEM I TRIED.", NULL } },
+    /* the deep: one page every ten floors from floor 100 */
+    { "A COURTIER'S PLEA", { "WE WERE TOLD TO WAIT FOR A KING.",
+                             "NOBODY TOLD US HOW LONG FOREVER IS.", NULL } },
+    { "THE REGENT'S LEDGER", { "TAXES: NONE. HARVEST: NONE. BIRTHS: NONE.",
+                               "DEATHS: NONE. THIS IS PEACE, I SUPPOSE.", NULL } },
+    { "A STONEMASON'S MARK", { "I CARVED THIS THRONE FOR A STRANGER.",
+                               "HE NEVER SAT IN IT. HE STOOD BY THE DOOR.", NULL } },
+    { "THE DOOR'S FIRST NOTE", { "THE STRANGER WROTE: THE HEART IS A LOCK,",
+                                 "AND I AM THE ONLY ONE WHO CAN HOLD IT.", NULL } },
+    { "A FERRY TICKET", { "ONE PASSAGE ACROSS THE ASH. NO RETURN.",
+                          "THE PRICE IS A NAME YOU WILL NOT MISS.", NULL } },
+    { "A SAILOR'S SONG", { "ROW, ROW, THE ASH IS DEEP,",
+                           "AND WHAT IT HOLDS IT MEANS TO KEEP.", NULL } },
+    { "A DROWNED MAP", { "THE SEA HAS NO FAR SHORE.",
+                         "THE SHORE MOVES AWAY AS YOU SAIL.", NULL } },
+    { "THE FERRYMAN'S COIN", { "I CARRIED DWARVES ACROSS FOR A CENTURY.",
+                               "NONE OF THEM EVER CAME BACK FOR THEIR CHANGE.", NULL } },
+    { "AN ENGINEER'S LOG", { "GEAR NINE HAS STOPPED AGAIN.",
+                             "SOMETHING ON THE FAR SIDE IS PUSHING BACK.", NULL } },
+    { "A BROKEN COG", { "STAMPED ON THE BACK, VERY SMALL:",
+                        "HOLD. HOLD. HOLD. HOLD. HOLD.", NULL } },
+    { "THE ORACLE'S FEAR", { "I HAVE COUNTED EVERY FUTURE.",
+                             "IN ALL OF THEM, THE DOOR OPENS.", NULL } },
+    { "A DWARF'S LAST WORDS", { "TELL THE KING THE ENGINES HELD.",
+                                "DO NOT TELL HIM FOR HOW LONG.", NULL } },
+    { "A LIGHTLESS PAGE", { "THE INK HAS BEEN EATEN AWAY.",
+                            "ONLY THE WORD 'RUN' IS LEFT.", NULL } },
+    { "THE TIDE'S WHISPER", { "WE DO NOT WANT YOUR WORLD.",
+                              "WE WANT YOUR FIRE. IT IS SO WARM.", NULL } },
+    { "A SCOUT'S REPORT", { "THE DARK MOVES LIKE WATER, BUT UPHILL.",
+                            "IT FOLLOWS ANYONE WHO CARRIES A FLAME.", NULL } },
+    { "A CANDLE STUB", { "WRAPPED IN A NOTE: KEEP IT LIT.",
+                         "THE TIDE CANNOT CROSS EVEN A SMALL LIGHT.", NULL } },
+    { "THE HERALD'S OATH", { "I WALKED AHEAD OF THE TIDE FOR AGES.",
+                             "I ONLY WANTED TO SEE THE DOOR OPEN.", NULL } },
+    { "A POSTCARD", { "GREETINGS FROM CINDERMERE! THE SUN IS OUT.",
+                      "THERE IS NO ASH HERE. WISH YOU WERE HERE.", NULL } },
+    { "THE OTHER BELL RINGER", { "IN THIS WORLD ALDRIC RINGS THE BELLS",
+                                 "FOR WEDDINGS, AND NOTHING ELSE.", NULL } },
+    { "A MIRRORED JOURNAL", { "THE HANDWRITING IS YOURS.",
+                              "THE LAST LINE SAYS: I SAID YES.", NULL } },
+    { "THE STRANGER'S NAME", { "THE STRANGER WHO CHOSE TO STAY",
+                               "HAD NO NAME. THE DOOR HAD TAKEN IT.", NULL } },
+    { "A CHILD'S QUESTION", { "WHY DOES THE HERO NEVER COME HOME?",
+                              "BECAUSE SOMEONE HAS TO KEEP WALKING.", NULL } },
+    { "THE LAST KEEPER'S NOTE", { "IF YOU MADE IT HERE, YOU DID NOT SAY YES.",
+                                  "GOOD. THE DEPTHS NEED A WALKER.", NULL } },
+    { "A BLANK PAGE", { "IT IS EMPTY.",
+                        "THE REST OF THE STORY IS YOURS.", NULL } },
 };

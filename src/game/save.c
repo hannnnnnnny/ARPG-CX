@@ -13,8 +13,9 @@
  * crafting materials, gems, elixirs and the hero's appearance.
  * v5: display language.
  * v6: acts VI-X (32-bit story bits), bounties, achievements, lost pages
- * and the event counters. */
-#define SAVE_VERSION 6
+ * and the event counters.
+ * v7: glyph progress, 64 lost pages (chapters XI-XV, Torment tiers). */
+#define SAVE_VERSION 7
 
 uint32_t save_crc32(const uint8_t *data, size_t n)
 {
@@ -167,7 +168,8 @@ static void write_goals(Writer *w, const Profile *p)
     for (i = 0; i < BOUNTY_SLOTS; i++) {
         w8(w, p->bounty[i].kind); w8(w, p->bounty[i].arg); w16(w, p->bounty[i].need); w16(w, p->bounty[i].have);
     }
-    w32(w, (uint32_t)p->ach); w32(w, (uint32_t)(p->ach >> 32)); w32(w, p->lore);
+    w32(w, (uint32_t)p->ach); w32(w, (uint32_t)(p->ach >> 32));
+    w32(w, (uint32_t)p->lore); w32(w, (uint32_t)(p->lore >> 32));
     w32(w, p->n_goblins); w32(w, p->n_shrines); w32(w, p->n_events); w32(w, p->n_elites);
     w32(w, p->n_bounties); w32(w, p->n_ancestral); w32(w, p->n_mythic);
 }
@@ -181,7 +183,8 @@ static void read_goals(Reader *r, Profile *p)
     }
     lo = r32(r);
     p->ach = lo | ((uint64_t)r32(r) << 32);
-    p->lore = r32(r);
+    lo = r32(r);
+    p->lore = lo | (r->version >= 7 ? (uint64_t)r32(r) << 32 : 0);
     p->n_goblins = r32(r); p->n_shrines = r32(r); p->n_events = r32(r); p->n_elites = r32(r);
     p->n_bounties = r32(r); p->n_ancestral = r32(r); p->n_mythic = r32(r);
 }
@@ -203,6 +206,7 @@ static void write_body(Writer *w, const Profile *p)
     w8(w, p->auto_equip); w8(w, p->salvage_upto); w8(w, p->mode); w8(w, p->auto_skills);
     w8(w, p->auto_paragon); w8(w, p->auto_craft); w8(w, p->dmg_numbers); w8(w, p->story_pause);
     w8(w, p->show_fps); w8(w, p->low_power); w8(w, p->lang);
+    for (i = 0; i < GLYPH_COUNT; i++) w16(w, p->glyph_xp[i]);
     w32(w, p->save_time); wf(w, p->kpm); wf(w, p->total_kills); wf(w, p->play_seconds); w32(w, p->seed);
     write_goals(w, p);
 }
@@ -225,7 +229,11 @@ static void read_body(Reader *r, Profile *p)
     p->auto_equip = r8(r); p->salvage_upto = r8(r); p->mode = r8(r); p->auto_skills = r8(r);
     p->auto_paragon = r8(r); p->auto_craft = r8(r); p->dmg_numbers = r8(r); p->story_pause = r8(r);
     p->show_fps = r8(r); p->low_power = r8(r);
+    if (r->version < 7 && p->level >= LEVEL_CAP)
+        p->xp = 0;                   /* paragon progress is counted in kills since v7 */
     p->lang = r->version >= 5 ? r8(r) : (uint8_t)lang_get();
+    for (i = 0; i < GLYPH_COUNT; i++)
+        p->glyph_xp[i] = r->version >= 7 ? r16(r) : 0;
     p->save_time = r32(r); p->kpm = rf(r); p->total_kills = rf(r); p->play_seconds = rf(r); p->seed = r32(r);
     if (r->version >= 6)
         read_goals(r, p);           /* older saves start with empty bounty slots */

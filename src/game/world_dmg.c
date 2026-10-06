@@ -367,7 +367,7 @@ Drop *world_drop_item(World *w, Profile *p, fx x, fx y, Rarity min, int luck)
                 d->x = x;                         /* never scatter loot into a wall */
                 d->y = y;
             }
-            item_roll(&d->item, &w->rng, w->floor, p->up[UP_FORTUNE] + luck, min, p->cls);
+            item_roll(&d->item, &w->rng, w->floor, p->up[UP_FORTUNE] + luck + torment_tier(w->floor), min, p->cls);
             announce_drop(w, p, &d->item);
             return d;
         }

@@ -52,7 +52,7 @@ static void act_cleared(Session *s, Profile *p)
     queue_story(s, p, STORY_VICTORY + act);
     if (act == CAMPAIGN_ACTS - 1)
         queue_story(s, p, STORY_EPILOGUE);
-    if (act == ACT_COUNT - 1)
+    if (act == CAMPAIGN_FLOORS / 10 - 1)
         queue_story(s, p, STORY_FINALE);
 }
 
@@ -75,6 +75,16 @@ static void announce_floor(World *w, const Profile *p)
     world_message(w, buf, RGB565(255, 200, 120));
 }
 
+/* First step into a new Torment tier: monsters and loot both grow. */
+static void announce_tier(World *w, const Profile *p)
+{
+    char roman[8], buf[48];
+    torment_name(roman, sizeof roman, p->floor);
+    snprintf(buf, sizeof buf, T("TORMENT %s"), roman);
+    world_banner(w, buf, RGB565(255, 90, 60));
+    world_message(w, "THE DEPTHS GROW DARKER. LOOT GROWS RICHER.", RGB565(255, 150, 90));
+}
+
 void session_tick(Session *s, Profile *p)
 {
     world_tick(&s->w, p);
@@ -93,6 +103,8 @@ void session_tick(Session *s, Profile *p)
         announce_floor(&s->w, p);
         check_act_intro(s, p);
         world_goal(&s->w, p, GE_FLOOR, 0);
+        if (p->floor == p->best_floor && p->floor >= TORMENT_FLOOR && (p->floor - TORMENT_FLOOR) % TORMENT_TIER_FLOORS == 0)
+            announce_tier(&s->w, p);
         if (p->best_floor > best && p->best_floor > MAX(p->best_floor_ever, 10))
             bark(&s->w.bark, BK_RECORD, (uint32_t)s->w.tick + (uint32_t)p->floor);
     } else if (s->w.ev_stuck) {

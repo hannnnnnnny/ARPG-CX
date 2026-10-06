@@ -21,12 +21,27 @@ const AchDef ach_defs[ACH_COUNT] = {
     { "TRAP SPRINGER", AK_EVENTS, 10 },         { "UNSHAKEN", AK_EVENTS, 100 },
     { "BOUNTY HUNTER", AK_BOUNTIES, 5 },        { "TOWN HERO", AK_BOUNTIES, 25 },
     { "LIVING LEGEND", AK_BOUNTIES, 100 },      { "ARCHIVIST", AK_LORE, 4 },
-    { "KEEPER OF PAGES", AK_LORE, LORE_COUNT }, { "ASPECT SEEKER", AK_CODEX, 10 },
+    { "KEEPER OF PAGES", AK_LORE, 16 },         { "ASPECT SEEKER", AK_CODEX, 10 },
     { "MASTER OF ASPECTS", AK_CODEX, 30 },      { "ANCESTRAL BLOOD", AK_ANCESTRAL, 1 },
     { "HEIRLOOMS", AK_ANCESTRAL, 25 },          { "MYTHIC", AK_MYTHIC, 1 },
     { "THE ASH SETTLES", AK_STORY, 1 },         { "THE LAST KEEPER", AK_STORY, 2 },
     { "REBORN", AK_REBIRTH, 1 },                { "ETERNAL", AK_REBIRTH, 5 },
     { "DEVOTED", AK_HOURS, 10 },
+    /* the long road: goals spread over hundreds of hours */
+    { "ABYSS WALKER", AK_FLOOR, 200 },          { "THE DEEP DARK", AK_FLOOR, 250 },
+    { "DOORKEEPER", AK_FLOOR, 300 },            { "BEYOND THE DOOR", AK_FLOOR, 350 },
+    { "NO WAY BACK", AK_FLOOR, 400 },           { "BOTTOMLESS", AK_FLOOR, 500 },
+    { "PARAGON OF ASH", AK_PARAGON, 500 },      { "ETERNAL PARAGON", AK_PARAGON, 1000 },
+    { "APOCALYPSE", AK_KILLS, 3000000 },        { "THE END OF ALL THINGS", AK_KILLS, 10000000 },
+    { "CHAMPION SLAYER", AK_ELITES, 1000 },     { "GOBLIN HUNTER", AK_GOBLINS, 100 },
+    { "TREASURE HOARDER", AK_GOBLINS, 500 },    { "LEGEND OF THE BOARD", AK_BOUNTIES, 2000 },
+    { "LOREKEEPER", AK_LORE, 28 },              { "THE WHOLE STORY", AK_LORE, LORE_COUNT },
+    { "EVERY ASPECT", AK_CODEX, 54 },           { "ANCESTRAL ARSENAL", AK_ANCESTRAL, 100 },
+    { "MYTHIC HOARD", AK_MYTHIC, 5 },           { "FULL CIRCLE", AK_STORY, 3 },
+    { "PHOENIX", AK_REBIRTH, 10 },              { "UNDYING", AK_REBIRTH, 25 },
+    { "ENDLESS CYCLE", AK_REBIRTH, 50 },        { "DEDICATED", AK_HOURS, 50 },
+    { "A HUNDRED HOURS", AK_HOURS, 100 },       { "OBSESSED", AK_HOURS, 200 },
+    { "THREE HUNDRED HOURS", AK_HOURS, 300 },
 };
 
 /* ------------------------------------------------------------- bounties */
@@ -60,13 +75,13 @@ static void roll_bounty(const Profile *p, Bounty *b, Rng *r)
     b->arg = 0;
     b->have = 0;
     switch (kind) {
-    case BT_KILL_TYPE: b->arg = (uint8_t)pick_monster(p, r); b->need = (uint16_t)rng_range(r, 40, 80); break;
-    case BT_ELITES:    b->need = (uint16_t)rng_range(r, 6, 12); break;
-    case BT_FLOORS:    b->need = (uint16_t)rng_range(r, 4, 8); break;
-    case BT_GOBLINS:   b->need = 1; break;
-    case BT_SHRINES:   b->need = (uint16_t)rng_range(r, 2, 3); break;
-    case BT_EVENTS:    b->need = (uint16_t)rng_range(r, 2, 3); break;
-    case BT_LEGENDARY: b->need = (uint16_t)rng_range(r, 2, 4); break;
+    case BT_KILL_TYPE: b->arg = (uint8_t)pick_monster(p, r); b->need = (uint16_t)rng_range(r, 120, 240); break;
+    case BT_ELITES:    b->need = (uint16_t)rng_range(r, 15, 30); break;
+    case BT_FLOORS:    b->need = (uint16_t)rng_range(r, 10, 20); break;
+    case BT_GOBLINS:   b->need = (uint16_t)rng_range(r, 1, 2); break;
+    case BT_SHRINES:   b->need = (uint16_t)rng_range(r, 4, 6); break;
+    case BT_EVENTS:    b->need = (uint16_t)rng_range(r, 4, 6); break;
+    case BT_LEGENDARY: b->need = (uint16_t)rng_range(r, 4, 8); break;
     default:           b->need = 1; break;               /* BT_BOSS */
     }
 }
@@ -124,12 +139,12 @@ int goals_note(Profile *p, GoalEvent e, int arg)
 double goals_complete(Profile *p, int slot, Rng *r)
 {
     int f = MAX(p->best_floor, 1);
-    double gold = kill_gold(f) * 150.0;
+    double gold = kill_gold(f) * 400.0;
     if (slot < 0 || slot >= BOUNTY_SLOTS || p->bounty[slot].kind == BT_NONE)
         return 0;
     prog_add_gold(p, gold);
-    p->iron += 2 + f / 5;
-    p->souls += 1 + f / 20;
+    p->iron += 5 + f / 3;
+    p->souls += 2 + f / 15;
     p->n_bounties++;
     p->bounty[slot].kind = BT_NONE;
     roll_bounty(p, &p->bounty[slot], r);
@@ -181,7 +196,8 @@ uint32_t ach_progress(const Profile *p, int id)
     case AK_CODEX:     return codex_size(p);
     case AK_ANCESTRAL: return p->n_ancestral;
     case AK_MYTHIC:    return p->n_mythic;
-    case AK_STORY:     return (uint32_t)story_event_seen(p, STORY_EPILOGUE) + story_event_seen(p, STORY_FINALE);
+    case AK_STORY:     return (uint32_t)story_event_seen(p, STORY_EPILOGUE) + story_event_seen(p, STORY_FINALE)
+                              + story_event_seen(p, STORY_VICTORY + ACT_COUNT - 1);
     case AK_REBIRTH:   return (uint32_t)p->rebirths;
     default:           return (uint32_t)(p->play_seconds / 3600.0);   /* AK_HOURS */
     }
@@ -221,8 +237,8 @@ void ach_text(char *out, size_t cap, int id)
     };
     const AchDef *d = &ach_defs[id];
     char n[16];
-    if (d->kind == AK_STORY && d->need == 2) {
-        snprintf(out, cap, "%s", T("FINISH ACT X"));
+    if (d->kind == AK_STORY && d->need >= 2) {
+        snprintf(out, cap, "%s", T(d->need == 2 ? "FINISH ACT X" : "FINISH ACT XV"));
         return;
     }
     if (d->need == 1 && one[d->kind]) {

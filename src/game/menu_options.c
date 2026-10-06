@@ -15,8 +15,8 @@
 static const char *const up_names[UP_COUNT] = { "MIGHT", "VIGOR", "GREED", "WISDOM", "FORTUNE", "HASTE",
                                                 "HEAD START", "PATIENCE" };
 static const char *const up_desc[UP_COUNT] = {
-    "[X]15% DAMAGE", "+15% LIFE", "+20% GOLD", "+20% EXPERIENCE",
-    "RARER LOOT", "+5% ATTACK AND MOVE", "+5 STARTING FLOOR", "+2H OFFLINE CAP",
+    "[X]12% DAMAGE", "+15% LIFE", "+20% GOLD", "+20% EXPERIENCE",
+    "RARER LOOT", "+5% ATTACK AND MOVE", "+5 STARTING FLOOR", "+4H OFFLINE CAP",
 };
 
 /* -------------------------------------------------------------- embers */

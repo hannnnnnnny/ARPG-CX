@@ -304,9 +304,16 @@ void events_touch(World *w, Profile *p)
 
 /* ------------------------------------------------------------ champions */
 
+/* Affixes per champion: 1, then 2 from floor 30, 3 from Torment III and 4
+ * from Torment V. */
+int champion_affixes(int floor)
+{
+    return floor >= 251 ? 4 : floor >= 151 ? 3 : floor >= 30 ? 2 : 1;
+}
+
 void champion_roll(World *w, Monster *m)
 {
-    int n = w->floor >= 30 ? 2 : 1;
+    int n = champion_affixes(w->floor);
     while (n > 0) {
         int bit = 1 << rng_range(&w->rng, 0, CH_KINDS - 1);
         if (m->champ & bit)

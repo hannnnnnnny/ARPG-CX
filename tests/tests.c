@@ -334,7 +334,7 @@ static void test_progression(void)
     CHECK(P.level == LEVEL_CAP && P.paragon_level > 0 && P.skill_points == 0);   /* auto spent */
     CHECK(skill_points_spent(&P) == LEVEL_CAP);
     CHECK(prog_paragon_available(&P) == 0 || paragon_spent(&P) >= 300);         /* auto paragon */
-    CHECK(paragon_xp(10) > paragon_xp(0));
+    CHECK(paragon_kills(10) > paragon_kills(0));
     P.gold = 1e30;
     CHECK(prog_switch_preset(&P, 2) && P.preset == 2 && skill_points_spent(&P) == LEVEL_CAP);
 }
@@ -367,6 +367,49 @@ static void test_offline(void)
     P.kpm = 30;
     CHECK(prog_offline(&P, 1000 + 3600, &rep) && rep.kills > 0 && P.gold > 0);
     CHECK(!prog_offline(&P, 500, &rep));                       /* clock went backwards */
+    /* a day away counts in full, and as time played */
+    P.save_time = 1000;
+    P.play_seconds = 0;
+    CHECK(prog_offline(&P, 1000 + 30 * 3600, &rep) && rep.seconds == 24u * 3600u);
+    CHECK(P.play_seconds == 24.0 * 3600.0);
+    P.up[UP_PATIENCE] = 8;
+    CHECK(prog_offline_cap_seconds(&P) == (24u + 32u) * 3600u);
+}
+
+/* The late game: paragon levels cost kills (no runaway with depth),
+ * mastery past paragon 100, glyphs to 100 from Torment floors, tiers. */
+static void test_long_road(void)
+{
+    static Stats a, b;
+    int i;
+    prog_new(&P, 8, CLASS_ROGUE);
+    P.level = LEVEL_CAP;
+    P.xp = 0;
+    P.floor = 50;
+    prog_add_xp(&P, kill_xp(50) * paragon_kills(0));
+    CHECK(P.paragon_level == 1);
+    P.floor = 300;                                             /* deeper floors: same kills per level */
+    prog_add_xp(&P, kill_xp(300) * (paragon_kills(1) - 0.5));
+    CHECK(P.paragon_level == 1);
+    prog_add_xp(&P, kill_xp(300));
+    CHECK(P.paragon_level == 2);
+    P.paragon_level = MASTERY_FROM;
+    stats_compute(&a, &P);
+    P.paragon_level = MASTERY_FROM + 50;
+    stats_compute(&b, &P);
+    CHECK(paragon_mastery(MASTERY_FROM) == 0 && paragon_mastery(MASTERY_FROM + 50) == 50);
+    CHECK(b.max_hp > a.max_hp * 1.5);
+    /* glyphs climb a level every few Torment floors */
+    P.glyph[0] = 1;
+    P.glyph_lvl[0] = 1;
+    P.floor = 120;
+    for (i = 0; i < 400; i++)
+        prog_floor_cleared(&P, false);
+    CHECK(P.glyph_lvl[0] > 25 && P.glyph_lvl[0] < GLYPH_MAX_LEVEL);
+    CHECK(glyph_radius(46) == 5 && glyph_radius(15) == 4 && glyph_radius(1) == 3);
+    CHECK(torment_tier(50) == 0 && torment_tier(51) == 1 && torment_tier(101) == 2 && torment_tier(351) == 7);
+    CHECK(champion_affixes(29) == 1 && champion_affixes(30) == 2 && champion_affixes(151) == 3);
+    CHECK(fabs(monster_scale(201) / monster_scale(200) - floor_scale(201) / floor_scale(200) * GAP_LATE) < 1e-9);
 }
 
 static void test_rebirth(void)
@@ -444,9 +487,13 @@ static void test_story(void)
     char name[64];
     int i;
     CHECK(story_act(1) == 0 && story_act(10) == 0 && story_act(11) == 1 && story_act(50) == 4);
-    CHECK(story_act(51) == 5 && story_act(100) == 9 && story_act(101) == -1);
+    CHECK(story_act(51) == 5 && story_act(100) == 9 && story_act(101) == 10 && story_act(350) == 14);
+    CHECK(story_act(351) == -1 && story_act(150) == 10 && story_act(151) == 11);
     CHECK(story_is_act_start(21) && !story_is_act_start(22) && story_is_act_boss(40) && story_is_act_boss(60));
-    CHECK(!story_is_act_boss(110));
+    CHECK(story_is_act_start(101) && story_is_act_start(151) && !story_is_act_start(111));
+    CHECK(!story_is_act_boss(110) && story_is_act_boss(150) && story_is_act_boss(350) && !story_is_act_boss(360));
+    story_boss_name(name, sizeof name, 150);
+    CHECK(!strcmp(name, "THE PALE REGENT"));
     story_boss_name(name, sizeof name, 10);
     CHECK(!strcmp(name, "MORDRAIN THE BONE WARDEN"));
     story_boss_name(name, sizeof name, 100);
@@ -459,8 +506,13 @@ static void test_story(void)
     for (i = 0; i < STORY_LORE; i++)
         if (i < ACT_COUNT || (i >= STORY_VICTORY && i < STORY_VICTORY + ACT_COUNT) || i == STORY_FINALE)
             story_mark_seen(&P, i);
-    CHECK(P.story_seen == 0x3FFFFFu);                     /* 22 distinct bits */
-    for (i = 0; i < LORE_COUNT; i++) {
+    CHECK(P.story_seen == 0xFFFFFFFFu);                   /* 32 distinct bits */
+    CHECK(story_unread_lore(&P, 0) >= 0 && story_lore_floor(16) == 100 && story_lore_floor(LORE_COUNT - 1) <= 350);
+    for (i = 0; i < 16; i++)
+        story_mark_seen(&P, STORY_LORE + i);
+    CHECK(story_unread_lore(&P, 5) < 0);                  /* the deep pages wait below floor 100 */
+    P.best_floor_ever = 400;
+    for (i = 16; i < LORE_COUNT; i++) {
         int page = story_unread_lore(&P, (uint32_t)i * 7u);
         CHECK(page >= 0 && !story_event_seen(&P, STORY_LORE + page));
         story_mark_seen(&P, STORY_LORE + page);
@@ -488,6 +540,12 @@ static void test_goals(void)
     CHECK(goals_complete(&P, slot, &r) > 0 && P.n_bounties == 1 && P.bounty[0].have == 0 && P.gold > 0);
     CHECK(bounty_sane(&P.bounty[0]) && P.bounty[0].kind != BT_NONE);
     /* achievements and renown */
+    for (i = 0; i < ACH_COUNT; i++)
+        CHECK(ach_defs[i].name && ach_defs[i].need > 0);
+    for (i = 0, slot = 0; i < ACH_COUNT; i++)                /* "every aspect" means every aspect */
+        if (ach_defs[i].kind == AK_CODEX)
+            slot = MAX(slot, (int)ach_defs[i].need);
+    CHECK(slot == aspect_count);
     CHECK(goals_check_achievements(&P) < 0 && renown_tier(&P) == 0);
     P.best_floor = 30; P.total_kills = 12000; P.n_goblins = 1; P.level = 25;
     CHECK(goals_check_achievements(&P) == 0);              /* INTO THE DARK first */
@@ -536,7 +594,7 @@ static void test_event_kinds(void)
         bad += S.w.boss_floor && S.w.ev.kind != EV_NONE;
         for (i = 0; i < S.w.nmon; i++) {
             const Monster *m = &S.w.mon[i];
-            bad += m->elite ? bit_count(m->champ) != (f >= 30 ? 2 : 1) : m->champ != 0;
+            bad += m->elite ? bit_count(m->champ) != champion_affixes(f) : m->champ != 0;
         }
     }
     CHECK(bad == 0);
@@ -797,6 +855,7 @@ int main(void)
     printf("loot\n");          test_loot_and_salvage();
     printf("offline\n");       test_offline();
     printf("rebirth\n");       test_rebirth();
+    printf("long road\n");     test_long_road();
     printf("save\n");          test_save();
     printf("migration\n");     test_migration();
     printf("story\n");         test_story();

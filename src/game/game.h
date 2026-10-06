@@ -142,7 +142,7 @@ void story_render(Game *g);
 void subtitle_tick(Game *g);
 void subtitle_render(const Game *g);
 const char *const *story_page(int id, const char **title);
-#define JOURNAL_MAX 48   /* every story event: STORY_EVENT_END */
+#define JOURNAL_MAX 80   /* every story event: STORY_EVENT_END */
 int  journal_events(const Profile *p, int out[JOURNAL_MAX]);
 /* menus*.c */
 void menu_tick(Game *g, Input *in, uint32_t now);

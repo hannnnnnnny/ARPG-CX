@@ -38,12 +38,18 @@ static void add_elixir_and_upgrades(BuildRT *b, const Profile *p)
         case ELIX_WISDOM:    build_add_mod(b, MOD_XP, 0, 10); break;
         default: break;
         }
-    build_add_mod(b, MOD_X_ALL, 0, 15.0 * p->up[UP_MIGHT]);
+    /* MIGHT compounds (x1.12 a rank) so embers stay worth earning forever. */
+    build_add_mod(b, MOD_X_ALL, 0, 100.0 * (pow(1.12, p->up[UP_MIGHT]) - 1.0));
     build_add_mod(b, MOD_LIFE_PCT, 0, 15.0 * p->up[UP_VIGOR]);
     build_add_mod(b, MOD_GOLD, 0, 20.0 * p->up[UP_GREED]);
     build_add_mod(b, MOD_XP, 0, 20.0 * p->up[UP_WISDOM]);
     build_add_mod(b, MOD_ATK_SPD, 0, 5.0 * p->up[UP_HASTE]);
     build_add_mod(b, MOD_MOVE, 0, 5.0 * p->up[UP_HASTE]);
+    if (paragon_mastery(p->paragon_level) > 0) {
+        double m = 100.0 * (pow(1.0 + MASTERY_PCT / 100.0, paragon_mastery(p->paragon_level)) - 1.0);
+        build_add_mod(b, MOD_X_ALL, 0, m);
+        build_add_mod(b, MOD_LIFE_PCT, 0, m);
+    }
     if (renown_tier(p) > 0) {
         build_add_mod(b, MOD_X_ALL, 0, RENOWN_DMG_PCT * renown_tier(p));
         build_add_mod(b, MOD_LIFE_PCT, 0, RENOWN_DMG_PCT * renown_tier(p));
