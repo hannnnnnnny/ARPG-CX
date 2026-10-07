@@ -1,4 +1,5 @@
 #include "events.h"
+#include "events_int.h"
 #include "world_int.h"
 #include "balance.h"
 #include "progress.h"
@@ -9,7 +10,6 @@
 #include <stdio.h>
 #include <string.h>
 
-#define EVENT_CHANCE  55               /* % of ordinary floors with an event */
 #define GOBLIN_TICKS  (12 * TICK_HZ)
 #define GOBLIN_SPEED  FX(1.15)          /* the hero (1.6) catches up, slowly */
 #define REACHABLE     30000
@@ -36,7 +36,7 @@ const char *shrine_tag(int kind) { return shrine_tags[kind % SH_COUNT]; }
 
 /* ------------------------------------------------------------ placement */
 
-static bool find_cell(World *w, int min_path, int *cx, int *cy)
+bool event_find_cell(World *w, int min_path, int *cx, int *cy)
 {
     int tries;
     for (tries = 0; tries < 300; tries++) {
@@ -52,7 +52,7 @@ static bool find_cell(World *w, int min_path, int *cx, int *cy)
     return false;
 }
 
-static int wave_type(World *w)
+int event_wave_type(World *w)
 {
     int t, tries = 0;
     do {
@@ -62,9 +62,9 @@ static int wave_type(World *w)
 }
 
 /* A pack that knows where the hero is, around cell (cx, cy). */
-static void spawn_wave(World *w, int cx, int cy, int n, int champs)
+void spawn_wave(World *w, int cx, int cy, int n, int champs)
 {
-    int k, tries = 0, type = wave_type(w);
+    int k, tries = 0, type = event_wave_type(w);
     for (k = 0; k < n && tries < 200; tries++) {
         int x = cx + rng_range(&w->rng, -5, 5), y = cy + rng_range(&w->rng, -4, 4), before = w->nmon;
         if (!world_walkable(w, x, y) || (ABS(x - cx) < 2 && ABS(y - cy) < 2) || w->fh[y][x] > 14)
@@ -85,7 +85,7 @@ static void spawn_goblin(World *w)
 {
     int cx, cy, before = w->nmon;
     Monster *m;
-    if (!find_cell(w, 10, &cx, &cy))
+    if (!event_find_cell(w, 10, &cx, &cy))
         return;
     spawn_monster(w, MT_IMP, cx, cy, false, false);
     if (w->nmon == before)
@@ -97,21 +97,37 @@ static void spawn_goblin(World *w)
     w->ev.kind = EV_GOBLIN;
 }
 
+/* Every ordinary floor rolls one event (weights out of 100). */
+static int pick_event(World *w, const Profile *p)
+{
+    static const struct { uint8_t kind, weight; } table[] = {
+        { EV_GOBLIN, 9 },  { EV_SHRINE, 14 }, { EV_AMBUSH, 11 }, { EV_CHEST, 11 }, { EV_FALLEN, 8 },
+        { EV_HARVEST, 14 }, { EV_CURSED, 13 }, { EV_HUNT, 11 },  { EV_RIFT, 9 },
+    };
+    int roll = rng_range(&w->rng, 0, 99), i;
+    for (i = 0; i < (int)(sizeof table / sizeof table[0]) - 1 && roll >= table[i].weight; i++)
+        roll -= table[i].weight;
+    if (table[i].kind == EV_FALLEN && story_unread_lore(p, 0) < 0)
+        return EV_SHRINE;
+    return table[i].kind;
+}
+
 void events_init(World *w, const Profile *p)
 {
-    int roll, kind;
+    int kind;
     memset(&w->ev, 0, sizeof w->ev);
-    if (w->boss_floor || w->floor < 2 || rng_range(&w->rng, 0, 99) >= EVENT_CHANCE)
+    if (w->boss_floor || w->floor < 2)
         return;
-    roll = rng_range(&w->rng, 0, 99);
-    kind = roll < 20 ? EV_GOBLIN : roll < 50 ? EV_SHRINE : roll < 70 ? EV_AMBUSH : roll < 85 ? EV_CHEST : EV_FALLEN;
-    if (kind == EV_FALLEN && story_unread_lore(p, 0) < 0)
-        kind = EV_SHRINE;
+    kind = pick_event(w, p);
     if (kind == EV_GOBLIN) {
         spawn_goblin(w);
         return;
     }
-    if (kind != EV_AMBUSH && !find_cell(w, 8, &w->ev.cx, &w->ev.cy))
+    if (kind >= EV_HARVEST) {
+        events_d4_init(w, kind);
+        return;
+    }
+    if (kind != EV_AMBUSH && !event_find_cell(w, 8, &w->ev.cx, &w->ev.cy))
         return;
     w->ev.kind = (uint8_t)kind;
     w->ev.shrine = (uint8_t)rng_range(&w->rng, 0, SH_COUNT - 1);
@@ -119,7 +135,7 @@ void events_init(World *w, const Profile *p)
 
 /* ------------------------------------------------------------- rewards */
 
-static void bonus_gold(World *w, Profile *p, double kills, int x, int y)
+void event_bonus_gold(World *w, Profile *p, double kills, int x, int y)
 {
     char n[16], buf[32];
     double g = kill_gold(w->floor) * kills * (1.0 + w->st.gold_pct / 100.0);
@@ -132,7 +148,7 @@ static void bonus_gold(World *w, Profile *p, double kills, int x, int y)
 static void goblin_loot(World *w, Profile *p, const Monster *m)
 {
     int kind = rng_range(&w->rng, 0, GEM_KINDS - 1);
-    bonus_gold(w, p, 60, FX_TO_INT(m->x), FX_TO_INT(m->y) - 20);
+    event_bonus_gold(w, p, 60, FX_TO_INT(m->x), FX_TO_INT(m->y) - 20);
     world_drop_item(w, p, m->x, m->y, RAR_RARE, 6);
     world_drop_item(w, p, m->x, m->y, RAR_RARE, 6);
     p->gems[kind][CLAMP(w->floor / 12, 0, GEM_TIERS - 1)] += 2;
@@ -147,16 +163,18 @@ static void wave_cleared(World *w, Profile *p)
 {
     fx x = w->ev.kind == EV_CHEST ? cell_center(w->ev.cx) : w->h.x;
     fx y = w->ev.kind == EV_CHEST ? cell_center(w->ev.cy) : w->h.y;
+    if (events_d4_wave_cleared(w, p))
+        return;
     w->ev.state = ES_DONE;
     if (w->ev.kind == EV_CHEST) {
         world_drop_item(w, p, x, y, RAR_LEGEND, 4);
         world_drop_item(w, p, x, y, RAR_RARE, 4);
-        bonus_gold(w, p, 30, FX_TO_INT(x), FX_TO_INT(y) - 16);
+        event_bonus_gold(w, p, 30, FX_TO_INT(x), FX_TO_INT(y) - 16);
         world_banner(w, "THE CURSED CHEST OPENS", C_GOLDEN);
         world_sound(w, SND_CHEST);
     } else {
         world_drop_item(w, p, x, y, RAR_RARE, 4);
-        bonus_gold(w, p, 20, FX_TO_INT(x), FX_TO_INT(y) - 16);
+        event_bonus_gold(w, p, 20, FX_TO_INT(x), FX_TO_INT(y) - 16);
         world_message(w, "AMBUSH REPELLED!", C_EVENT);
     }
     world_goal(w, p, GE_EVENT, 0);
@@ -175,6 +193,7 @@ void events_on_kill(World *w, Profile *p, Monster *m)
         goblin_loot(w, p, m);
     if (m->champ & CH_VOLATILE)
         volatile_burst(w, p, m);
+    events_d4_on_kill(w, p, m);
     if (m->wave && w->ev.wave_left > 0 && --w->ev.wave_left == 0)
         wave_cleared(w, p);
 }
@@ -247,6 +266,7 @@ void events_tick(World *w, Profile *p)
         check_achievements(w, p);
     if (w->ev.kind == EV_GOBLIN)
         goblin_tick(w);
+    events_d4_tick(w, p);
     if (w->ev.kind == EV_AMBUSH && w->ev.state == ES_WAITING && w->quota > 1 && w->kills >= w->quota / 2) {
         w->ev.state = ES_RUNNING;
         spawn_wave(w, px_to_cell(w->h.x), px_to_cell(w->h.y), 5, 1);
@@ -262,13 +282,14 @@ void events_tick(World *w, Profile *p)
 
 bool events_object_pending(const World *w)
 {
-    return (w->ev.kind == EV_SHRINE || w->ev.kind == EV_CHEST || w->ev.kind == EV_FALLEN)
+    return (w->ev.kind == EV_SHRINE || w->ev.kind == EV_CHEST || w->ev.kind == EV_FALLEN
+            || w->ev.kind == EV_CURSED || w->ev.kind == EV_RIFT)
         && w->ev.state == ES_WAITING && w->fh[w->ev.cy][w->ev.cx] < REACHABLE;
 }
 
 bool events_wave_active(const World *w)
 {
-    return w->ev.wave_left > 0;
+    return w->ev.wave_left > 0 || events_d4_running(w);
 }
 
 static void touch_fallen(World *w, Profile *p)
@@ -306,6 +327,8 @@ void events_touch(World *w, Profile *p)
             wave_cleared(w, p);
     } else if (w->ev.kind == EV_FALLEN) {
         touch_fallen(w, p);
+    } else {
+        events_d4_touch(w, p);
     }
 }
 
@@ -345,7 +368,7 @@ void champion_name(char *out, size_t cap, const Monster *m)
                 snprintf(tmp, sizeof tmp, "%s", T(champ_names[k]));
             snprintf(affixes, sizeof affixes, "%s", tmp);
         }
-    tjoin(out, cap, affixes, mon_defs[m->type % MT_COUNT].name);
+    tjoin(out, cap, affixes, mon_defs[m->type % MON_TYPES].name);
 }
 
 /* --------------------------------------------------------------- goals */

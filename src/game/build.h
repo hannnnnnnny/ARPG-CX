@@ -13,6 +13,7 @@
 #include "defs.h"
 #include "skills.h"
 #include "sig.h"
+#include "myth_ids.h"
 
 typedef enum {
     MOD_NONE,
@@ -38,6 +39,8 @@ typedef enum {
     MOD_MINION_COUNT,
     /* signature builds (sig.h): arg = Signature / SigFacet */
     MOD_SIGNATURE, MOD_SIG_FACET,
+    /* mythic powers (mythic.h): arg = MythicPower, value = its strength */
+    MOD_MYTHIC,
     MOD_COUNT
 } ModKind;
 
@@ -111,6 +114,8 @@ typedef struct {
     double  sig_power;                /* its % weapon damage */
     double  facet[SF_COUNT];          /* aspect facets feeding it */
     double  x_life;                   /* [x] maximum life (1 = none) */
+    double  myth[MY_COUNT];           /* strength of each mythic power worn, 0 = none */
+    uint8_t myth_any;                 /* at least one mythic power worn */
 } BuildRT;
 
 void build_clear(BuildRT *b);

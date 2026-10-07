@@ -1,6 +1,7 @@
 """Regenerate the README screenshots and clips in docs/media (Windows build).
 
     sh tools/build_host.sh && python tools/media/make_media.py   (project root)
+    python tools/media/make_media.py --only season_butcher,season_mythic
 
 Everything is rendered by the game itself through the 640x480 headless
 runner (build/ad_headless_hd: the same GFX_HD renderer and 12px CJK font as
@@ -45,6 +46,11 @@ CLIPS = [
      (640, 120, 3), 100),
     ('meta_inferno', ['--new', '--class', '1', '--preset', '0', '--fast', '0.4', '--sig'] + ZH, '-:500',
      (20, 120, 3), 100),
+    # season content: the Fleshrender, mythic powers, a blood harvest
+    ('season_butcher', ['--new', '--class', '0', '--fast', '1.5', '--butcher'] + ZH, '-:900', (20, 120, 3), 100),
+    ('season_mythic', ['--new', '--class', '3', '--preset', '1', '--fast', '1.0', '--mythic', '1,5,9,11,16'] + ZH,
+     '-:900', (330, 120, 3), 100),
+    ('season_harvest', ['--new', '--class', '0', '--fast', '0.8', '--event', '6'] + ZH, '-:700', (40, 120, 3), 100),
 ]
 
 SHOTS = [
@@ -114,13 +120,16 @@ def shot(name, args, script, tick):
 
 
 def main():
+    only = sys.argv[sys.argv.index('--only') + 1].split(',') if '--only' in sys.argv else None
     shutil.rmtree(TMP, ignore_errors=True)
     os.makedirs(TMP)
     os.makedirs(OUT, exist_ok=True)
     for c in CLIPS:
-        clip(*c)
+        if only is None or c[0] in only:
+            clip(*c)
     for s in SHOTS:
-        shot(*s)
+        if only is None or s[0] in only:
+            shot(*s)
     shutil.rmtree(TMP, ignore_errors=True)
 
 

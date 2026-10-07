@@ -3,7 +3,7 @@
 #ifndef AD_ART_H
 #define AD_ART_H
 
-#define MON_ART_COUNT 7
+#define MON_ART_COUNT 8   /* the 7 monster kinds and the butcher */
 #define HAIR_STYLES 6
 #define FACE_STYLES 5
 #define SLOT_ICONS 9   /* weapon, off-hand, helm, chest, gloves, pants, boots, amulet, ring */

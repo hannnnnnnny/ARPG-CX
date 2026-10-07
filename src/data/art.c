@@ -74,5 +74,14 @@ const char *const art_mon[MON_ART_COUNT][2][16] = {
        "...kSdccdSSdk...", "...kSSSSSSSSk...", "..kkkSSSSSSkkk..", ".kSSkSscsSSkSSk.",
        ".kSdkSSSSSSkdSk.", ".kSSkSdddSSkSSk.", ".kkkkSSSSSSkkkk.", "....kSSkkSSk....",
        "...kSSSk.kSSSk..", "...kkkkk.kkkkk..", "................", "................" }},
+    /* Fleshrender (the butcher): apron, cleaver, burning eyes */
+    {{ "................", "......kkkk......", ".....kffffk.....", ".....kfefek.....",
+       ".....kRffRk.....", "...kkkkffkkkk...", "..kffkwwwwkffk..", ".kffkwwrwwwkffk.",
+       ".kfk.kwwrrwk.kfk", ".kfk.kwrwwwk.kSk", "..kk.kwwwwk.kSSk", ".....kNNNNk.kSSk",
+       ".....kNk.kNk.ks.", ".....kNk.kNk..k.", "....kNNk.kNNk...", "....kkk...kkk..." },
+     { "................", "......kkkk...kk.", ".....kffffk.kSSk", ".....kfefek.kSSk",
+       ".....kRffRk.kSk.", "...kkkkffkkkkfk.", "..kffkwwwwkffk..", ".kffkwwrwwwkk...",
+       ".kfk.kwwrrwk....", ".kfk.kwrwwwk....", "..kk.kwwwwk.....", ".....kNNNNk.....",
+       "....kNk..kNk....", "....kNk...kNk...", "...kNNk...kNNk..", "...kkk.....kkk.." }},
 };
 

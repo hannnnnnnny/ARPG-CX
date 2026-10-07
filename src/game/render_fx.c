@@ -382,7 +382,12 @@ void fx_draw_effect(const Effect *e, int cam_x, int cam_y)
     case FX_PUFF:   gfx_circle(x, y, 3 + e->t, e->color); break;
     case FX_HEAL:
     case FX_LEVEL:  buff_rings(e, x, y, fx_style_of(e->vfx)); break;
-    default:        fx_draw_sig(e, x, y); break;
+    default:
+        if (e->kind >= FX_STAR)
+            fx_draw_myth(e, x, y, e->x2 - cam_x, e->y2 - cam_y);
+        else
+            fx_draw_sig(e, x, y);
+        break;
     }
 }
 

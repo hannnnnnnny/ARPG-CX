@@ -157,6 +157,17 @@ static void draw_buffs(const World *w)
     if (h->buff_t[BUFF_IMBUE]) x = buff_tag(x, "IMBUED", element_color((Element)h->imbue_el));
     if (h->buff_t[BUFF_SPEED] || h->haste_t) x = buff_tag(x, "HASTE", RGB565(120, 230, 160));
     if (h->buff_t[BUFF_CRIT]) x = buff_tag(x, "FOCUS", RGB565(255, 220, 60));
+    if (w->myth.stop_t > 0) x = buff_tag(x, "TIME STOP", RGB565(150, 210, 255));
+    if (w->sig.res > 1.5) {
+        char n[12];
+        fmt_num(n, sizeof n, w->sig.res);
+        snprintf(buf, sizeof buf, T("RESONANCE x%s"), n);
+        x = buff_tag(x, buf, RGB565(255, 170, 60));
+    }
+    if (w->myth.streak > 0) {
+        snprintf(buf, sizeof buf, T("SLAUGHTER x%d%%"), 100 + w->myth.streak);
+        x = buff_tag(x, buf, RGB565(255, 70, 70));
+    }
     if (h->stacks > 0) {
         snprintf(buf, sizeof buf, T("FEROCITY %d"), h->stacks);
         buff_tag(x, buf, RGB565(255, 200, 80));
@@ -208,6 +219,19 @@ static void draw_bounty(const Profile *p)
     tw = MIN(font_text_width(buf, 1), 150);
     gfx_dim_rect(SCREEN_W - tw - 6, 12, tw + 3, 9);
     font_draw_fit(SCREEN_W - tw - 4, 13, buf, tw, RGB565(230, 200, 120));
+}
+
+/* The running event's objective, under the bounty line. */
+static void draw_event(const World *w)
+{
+    char buf[96];
+    int tw;
+    events_d4_status(w, buf, sizeof buf);
+    if (!buf[0])
+        return;
+    tw = MIN(font_text_width(buf, 1), 150);
+    gfx_dim_rect(SCREEN_W - tw - 6, 22, tw + 3, 9);
+    font_draw_fit(SCREEN_W - tw - 4, 23, buf, tw, (w->tick >> 3) & 1 ? RGB565(255, 110, 90) : RGB565(255, 170, 120));
 }
 
 /* Aldric (through the torch) or the hero, just above the subtitles. */
@@ -263,6 +287,7 @@ void render_hud(const World *w, const Profile *p)
     draw_info(w, p);
     draw_status(w, p);
     draw_bounty(p);
+    draw_event(w);
     draw_bark(w, p);
     if (w->boss_floor)
         draw_boss_bar(w);

@@ -3,6 +3,8 @@
  * effects, lucky hits, damage numbers and kill rewards.
  */
 #include "world_int.h"
+#include "mythic.h"
+#include "story.h"
 #include "balance.h"
 #include "progress.h"
 #include "items.h"
@@ -178,8 +180,8 @@ static void damage_floater(World *w, const Monster *m, double dmg, bool crit, bo
         c = vuln ? C_VCRIT : C_CRIT;
     else
         c = vuln ? C_VULN : C_NORMAL;
-    if (h->sig) {                                  /* signature hits: huge, outlined numbers */
-        c = crit ? RGB565(255, 240, 120) : element_color((Element)h->element);
+    if (h->sig) {                                  /* signature and mythic hits: huge, outlined numbers */
+        c = crit ? RGB565(255, 240, 120) : h->sig == 2 ? RGB565(215, 150, 255) : element_color((Element)h->element);
         floater_kind(w, x, y - 4, buf, c, crit || op || m->boss ? FL_MEGA : FL_BIG);
         return;
     }
@@ -221,7 +223,7 @@ static double compute(World *w, const Monster *m, const Hit *h, HitLog *l)
     if (l->is_op)   /* overpower adds your current life and barrier to the hit */
         dmg += (w->h.hp + w->h.barrier) * 0.2;
     l->op = l->is_op ? (1.5 + st->op_dmg) * st->b.x_op : 1.0;
-    dmg *= l->stat * l->add * l->mult * l->vuln * l->crit * l->op;
+    dmg *= l->stat * l->add * l->mult * l->vuln * l->crit * l->op * myth_damage_mult(w, m) * MAX(w->sig.res, 1.0);
     if (!h->dot)
         dmg *= 0.9 + 0.2 * (double)(rng_next(&w->rng) % 1000u) / 1000.0;
     l->total = dmg;
@@ -248,6 +250,30 @@ static void on_hit_effects(World *w, Monster *m, const Hit *h)
         hero_buff(w, BUFF_BERSERK, MAX(w->h.buff_val[BUFF_BERSERK], 25), 30);
 }
 
+/* Blood colour of a monster type, for sparks and gibs. */
+static uint16_t gore_color(const Monster *m)
+{
+    static const uint16_t c[MON_TYPES] = {
+        RGB565(235, 228, 205), RGB565(150, 60, 190), RGB565(110, 190, 70), RGB565(120, 200, 60),
+        RGB565(255, 110, 40), RGB565(170, 60, 200), RGB565(170, 170, 180), RGB565(200, 20, 30),
+    };
+    return c[m->type % MON_TYPES];
+}
+
+/* Impact: a spark and a shove on crits and on the big powers' hits. */
+static void hit_feel(World *w, Monster *m, const HitLog *l, const Hit *h)
+{
+    fx dx, dy;
+    if (h->dot || (!l->is_crit && !h->sig))
+        return;
+    effect(w, FX_SPARK, FX_TO_INT(m->x), FX_TO_INT(m->y) - 6, 0, 0, l->is_crit ? 10 : 7, 6,
+           l->is_crit ? RGB565(255, 240, 150) : gore_color(m));
+    if (m->boss || m->special || m->goblin)
+        return;
+    step_toward(w->h.x, w->h.y, m->x, m->y, l->is_crit ? FX(3) : FX(2), &dx, &dy);
+    move_body(w, &m->x, &m->y, dx, dy, MON_HALF);
+}
+
 void deal_damage(World *w, Profile *p, int i, const Hit *h)
 {
     Monster *m = &w->mon[i];
@@ -265,11 +291,14 @@ void deal_damage(World *w, Profile *p, int i, const Hit *h)
         world_sound(w, l.is_crit ? SND_CRIT : SND_HIT);
         log_hit(w, &l);
         on_hit_effects(w, m, h);
+        hit_feel(w, m, &l, h);
     }
     if (!h->dot || (w->tick % 30) < DOT_EVERY)
         damage_floater(w, m, dmg, l.is_crit, l.is_vuln, l.is_op, h);
     if (w->st.b.sig && h->skill < CLASS_SKILLS)
         sig_on_hit(w, p, i, h, l.is_crit);
+    if (w->st.b.myth_any && m->alive)
+        myth_on_hit(w, p, i, h, l.is_crit);
     if (m->hp <= 0 && m->alive)
         kill_rewards(w, p, m);
 }
@@ -298,7 +327,7 @@ void tick_dots(World *w, Profile *p, int i)
 void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
 {
     const Stats *st = &w->st;
-    double d = raw * (1.0 - st->dr), armor = stats_damage_reduction(st, w->floor);
+    double d = raw * (1.0 - st->dr) / MAX(w->sig.res, 1.0), armor = stats_damage_reduction(st, w->floor);
     char buf[16];
     if (w->h.dead_t > 0)
         return;
@@ -334,6 +363,8 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
     }
     if (d >= st->max_hp * 0.03)
         world_sound(w, SND_HURT);
+    if (w->h.hp <= 0 && myth_refuse_death(w))
+        return;
     if (w->h.hp <= 0) {
         world_sound(w, SND_DEATH);
         w->h.hp = 0;
@@ -364,6 +395,11 @@ static void announce_drop(World *w, Profile *p, const Item *it)
           rarity_name((Rarity)it->rarity));
     strcat(buf, "!");
     world_banner(w, buf, rarity_color((Rarity)it->rarity));
+    if (it->rarity == RAR_MYTHIC) {                   /* the screen itself reacts */
+        sig_shake(w, 16, 4);
+        w->sig.flash_t = 4;
+        w->sig.flash_color = rarity_color(RAR_MYTHIC);
+    }
     bark(&w->bark, it->rarity == RAR_MYTHIC ? BK_MYTHIC : it->rarity == RAR_UNIQUE ? BK_UNIQUE : BK_ANCESTRAL,
          (uint32_t)w->tick);
 }
@@ -502,7 +538,7 @@ static void kill_goals(World *w, Profile *p, const Monster *m)
 
 void kill_rewards(World *w, Profile *p, Monster *m)
 {
-    double mult = m->boss ? 25.0 : m->elite ? 3.0 : 1.0;
+    double mult = m->boss || m->special == MS_BUTCHER ? 25.0 : m->elite ? 3.0 : 1.0;
     double gold = world_shrine(w, SH_GREED) ? 3.0 : 1.0, xp = world_shrine(w, SH_WISDOM) ? 3.0 : 1.0;
     int levels;
     m->alive = 0;
@@ -512,7 +548,10 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     p->total_kills += 1;
     prog_add_gold(p, kill_gold(w->floor) * mult * gold * (1.0 + w->st.gold_pct / 100.0));
     levels = prog_add_xp(p, kill_xp(w->floor) * mult * xp * (1.0 + w->st.xp_pct / 100.0));
-    effect(w, FX_PUFF, FX_TO_INT(m->x), FX_TO_INT(m->y), 0, 0, m->boss ? 20 : 8, 10, RGB565(200, 200, 200));
+    effect(w, FX_GIB, FX_TO_INT(m->x), FX_TO_INT(m->y), 0, 0, m->boss || m->special ? 22 : m->elite ? 14 : 9, 14,
+           gore_color(m));
+    if (m->boss || m->elite || m->special)
+        sig_shake(w, m->boss || m->special ? 12 : 5, m->boss || m->special ? 4 : 2);
     corpse_add(w, m->x, m->y);
     p->souls += m->boss ? 5 : m->elite ? 1 : 0;   /* forgotten souls for the blacksmith */
     drop_item(w, p, m);
@@ -526,4 +565,9 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     events_on_kill(w, p, m);
     sig_boss_drop(w, p, m);
     sig_on_kill(w, p, m);
+    butcher_on_kill(w, p, m);
+    if (m->boss && w->floor >= 30)
+        mythic_try_drop(w, p, m->x, m->y, story_is_act_boss(w->floor) ? MYTHIC_ODDS_ACT_BOSS : MYTHIC_ODDS_GUARDIAN);
+    if (w->st.b.myth_any)
+        myth_on_kill(w, p, m);
 }

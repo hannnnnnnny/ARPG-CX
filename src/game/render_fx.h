@@ -38,6 +38,11 @@ void render_sig_giant(const Proj *pj, int x, int y);
 int  render_sig_shake(const World *w, int axis);
 void render_sig_flash(const World *w, int view_h);
 
+/* render_myth.c: mythic powers, hit sparks and gibs, mythic aura, time stop. */
+void fx_draw_myth(const Effect *e, int x, int y, int x2, int y2);
+void render_myth_aura(const World *w, int x, int y);
+void render_myth_tint(const World *w, int view_h);
+
 /* render_event.c: floor event objects, goblin sack, champion plates. */
 void render_event_object(const World *w, int cam_x, int cam_y);
 void render_monster_extras(const World *w, const Monster *m, int x, int top);

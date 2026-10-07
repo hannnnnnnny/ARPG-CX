@@ -65,6 +65,14 @@ static inline bool is_boss_floor(int floor) { return floor % 10 == 0; }
 #define GAP_LATE 1.06                 /* overridable for balance experiments */
 #endif
 
+/* Signature builds resonate with the depths: they shrug off this power of
+ * the monsters' lead over gear (sig_resonance), in damage dealt and taken,
+ * so they push about half again as deep as any other build. */
+#ifndef SIG_RESONANCE
+#define SIG_RESONANCE 0.35
+#endif
+double sig_resonance(int floor);
+
 /* Paragon mastery: every paragon level past MASTERY_FROM adds this much
  * damage and life (compounding), the endless engine of the late game. */
 #define MASTERY_FROM 100

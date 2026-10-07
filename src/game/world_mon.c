@@ -39,7 +39,7 @@ static void boss_slam(World *w, Profile *p, Monster *m)
         hurt_hero(w, p, m->dmg * 1.5, EL_PHYS, (int)(m - w->mon));
 }
 
-static void monster_move(World *w, Monster *m, fx speed)
+void monster_move(World *w, Monster *m, fx speed)
 {
     fx dx, dy, wx = w->h.x, wy = w->h.y;
     int half = m->boss ? 10 : MON_HALF;
@@ -61,6 +61,10 @@ static void monster_act(World *w, Profile *p, Monster *m)
     bool los = line_of_sight(w, m->x, m->y, w->h.x, w->h.y);
     if (m->goblin) {
         events_goblin_act(w, m);
+        return;
+    }
+    if (m->special == MS_BUTCHER) {
+        butcher_act(w, p, m);
         return;
     }
     if (m->champ & CH_FAST)

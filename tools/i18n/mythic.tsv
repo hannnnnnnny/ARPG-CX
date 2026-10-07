@@ -1,0 +1,66 @@
+// Super ancestral (mythic) uniques, Diablo IV style floor events, the Fleshrender.
+WORLDSPLITTER	裂界者	裂界者	界断ち	세계가르개
+SCYTHE OF ENDLESS NIGHT	永夜之镰	永夜之鐮	永夜の大鎌	영원한 밤의 낫
+TOME OF THE HUNGRY VOID	饥渴虚空之典	飢渴虛空之典	飢えた虚空の書	굶주린 공허의 서
+HOURGLASS OF STILL TIME	静止时光沙漏	靜止時光沙漏	静止せし時の砂時計	멈춘 시간의 모래시계
+DIADEM OF A THOUSAND EYES	千眼冠冕	千眼冠冕	千眼の冠	천 개의 눈의 관
+AEGIS OF THE UNDYING	不灭者之铠	不滅者之鎧	不死者の鎧	불멸자의 갑주
+DRAGONSCALE HAUBERK	龙鳞战甲	龍鱗戰甲	竜鱗の鎖帷子	용비늘 사슬갑옷
+GRASP OF THE THUNDER KING	雷霆之王的掌握	雷霆之王的掌握	雷王の掌握	천둥왕의 손아귀
+HANDS OF A HUNDRED BLADES	百刃之手	百刃之手	百刃の手	백 개의 칼날의 손
+MAGMAWALKER LEGPLATES	熔岩行者腿甲	熔岩行者腿甲	溶岩歩きの脚甲	용암걸음 다리갑옷
+GREAVES OF THE SLAUGHTER	屠戮者护胫	屠戮者護脛	殺戮の脛当て	도륙의 정강이받이
+VOIDSTRIDE BOOTS	虚空步靴	虛空步靴	虚空歩みの靴	공허걸음 장화
+ABYSSDIVER TREADS	深渊潜行者之靴	深淵潛行者之靴	深淵潜りの靴	심연잠수부 신발
+HEART OF RUIN	毁灭之心	毀滅之心	破滅の心臓	파멸의 심장
+SIGIL OF THE ONE TRUE NAME	唯一真名之印	唯一真名之印	唯一の真名の印	유일한 진명의 인장
+RING OF DEVOURING	吞噬之戒	吞噬之戒	貪食の指輪	포식의 반지
+THE ENDLESS ORBIT	无尽轨道	無盡軌道	果てなき軌道	끝없는 궤도
+STARS RAIN ON YOUR FOES FOR #% WEAPON DAMAGE, +3 RANKS TO ALL SKILLS	星辰如雨坠向敌人，造成#%武器伤害，所有技能+3级	星辰如雨墜向敵人，造成#%武器傷害，所有技能+3級	星々が敵に降り注ぎ武器ダメージの#%、全スキル+3ランク	별이 비처럼 적에게 쏟아져 무기 피해의 #%, 모든 기술 +3랭크
+CRITICAL STRIKES BURST INTO SIX STAR SHARDS FOR #%, +15% CRITICAL STRIKE CHANCE	暴击迸发六片星辰碎片，造成#%伤害，暴击几率+15%	暴擊迸發六片星辰碎片，造成#%傷害，暴擊機率+15%	会心で星の破片が6つ弾け#%のダメージ、会心率+15%	극대화 시 별 파편 6개가 터져 #% 피해, 극대화 확률 +15%
+EVERY FIFTH HIT LOOSES A CRESCENT WAVE FOR #%, [x]60% DAMAGE	每第五次命中释放新月波，造成#%伤害，伤害[x]60%	每第五次命中釋放新月波，造成#%傷害，傷害[x]60%	5回目の命中ごとに三日月の波動、#%のダメージ、ダメージ[x]60%	다섯 번째 적중마다 초승달 파동 #% 피해, 피해 [x]60%
+HITS REAP ANY FOE BUT A GUARDIAN BELOW #% LIFE, +25% ATTACK SPEED	命中时直接收割生命低于#%的敌人（守护者除外），攻击速度+25%	命中時直接收割生命低於#%的敵人（守護者除外），攻擊速度+25%	ライフ#%未満の敵を命中で刈り取る（守護者以外）、攻撃速度+25%	생명력 #% 미만의 적을 적중 시 즉시 수확(수호자 제외), 공격 속도 +25%
+A SINGULARITY DRAGS FOES IN AND BURSTS FOR #%, 20% COOLDOWN REDUCTION	奇点将敌人吸入后爆裂，造成#%伤害，冷却缩减20%	奇點將敵人吸入後爆裂，造成#%傷害，冷卻縮減20%	特異点が敵を引き込み炸裂、#%のダメージ、クールダウン短縮20%	특이점이 적을 끌어당긴 뒤 폭발해 #% 피해, 재사용 대기시간 감소 20%
+EVERY 15 SECONDS TIME STOPS, FROZEN FOES TAKE [x]#% DAMAGE, [x]20% DAMAGE	每15秒时间静止，被冻结的敌人受到伤害[x]#%，伤害[x]20%	每15秒時間靜止，被凍結的敵人受到傷害[x]#%，傷害[x]20%	15秒ごとに時が止まり、凍結した敵への被ダメージ[x]#%、ダメージ[x]20%	15초마다 시간이 멈추고 얼어붙은 적이 받는 피해 [x]#%, 피해 [x]20%
+HITS MAY LOOSE THREE EYE BEAMS FOR #%, +80% CRITICAL STRIKE DAMAGE	命中有几率射出三道眼光，造成#%伤害，暴击伤害+80%	命中有機率射出三道眼光，造成#%傷害，暴擊傷害+80%	命中時に3本の眼光線を放つことがあり#%のダメージ、会心ダメージ+80%	적중 시 눈빛 광선 3개를 쏠 수 있어 #% 피해, 극대화 피해 +80%
+[x]# MAXIMUM LIFE, DEATH IS REFUSED ONCE EVERY 30 SECONDS, 30% DAMAGE REDUCTION	最大生命[x]#，每30秒可拒绝一次死亡，伤害减免30%	最大生命[x]#，每30秒可拒絕一次死亡，傷害減免30%	最大ライフ[x]#、30秒に一度死を拒む、被ダメージ30%軽減	최대 생명력 [x]#, 30초마다 한 번 죽음을 거부, 피해 감소 30%
+A RING OF DRAGONFIRE BURNS AROUND YOU FOR #% EVERY SECOND, +60% MAXIMUM LIFE	龙焰之环每秒在你周围燃烧，造成#%伤害，最大生命+60%	龍焰之環每秒在你周圍燃燒，造成#%傷害，最大生命+60%	竜炎の輪が毎秒周囲を焼き#%のダメージ、最大ライフ+60%	용의 불꽃 고리가 매초 주위를 태워 #% 피해, 최대 생명력 +60%
+CRITICAL STRIKES CALL CHAIN LIGHTNING THROUGH SIX FOES FOR #%, +20% ATTACK SPEED	暴击召唤贯穿六个敌人的连锁闪电，造成#%伤害，攻击速度+20%	暴擊召喚貫穿六個敵人的連鎖閃電，造成#%傷害，攻擊速度+20%	会心で6体を貫く連鎖雷、#%のダメージ、攻撃速度+20%	극대화 시 적 6명을 꿰뚫는 연쇄 번개 #% 피해, 공격 속도 +20%
+FOUR SPECTRAL BLADES CIRCLE YOU, CUTTING FOR #%, +40% ATTACK SPEED	四柄幽灵之刃环绕你切割敌人，造成#%伤害，攻击速度+40%	四柄幽靈之刃環繞你切割敵人，造成#%傷害，攻擊速度+40%	4本の霊刃が周囲を巡り#%のダメージ、攻撃速度+40%	유령 칼날 4개가 주위를 돌며 #% 피해, 공격 속도 +40%
+YOUR STEPS LEAVE BURNING GROUND FOR #% A SECOND, +30% MOVEMENT SPEED	脚步留下燃烧地面，每秒造成#%伤害，移动速度+30%	腳步留下燃燒地面，每秒造成#%傷害，移動速度+30%	足跡が燃える地面となり毎秒#%のダメージ、移動速度+30%	발자국이 불타는 땅을 남겨 매초 #% 피해, 이동 속도 +30%
+EACH KILL GRANTS [x]4% DAMAGE FOR 4 SECONDS, UP TO [x]#%, 15% DAMAGE REDUCTION	每次击杀获得伤害[x]4%，持续4秒，最多[x]#%，伤害减免15%	每次擊殺獲得傷害[x]4%，持續4秒，最多[x]#%，傷害減免15%	撃破ごとにダメージ[x]4%（4秒）、最大[x]#%、被ダメージ15%軽減	처치마다 4초간 피해 [x]4%, 최대 [x]#%, 피해 감소 15%
+YOU BLINK ONTO DISTANT FOES AND BURST FOR #%, +50% MOVEMENT SPEED	闪现至远处的敌人身边并爆发，造成#%伤害，移动速度+50%	閃現至遠處的敵人身邊並爆發，造成#%傷害，移動速度+50%	遠くの敵へ瞬間移動し炸裂、#%のダメージ、移動速度+50%	먼 적에게 순간이동해 폭발 #% 피해, 이동 속도 +50%
+A CLEARED FLOOR HAS A #% CHANCE TO DROP YOU TWO FLOORS DEEPER, +40% MOVEMENT SPEED	通关楼层时有#%几率让你再下坠两层，移动速度+40%	通關樓層時有#%機率讓你再下墜兩層，移動速度+40%	階層踏破時#%の確率でさらに2階層下へ、移動速度+40%	층 돌파 시 #% 확률로 두 층 더 아래로, 이동 속도 +40%
+THE SLAIN EXPLODE FOR #%, [x]40% DAMAGE	被杀死的敌人爆炸，造成#%伤害，伤害[x]40%	被殺死的敵人爆炸，造成#%傷害，傷害[x]40%	倒した敵が爆発し#%のダメージ、ダメージ[x]40%	처치한 적이 폭발해 #% 피해, 피해 [x]40%
+[x]#% DAMAGE, +2 RANKS TO ALL SKILLS	伤害[x]#%，所有技能+2级	傷害[x]#%，所有技能+2級	ダメージ[x]#%、全スキル+2ランク	피해 [x]#%, 모든 기술 +2랭크
+EVERY 3 SECONDS FOES WITHIN # PACES ARE DRAGGED TO YOU AND FEED YOU, [x]25% DAMAGE	每3秒将#步内的敌人拖到你身边并吞噬其生命，伤害[x]25%	每3秒將#步內的敵人拖到你身邊並吞噬其生命，傷害[x]25%	3秒ごとに#歩以内の敵を引き寄せ糧とする、ダメージ[x]25%	3초마다 #걸음 안의 적을 끌어와 흡수, 피해 [x]25%
+SKILLS COST NOTHING, COOLDOWNS -#%, +20% ATTACK SPEED	技能无消耗，冷却时间-#%，攻击速度+20%	技能無消耗，冷卻時間-#%，攻擊速度+20%	スキルのコストなし、クールダウン-#%、攻撃速度+20%	기술 소모 없음, 재사용 대기시간 -#%, 공격 속도 +20%
+BLOOD HARVEST!	嗜血收割！	嗜血收割！	血の収穫！	피의 수확!
+SLAY %d FOES IN %d SECONDS	杀死%d个敌人，限时%d秒	殺死%d個敵人，限時%d秒	%d体の敵を%d秒以内に倒せ	적 %d명을 %d초 안에 처치하라
+THE HARVEST IS REAPED	收割完成	收割完成	収穫は成った	수확 완료
+THE HARVEST ENDS	收割结束	收割結束	収穫の時は終わった	수확이 끝났다
+CURSED SHRINE	诅咒神龛	詛咒神龕	呪われた祠	저주받은 제단
+SURVIVE THREE WAVES	撑过三波敌人	撐過三波敵人	3つの波を生き延びよ	세 번의 습격에서 살아남아라
+THE CURSE IS LIFTED	诅咒已解除	詛咒已解除	呪いは解かれた	저주가 풀렸다
+A BLOODMARKED CHAMPION!	血印勇士！	血印勇士！	血の刻印の勇者！	피의 낙인 용사!
+BLOODMARKED CHAMPION SLAIN	血印勇士已被击杀	血印勇士已被擊殺	血の刻印の勇者を討ち取った	피의 낙인 용사 처치
+A HELL RIFT TEARS OPEN!	地狱裂隙撕裂开来！	地獄裂隙撕裂開來！	地獄の裂け目が開いた！	지옥 균열이 열렸다!
+THE RIFT COLLAPSES	裂隙崩塌了	裂隙崩塌了	裂け目が崩れ落ちる	균열이 무너진다
+THE RIFT IS SEALED	裂隙已封印	裂隙已封印	裂け目は封じられた	균열이 봉인되었다
+HARVEST %d/%d  %dS	收割 %d/%d  %d秒	收割 %d/%d  %d秒	収穫 %d/%d  %d秒	수확 %d/%d  %d초
+CURSED SHRINE  WAVE %d/%d	诅咒神龛  第%d/%d波	詛咒神龕  第%d/%d波	呪われた祠  第%d/%d波	저주받은 제단  %d/%d번째 습격
+HELL RIFT  %dS	地狱裂隙  %d秒	地獄裂隙  %d秒	地獄の裂け目  %d秒	지옥 균열  %d초
+HELL RIFT  %d LEFT	地狱裂隙  剩余%d	地獄裂隙  剩餘%d	地獄の裂け目  残り%d	지옥 균열  %d 남음
+HUNT: THE BLOODMARKED	猎杀：血印勇士	獵殺：血印勇士	狩り：血の刻印	사냥: 피의 낙인
+BLOODMARKED	血印	血印	血の刻印	피의 낙인
+THE FLESHRENDER	剁肉屠夫	剁肉屠夫	肉裂きの屠殺人	살점 도살자
+THE FLESHRENDER HAS COME!	剁肉屠夫来了！	剁肉屠夫來了！	肉裂きの屠殺人が来た！	살점 도살자가 나타났다!
+SOMETHING HEAVY DRAGS A CLEAVER...	有什么沉重的东西拖着一把剁刀……	有什麼沉重的東西拖著一把剁刀……	何か重いものが肉切り包丁を引きずっている……	무언가 무거운 것이 고기칼을 끌고 온다...
+THE FLESHRENDER IS SLAIN!	剁肉屠夫已被击杀！	剁肉屠夫已被擊殺！	肉裂きの屠殺人を倒した！	살점 도살자를 처치했다!
+THE ABYSS PULLS YOU DEEPER	深渊将你拖向更深处	深淵將你拖向更深處	深淵がさらに深みへ引きずり込む	심연이 당신을 더 깊이 끌어당긴다
+DEATH REFUSED	拒绝死亡	拒絕死亡	死を拒んだ	죽음을 거부했다
+REAPED	收割	收割	刈り取り	수확
+TIME STANDS STILL	时间静止	時間靜止	時が止まる	시간이 멈췄다
+TIME STOP	时停	時停	時間停止	시간 정지
+SLAUGHTER x%d%%	杀戮 x%d%%	殺戮 x%d%%	殺戮 x%d%%	도륙 x%d%%
+RESONANCE x%s	共鸣 x%s	共鳴 x%s	共鳴 x%s	공명 x%s

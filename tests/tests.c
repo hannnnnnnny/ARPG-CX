@@ -34,6 +34,7 @@
 #include <string.h>
 
 static int g_fail, g_checks;
+void test_d4(int *checks, int *fails);      /* test_d4.c */
 #define CHECK(c) do { g_checks++; if (!(c)) { g_fail++; printf("  FAIL %s:%d: %s\n", __FILE__, __LINE__, #c); } } while (0)
 
 bool plat_init(void) { return true; }
@@ -294,6 +295,7 @@ static void test_damage_pipeline(void)
 {
     static World w;
     Monster *m;
+    int i;
     Hit h = { 0 };
     prog_new(&P, 8, CLASS_SORCERER);
     world_init_floor(&w, &P, 5);
@@ -316,8 +318,10 @@ static void test_damage_pipeline(void)
     CHECK(m->vuln > 0 && w.last_big.is_vuln && fabs(w.last_big.vuln - 1.7) < 1e-9);
     w.st.crit = 1.0;
     w.st.crit_dmg = 1.0;
-    w.last_big.total = 0;
-    deal_damage(&w, &P, 0, &h);
+    for (i = 0; i < 10 && !w.last_big.is_crit; i++) {   /* crit chance caps at 95% */
+        w.last_big.total = 0;
+        deal_damage(&w, &P, 0, &h);
+    }
     CHECK(w.last_big.is_crit && fabs(w.last_big.crit - 2.5 * w.st.b.x_crit) < 1e-9);
     h.dot = true;
     w.last_big.total = 0;
@@ -758,13 +762,14 @@ static void test_event_kinds(void)
         bad += S.w.boss_floor && S.w.ev.kind != EV_NONE;
         for (i = 0; i < S.w.nmon; i++) {
             const Monster *m = &S.w.mon[i];
-            bad += m->elite ? bit_count(m->champ) != champion_affixes(f) : m->champ != 0;
+            int want = champion_affixes(f) + (m->special == MS_HUNT);   /* bloodmarked: one more */
+            bad += m->elite ? bit_count(m->champ) != want : m->champ != 0;
         }
     }
     CHECK(bad == 0);
     for (i = EV_GOBLIN; i < EV_COUNT; i++)
         CHECK(seen[i] > 5);
-    CHECK(seen[EV_NONE] > 60 && seen[EV_NONE] < 200);
+    CHECK(seen[EV_NONE] < 45);                    /* only guardian floors go without */
 }
 
 static int legendary_drops(const World *w)
@@ -1031,6 +1036,7 @@ int main(void)
     printf("slots\n");         test_slot_paths();
     printf("sprites\n");       test_sprites();
     printf("dungeon\n");       test_dungeon_connectivity();
+    test_d4(&g_checks, &g_fail);
     printf("idle sim\n");      test_idle_simulation();
     printf("\n%d checks, %d failures\n", g_checks, g_fail);
     return g_fail ? 1 : 0;

@@ -4,11 +4,15 @@
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
  *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE]
+ *               [--mythic ID,ID...] [--butcher] [--event KIND]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
  * --sounds logs every sound effect the game asks for as "tick id volume"
  * lines, so a video can be scored with the game's own effects.
+ * --mythic wears the listed mythic powers (mythic.h ids) and --butcher
+ * makes the Fleshrender walk in; --event replaces the floor's event with
+ * one of events_d4.c (FloorEventKind). All three act after --fast.
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
  * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
@@ -24,6 +28,8 @@
 #include "../../src/game/aspects.h"
 #include "../../src/game/world_int.h"
 #include "../../src/game/items.h"
+#include "../../src/game/mythic.h"
+#include "../../src/game/events_int.h"
 #include "../../src/i18n/i18n.h"
 #include "png.h"
 #include <stdio.h>
@@ -153,6 +159,25 @@ static void equip_signature(Profile *p)
     item_make_unique(&p->equip[unique_def(uid)->slot], &r, MAX(p->best_floor, 1), uid, true, p->cls);
 }
 
+/* --mythic 1,5,9: wear those mythic powers (MythicPower ids, demo clips). */
+static void equip_mythics(Profile *p, const char *list)
+{
+    Rng r;
+    int rings = 0;
+    rng_seed(&r, 77);
+    while (list && *list) {
+        int uid = mythic_unique(atoi(list));
+        const char *comma = strchr(list, ',');
+        if (uid) {
+            int slot = unique_def(uid)->slot;
+            if (slot == SLOT_RING1 && rings++)
+                slot = SLOT_RING2;
+            item_make_unique(&p->equip[slot], &r, MAX(p->best_floor, 1), uid, true, p->cls);
+        }
+        list = comma ? comma + 1 : NULL;
+    }
+}
+
 static void fast_forward(double hours, uint32_t now)
 {
     long t;
@@ -175,8 +200,9 @@ int main(int argc, char **argv)
     int nsteps = 0, nshots = 0, i, s, tick = 0, trace = 0, cls = 0;
     double fast = 0;
     int preset = 0, lang = -1;
-    const char *save = NULL;
-    bool fresh = false, sig = false;
+    const char *save = NULL, *mythics = NULL;
+    bool fresh = false, sig = false, butcher = false;
+    int event = 0;
     uint32_t now = 2000000000u;
     Input in;
 
@@ -187,6 +213,9 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--fast") && i + 1 < argc) fast = atof(argv[++i]);
         else if (!strcmp(argv[i], "--new")) fresh = true;
         else if (!strcmp(argv[i], "--sig")) sig = true;
+        else if (!strcmp(argv[i], "--butcher")) butcher = true;
+        else if (!strcmp(argv[i], "--event") && i + 1 < argc) event = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--mythic") && i + 1 < argc) mythics = argv[++i];
         else if (!strcmp(argv[i], "--class") && i + 1 < argc) cls = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--record") && i + 1 < argc) parse_record(argv[++i], &rec);
@@ -216,9 +245,17 @@ int main(int argc, char **argv)
     }
     if (fast > 0)
         fast_forward(fast, now);
-    if (sig) {
-        equip_signature(&g_game.p);
+    if (sig || mythics) {
+        if (sig)
+            equip_signature(&g_game.p);
+        equip_mythics(&g_game.p, mythics);
         session_profile_changed(&g_game.s, &g_game.p);
+    }
+    if (butcher)
+        g_game.s.w.butcher_t = TICK_HZ;            /* he walks in a second into the script */
+    if (event >= EV_HARVEST && event < EV_COUNT) {  /* this floor's event becomes the one asked for */
+        memset(&g_game.s.w.ev, 0, sizeof g_game.s.w.ev);
+        events_d4_init(&g_game.s.w, event);
     }
     input_init(&in);
     for (s = 0; s <= nsteps; s++) {

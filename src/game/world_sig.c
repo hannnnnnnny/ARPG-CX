@@ -53,6 +53,8 @@ void sig_shake(World *w, int ticks, int px)
         w->sig.shake_px = 0;
     w->sig.shake_t = (int16_t)MAX(w->sig.shake_t, ticks);
     w->sig.shake_px = (int16_t)MAX(w->sig.shake_px, px);
+    if (px >= 3)                                     /* heavy blows freeze the frame a moment */
+        w->sig.hitstop = (int16_t)MAX(w->sig.hitstop, px >= 4 ? 3 : 2);
 }
 
 static void sig_flash(World *w, uint16_t c, int ticks)

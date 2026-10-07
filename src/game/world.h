@@ -17,20 +17,25 @@
 
 #define MAP_W 48
 #define MAP_H 32
-#define MAX_MON    40
+#define MAX_MON    64       /* hit masks are uint64_t: one bit per monster */
 #define MAX_PROJ   48
 #define MAX_DROP   12
 #define MAX_FLOAT  40
-#define MAX_FX     48
-#define MAX_GROUND 12
+#define MAX_FX     64
+#define MAX_GROUND 16
 #define MAX_ALLY   9
 #define MAX_CORPSE 16
 #define MAX_ORB    6
 #define DOT_KINDS  4            /* burn, poison, bleed, shadow */
 
+typedef char mon_mask_fits[MAX_MON <= 64 ? 1 : -1];
+
 enum { CELL_WALL, CELL_FLOOR, CELL_STAIRS };
 
 typedef enum { MT_SKELETON, MT_BAT, MT_GHOUL, MT_SPIDER, MT_IMP, MT_CULTIST, MT_GOLEM, MT_COUNT } MonType;
+/* Not in the random pools (MT_COUNT): the butcher (world_butcher.c). */
+#define MT_BUTCHER MT_COUNT
+#define MON_TYPES  (MT_COUNT + 1)
 
 typedef struct {
     const char *name;
@@ -42,7 +47,10 @@ typedef struct {
     int atk_ticks;
 } MonDef;
 
-extern const MonDef mon_defs[MT_COUNT];
+extern const MonDef mon_defs[MON_TYPES];
+
+/* Monsters with a story of their own (Monster.special). */
+enum { MS_NONE, MS_HUNT, MS_BUTCHER };
 
 /* Champion affixes (elites): one below floor 30, two from there on. */
 enum { CH_FAST = 1, CH_STURDY = 2, CH_VAMPIRIC = 4, CH_VOLATILE = 8, CH_WARDED = 16, CH_FRENZIED = 32 };
@@ -53,6 +61,7 @@ typedef struct {
     uint8_t champ;       /* CH_* bits */
     uint8_t goblin;      /* treasure goblin: flees, then portals away */
     uint8_t wave;        /* part of an event wave (ambush, cursed chest) */
+    uint8_t special;     /* MS_*: bloodmarked champion, the butcher */
     int8_t  face;
     fx      x, y;
     fx      px, py;      /* position at the previous tick (render interpolation) */
@@ -110,7 +119,8 @@ typedef enum { FL_TEXT, FL_DMG, FL_BIG, FL_MEGA } FloatKind;   /* FL_MEGA: signa
 typedef struct { uint8_t alive, kind; int16_t x, y, t; uint16_t color; char text[32]; } Floater;
 
 typedef enum { FX_SLASH, FX_BOOM, FX_NOVA, FX_BOLT, FX_WHIRL, FX_WARN, FX_METEOR, FX_PUFF, FX_HEAL, FX_LEVEL,
-               FX_DASH, FX_RAISE, FX_SKYBOLT, FX_SHARDS, FX_FIRERING, FX_FALL } FxKind;
+               FX_DASH, FX_RAISE, FX_SKYBOLT, FX_SHARDS, FX_FIRERING, FX_FALL,
+               FX_STAR, FX_CRESCENT, FX_VORTEX, FX_REAP, FX_SPARK, FX_GIB } FxKind;
 typedef struct { uint8_t alive, kind, vfx; int16_t x, y, x2, y2, t, dur, r; uint16_t color; } Effect;
 
 typedef enum { AK_SKELETON, AK_MAGE, AK_WOLF } AllyKind;
@@ -133,12 +143,25 @@ typedef struct { uint8_t alive; int16_t t, x, y; } SigMeteor;
 typedef struct {
     SigMeteor met[MAX_METEOR];
     int16_t shake_t, shake_px, flash_t;
+    int16_t hitstop;         /* frames the game layer holds the world still after a heavy blow */
+    double res;              /* resonance: [x] damage dealt, [/] damage taken (1 = no signature) */
     uint16_t flash_color;
     int16_t heal_t;          /* ticks left in the current healing window */
     double healed;           /* fraction of life healed in it (capped) */
     int last_bolt, last_nova, last_boom, booms;  /* tick + 1 of the last of each (0 = never) */
     int spears;              /* bone spears cast (every sixth is a giant) */
 } SigState;
+
+/* Mythic powers in combat (world_myth.c): timers and per-tick limits. */
+typedef struct {
+    int16_t star_t, void_t, void_pull, stop_cd, stop_t, dragon_t, devour_t, blink_cd, undying_cd, magma_t;
+    int16_t streak, streak_t;  /* Greaves of the Slaughter: [x] % and ticks left */
+    int16_t hits;              /* direct hits, for Worldsplitter's every fifth */
+    int16_t vx, vy;            /* the singularity (px) */
+    int16_t eye_cd, thunder_cd, blade_cd;
+    int burst_tick, bursts;    /* explosions this tick (tick + 1) */
+    uint8_t blade_a;           /* angle of the circling blades */
+} MythRT;
 
 /* What the player asks of the hero this tick (set by the game layer from
  * keyboard and mouse; all zero on the calculator and in simulations). */
@@ -164,8 +187,15 @@ typedef struct {
     int16_t stairs_msg_t;
 } ControlRT;
 
-/* One event per floor at most (events.c). */
-typedef enum { EV_NONE, EV_GOBLIN, EV_SHRINE, EV_AMBUSH, EV_CHEST, EV_FALLEN, EV_COUNT } FloorEventKind;
+/* One event on every ordinary floor (events.c, events_d4.c). */
+typedef enum {
+    EV_NONE, EV_GOBLIN, EV_SHRINE, EV_AMBUSH, EV_CHEST, EV_FALLEN,
+    EV_HARVEST,      /* blood harvest: slay a quota of foes before time runs out */
+    EV_CURSED,       /* cursed shrine: survive three waves */
+    EV_HUNT,         /* a bloodmarked champion and its guard */
+    EV_RIFT,         /* hell rift: it spills monsters until it collapses */
+    EV_COUNT
+} FloorEventKind;
 typedef enum { SH_BLESSED, SH_LETHAL, SH_GREED, SH_WISDOM, SH_FRENZY, SH_PROTECT, SH_COUNT } ShrineKind;
 typedef enum { ES_WAITING, ES_RUNNING, ES_DONE } EventState;
 typedef struct {
@@ -173,6 +203,8 @@ typedef struct {
     int16_t t;                    /* goblin: ticks left before its portal */
     int cx, cy;                   /* the object's cell (shrine, chest, fallen adventurer) */
     int wave_left;                /* event monsters still alive */
+    int16_t goal, count;          /* harvest: kills needed / made */
+    int16_t stage, spawn_t;       /* cursed shrine wave; ticks to the next spawn */
 } FloorEvent;
 
 /* Last notable hit, broken down by damage bucket (HERO > COMBAT page). */
@@ -259,6 +291,10 @@ typedef struct {
     HitStats hs;               /* this floor's hit statistics */
     FloorEvent ev;
     SigState sig;
+    MythRT myth;
+    uint8_t core_skill;        /* the preset's core skill: mythic hits carry its numbers */
+    int butcher_t;             /* ticks until the butcher walks in (0 = not this floor) */
+    int16_t hook_t, hook_cd;   /* his chain: wind-up left, then cooldown */
     HeroCommand cmd;
     ControlRT ctl;
     /* Carried across floors: the shrine blessing and the remarks. */

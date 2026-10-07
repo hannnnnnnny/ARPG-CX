@@ -77,7 +77,7 @@ static void populate(World *w, Room *rooms, int n)
     int total = floor_monsters(w->floor), placed = 0, guard = 0;
     while (placed < total && guard++ < 400) {
         const Room *rm = &rooms[rng_range(&w->rng, 1, n - 1)];
-        int roll = rng_range(&w->rng, 2, 5); /* macro args must be side-effect free */
+        int roll = rng_range(&w->rng, 3, 7); /* macro args must be side-effect free */
         int pack = MIN(roll, total - placed), k;
         int type = pick_type(w);
         for (k = 0; k < pack && w->nmon < MAX_MON; k++) {

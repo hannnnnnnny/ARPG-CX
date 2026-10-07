@@ -78,11 +78,19 @@ void sig_boss_drop(World *w, Profile *p, const Monster *m);
 
 /* world_mon.c */
 void monsters_update(World *w, Profile *p);
+/* One step toward the hero, around walls along the distance field. */
+void monster_move(World *w, Monster *m, fx speed);
 void projectiles_update(World *w, Profile *p);
 void grounds_update(World *w, Profile *p);
 void world_spawn_ground(World *w, int x, int y, int r, int dur, const Hit *h, bool follow, int vfx);
 void spawn_monster(World *w, int type, int cx, int cy, bool elite, bool boss);
 Proj *spawn_proj(World *w);
+
+/* world_butcher.c: the rare butcher who hunts the hero across a floor */
+void butcher_init(World *w);
+void butcher_tick(World *w, Profile *p);
+void butcher_act(World *w, Profile *p, Monster *m);
+void butcher_on_kill(World *w, Profile *p, const Monster *m);
 
 /* world_ally.c: minions, corpses, health orbs */
 void allies_update(World *w, Profile *p);

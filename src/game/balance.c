@@ -21,6 +21,12 @@ double monster_scale(int floor)
          * pow(GAP_LATE, (double)MAX(f - GAP_SPLIT, 0));
 }
 
+double sig_resonance(int floor)
+{
+    int f = MAX(floor, 1);
+    return pow(monster_scale(f) / floor_scale(f), SIG_RESONANCE);
+}
+
 double xp_to_next(int level)
 {
     return 25.0 * pow(1.13, (double)(MIN(MAX(level, 1), LEVEL_CAP) - 1));
@@ -119,5 +125,6 @@ int upgrade_max(UpgradeId id)
     }
 }
 
-int floor_monsters(int floor) { return 12 + MIN(floor / 3, 16); }
+/* Packed floors (Diablo IV density): bigger packs, more of them deeper down. */
+int floor_monsters(int floor) { return 26 + MIN(floor / 4, 22); }
 int floor_quota(int floor)    { return floor_monsters(floor) * 3 / 4; }

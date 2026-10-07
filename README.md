@@ -83,7 +83,10 @@ Three signature builds sit at the top of the ladder. Each is switched on
 by a **build-defining unique** (dropped by act bosses and guardians) and
 pushed further by two class aspects. The signature only wakes with its
 skill on the bar; then it reshapes that skill, makes the hero far tougher
-([x]8 life, 40% damage reduction) and throws huge, outlined numbers.
+([x]8 life, 40% damage reduction) and throws huge, outlined numbers. It
+also **resonates with the depths**: the deeper the floor, the more of the
+monsters' lead it shrugs off, in damage dealt and taken (x4 on floor 80,
+x300 on floor 300; RESONANCE on the HUD).
 
 <table>
   <tr>
@@ -106,9 +109,81 @@ skill on the bar; then it reshapes that skill, makes the hero far tougher
 
 Worn, the unique grows with you: every guardian re-forges it to the
 floor's item level (tempers and masterwork kept), and auto equip never
-swaps it for ordinary gear. In the long-run simulator (300 hours, all 18
-builds) the three lead the ladder from about hour 25 to hour 200 and stay
-at the top after that.
+swaps it for ordinary gear. The long-run simulator (all 18 builds, idle,
+no rebirth) puts the three far ahead of everything else:
+
+| Build | 25 h | 100 h | 300 h |
+|---|---|---|---|
+| Bone Spear | 294 | 397 | 689 |
+| Storm Werewolf | 292 | 436 | 650 |
+| Inferno | 296 | 424 | 615 |
+| best other build | 263 | 303 | 469 |
+
+## Season: mythics, the Fleshrender, packed floors (赛季内容)
+
+<table>
+  <tr>
+    <td><img src="docs/media/season_mythic.gif" width="300" alt="Mythic powers: stars, singularity, chain lightning"></td>
+    <td><img src="docs/media/season_butcher.gif" width="300" alt="The Fleshrender hunts the hero"></td>
+    <td><img src="docs/media/season_harvest.gif" width="300" alt="Blood harvest event"></td>
+  </tr>
+  <tr>
+    <td align="center"><b>超级先祖暗金 Mythic powers</b></td>
+    <td align="center"><b>剁肉屠夫 The Fleshrender</b></td>
+    <td align="center"><b>嗜血收割 Blood harvest</b></td>
+  </tr>
+</table>
+
+**Super ancestral (mythic) uniques.** 19 mythics, any class, several worn
+at once: 17 new ones plus the Crown of the Nameless King and the Shattered
+Star re-forged with powers of their own. Every power has code-side
+behaviour and its own effect, numbers in the millions (violet, outlined)
+and changes how a floor is cleared:
+
+| Slot | Mythic | Power |
+|---|---|---|
+| Weapon | Worldsplitter | every 5th hit a crescent wave across the screen, [x]60% damage |
+| Weapon | Scythe of Endless Night | hits reap any foe but a guardian below 20-30% life |
+| Off-hand | Tome of the Hungry Void | a singularity drags the pack in, then bursts |
+| Off-hand | Hourglass of Still Time | every 15 s time stops for 3 s; frozen foes take [x]60-120% |
+| Helm | Crown of the Nameless King | stars rain on the pack, +3 ranks to all skills |
+| Helm | Diadem of a Thousand Eyes | hits loose three eye beams, +80% crit damage |
+| Chest | Aegis of the Undying | [x]3-5 life, death refused once every 30 s |
+| Chest | Dragonscale Hauberk | a ring of dragonfire every second |
+| Gloves | Grasp of the Thunder King | crits call chain lightning through six foes |
+| Gloves | Hands of a Hundred Blades | four spectral blades circle the hero |
+| Pants | Magmawalker Legplates | every step leaves burning ground, +30% speed |
+| Pants | Greaves of the Slaughter | kill streaks stack up to [x]120-200% damage |
+| Boots | Voidstride Boots | blink onto distant foes with a burst, +50% speed |
+| Boots | Abyssdiver Treads | a cleared floor may drop the hero two floors deeper |
+| Amulet | Heart of Ruin | the slain explode |
+| Amulet | Sigil of the One True Name | [x]100-160% damage, +2 ranks |
+| Ring | The Shattered Star | crits burst into six star shards |
+| Ring | Ring of Devouring | drags the pack to the hero and feeds on it |
+| Ring | The Endless Orbit | skills cost nothing, cooldowns -40-60% |
+
+They are rare: a sliver of every Torment drop, 0.5% from act bosses, 1%
+from the Fleshrender; the simulator finds 5-27 over 300 hours. A mythic
+drop shakes the screen, auto equip always puts one on and never takes it
+off for ordinary gear.
+
+**The Fleshrender** (屠夫), a rare butcher in the spirit of Diablo IV's:
+about one ordinary floor in forty from floor 20, never a guardian floor.
+He walks in, hunts the hero across the map, throws a chain that drags the
+hero to his cleaver, enrages below 40% life and pays out like a guardian
+(three legendaries, often a unique, a chance at a mythic).
+
+**Packed floors and an event on every one.** Floors hold 26-48 monsters
+in packs of 3-7 (up to 64 at once), and every ordinary floor rolls an
+event: blood harvest (slay a quota in 45 s while packs pour in), cursed
+shrine (three waves), bloodmarked hunt (a champion with an extra affix
+and its guard), hell rift (spills monsters for 18 s, then collapses), plus
+the goblin, shrine, ambush, cursed chest and fallen adventurer. The
+running objective shows on the HUD.
+
+**Impact.** Crits throw sparks and shove foes back, the slain burst into
+gibs, elites and heavy blows shake the screen and freeze the frame for a
+moment (hit stop, live play only).
 
 ## Status
 
@@ -116,7 +191,7 @@ at the top after that.
 |---|---|
 | Ndless build `AshenDepths.tns` | Compiles with the official Ndless SDK (GCC 14.2), zero warnings |
 | Windows build `AshenDepthsDesktop.exe` | 640x480 rendering with 12px CJK text, keyboard and mouse play, synthesized sound; every screen checked with the headless renderer at the same resolution |
-| Tests | 314,541 checks pass: signature builds, manual control (click to attack, stairs quota, auto battle hand-back), loot rules, crafting, skill tree, paragon, paragon mastery and glyph levels, damage pipeline, floor events, bounties and achievements, offline gains, saves (v8 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
+| Tests | 316,973 checks pass: mythic powers, the Fleshrender, the new floor events, 15 slots, signature resonance, signature builds, manual control (click to attack, stairs quota, auto battle hand-back), loot rules, crafting, skill tree, paragon, paragon mastery and glyph levels, damage pipeline, floor events, bounties and achievements, offline gains, saves (v8 plus real v1/v3 saves converted), every translation's format, glyphs and line width, 200 connected floors, 2-hour idle runs for all 6 classes |
 | Physical TI-Nspire CX CAS | Earlier versions ran on the owner's calculator; this version is not yet tested on hardware |
 
 ## Classes (6) and builds (3 each)
@@ -158,7 +233,7 @@ bucket.
 ## Loot and gold
 
 * Common, Magic (1 affix), Rare (2), Legendary (3 + an aspect), Unique (4
-  fixed + a unique power), Mythic Unique. 40 affix types with slot pools;
+  fixed + a unique power), Mythic (super ancestral) Unique with a power of its own. 40 affix types with slot pools;
   every weapon type, ring, amulet and boot has an implicit affix.
 * **Ancestral** items (deep floors) have 1-3 greater affixes (x1.5, shown
   with a star) and +100 item power. Legendary and better drops stand in a
@@ -204,7 +279,7 @@ more, with cooldowns so they stay special.
 
 ## Floor events
 
-Most floors hold one event: a treasure goblin (flees, portals away after
+Every ordinary floor holds one event (more in the season section above): a treasure goblin (flees, portals away after
 12 s; catch it for gold, gems and two rares), a shrine (40 s blessing:
 damage, always-crit, triple gold or experience, attack speed, half damage
 taken), an ambush, a cursed chest (beat its guardians for a legendary) or a
@@ -237,8 +312,9 @@ is built to keep giving for hundreds of hours, offline time included:
   time played.
 
 Measured with the long-run simulator for all 18 builds (idle, no rebirth):
-every 25 hours still adds floors, and after 300 hours the builds stand
-between floors 280 and 345, so the last chapter is still ahead for most.
+every 25 hours still adds floors; after 300 hours the ordinary builds stand
+between floors 352 and 469 and the three signature builds between 615 and
+689, so the deep keeps going for everyone.
 
 ## Languages
 
@@ -262,7 +338,7 @@ files from `.tools/fonts12/` (the 12px monospaced BDF release).
 
 ## Saving
 
-* 3 save slots, CONTINUE / LOAD GAME / NEW GAME, delete with confirmation.
+* 15 save slots (a scrolling list), CONTINUE / LOAD GAME / NEW GAME, delete with confirmation.
 * Saves from earlier versions load automatically: class, level, gold,
   floors, embers, story and options carry over; old gear is re-forged into
   new items of the same slot, rarity and item level; skill points are

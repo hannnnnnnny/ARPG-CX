@@ -133,19 +133,23 @@ static void status_marks(const World *w, const Monster *m, int x, int top)
 static void draw_monster(const World *w, const Monster *m)
 {
     int x = ipx(m->px, m->x) - cam_x, y = ipx(m->py, m->y) - cam_y;
-    int size = m->boss ? 32 : 16, frame = (m->anim >> 3) & 1, top = y - size / 2 - (m->boss ? 8 : 4);
+    bool big = m->boss || m->special == MS_BUTCHER;
+    int size = big ? 32 : 16, frame = (m->anim >> 3) & 1, top = y - size / 2 - (big ? 8 : 4);
     unsigned flags = (m->face > 0 ? BLIT_FLIP_X : 0) | (m->flash ? BLIT_WHITE : 0);
     shadow(x, y + size / 2 - 2, size / 3);
     if (m->elite)
         gfx_circle(x, y + 2, 9, RGB565(70, 130, 240));
-    gfx_blit(spr_mon(m->type, frame, m->boss), x - size / 2, top, flags);
+    if (m->special == MS_BUTCHER)                    /* a pool of blood follows him */
+        fx_ellipse(x, y + 6, 14 + ((w->tick >> 3) & 1), m->hp < m->max_hp * 0.4 ? RGB565(255, 40, 30)
+                   : RGB565(150, 20, 20));
+    gfx_blit(spr_mon(m->type, frame, big), x - size / 2, top, flags);
     if (m->freeze)
         gfx_rect(x - size / 2, top, size, size, RGB565(140, 210, 255));
     status_marks(w, m, x, top);
     render_monster_extras(w, m, x, top);
     if (m->hp < m->max_hp)
         draw_hp_bar(x - size / 3, top - 3, size * 2 / 3, m->hp / m->max_hp,
-                    m->vuln ? RGB565(200, 110, 255) : m->boss ? RGB565(255, 120, 40) : RGB565(220, 40, 40));
+                    m->vuln ? RGB565(200, 110, 255) : big ? RGB565(255, 120, 40) : RGB565(220, 40, 40));
 }
 
 /* ------------------------------------------------------- hero and allies */
@@ -176,6 +180,7 @@ static void draw_hero(const World *w, const Profile *p)
     if (wp->used)
         fx_draw_weapon(wp->base, wp->rarity + 1, x, y, h->face, h->attack_t, w->accent, w->tick);
     render_sig_aura(w, x, y);
+    render_myth_aura(w, x, y);
 }
 
 static void draw_ally(const World *w, const Ally *a)
@@ -353,6 +358,7 @@ void render_world(const World *w, const Profile *p)
     render_event_object(w, cam_x, cam_y);
     draw_entities(w, p);
     draw_overlays(w);
+    render_myth_tint(w, VIEW_H);
     render_sig_flash(w, VIEW_H);
     draw_floaters(w);
 }

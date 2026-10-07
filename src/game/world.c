@@ -4,11 +4,12 @@
 #include "skills.h"
 #include "build.h"
 #include "events.h"
+#include "mythic.h"
 #include "../gfx/gfx.h"
 #include <string.h>
 #include <stdio.h>
 
-const MonDef mon_defs[MT_COUNT] = {
+const MonDef mon_defs[MON_TYPES] = {
     /*               name        hp   dmg  speed      rng element    min atk */
     [MT_SKELETON] = { "SKELETON", 1.0, 1.0, FX(0.70), 0, EL_PHYS,   1, 30 },
     [MT_BAT]      = { "BAT",      0.5, 0.6, FX(1.30), 0, EL_PHYS,   1, 24 },
@@ -17,6 +18,7 @@ const MonDef mon_defs[MT_COUNT] = {
     [MT_IMP]      = { "IMP",      0.7, 0.8, FX(0.80), 1, EL_FIRE,   8, 45 },
     [MT_CULTIST]  = { "CULTIST",  1.0, 1.2, FX(0.70), 1, EL_SHADOW, 12, 50 },
     [MT_GOLEM]    = { "GOLEM",    3.0, 1.6, FX(0.40), 0, EL_PHYS,   15, 48 },
+    [MT_BUTCHER]  = { "THE FLESHRENDER", 1.0, 1.0, FX(1.45), 0, EL_PHYS, 99999, 34 },
 };
 
 void spawn_monster(World *w, int type, int cx, int cy, bool elite, bool boss)
@@ -38,7 +40,8 @@ void spawn_monster(World *w, int type, int cx, int cy, bool elite, bool boss)
      * similar wall (a golem boss would otherwise have 75x normal life). */
     m->max_hp = 22.0 * s * (boss ? 25.0 : mon_defs[type].hp * (elite ? 3.0 : 1.0));
     m->hp = m->max_hp;
-    m->dmg = 6.0 * s * (boss ? 2.2 : mon_defs[type].dmg * (elite ? 1.6 : 1.0));
+    /* 5.0 since the packed floors: more of them swing at once. */
+    m->dmg = 5.0 * s * (boss ? 2.64 : mon_defs[type].dmg * (elite ? 1.6 : 1.0));
     if (elite)
         champion_roll(w, m);
     m->anim = (int16_t)rng_range(&w->rng, 0, 63);
@@ -83,6 +86,8 @@ void world_refresh_stats(World *w, const Profile *p)
     w->accent = build_accent(p);
     w->h.engage = engage_range(w, p);
     w->dmg_numbers = p->dmg_numbers;
+    w->core_skill = class_defs[p->cls % CLASS_COUNT].preset[p->preset % PRESETS].bar[1] % CLASS_SKILLS;
+    w->sig.res = w->st.b.sig ? sig_resonance(w->floor) : 1.0;
     if (w->h.hp > w->st.max_hp)
         w->h.hp = w->st.max_hp;
     if (w->h.res > world_max_res(w))
@@ -134,6 +139,7 @@ void world_init_floor(World *w, const Profile *p, int floor)
     w->ctl.target = w->ctl.drop = -1;
     w->ctl.cast = w->cmd.cast = -1;
     events_init(w, p);
+    butcher_init(w);
 }
 
 void world_message(World *w, const char *text, uint16_t color)
@@ -278,8 +284,10 @@ void world_tick(World *w, Profile *p)
     grounds_update(w, p);
     orbs_update(w);
     events_tick(w, p);
-    if (w->st.b.sig)
-        sig_tick(w, p);
+    butcher_tick(w, p);
+    sig_tick(w, p);                   /* screen shake and flash serve every power */
+    if (w->st.b.myth_any)
+        myth_tick(w, p);
     bark_tick(&w->bark, (uint32_t)w->tick);
     age_visuals(w);
     if (w->tick % 4 == 0)

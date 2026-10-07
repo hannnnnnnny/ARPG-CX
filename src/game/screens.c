@@ -305,39 +305,59 @@ static void slot_row(const Game *g, int i, int y)
     const ClassDef *c = &class_defs[si->cls % CLASS_COUNT];
     char buf[128];
     snprintf(buf, sizeof buf, "%s - %s %s", si->name, T(c->name), T(c->preset[si->preset % PRESETS].name));
-    font_draw(52, y + 18, buf, C_TEXT, 1);
+    font_draw(52, y + 6, buf, C_TEXT, 1);
     if (si->level >= LEVEL_CAP)
         snprintf(buf, sizeof buf, T("PARAGON %d  FLOOR %d  BEST %d  REBIRTHS %d"), si->paragon, si->floor,
                  si->best_floor, si->rebirths);
     else
         snprintf(buf, sizeof buf, T("LEVEL %d  FLOOR %d  BEST %d  REBIRTHS %d"), si->level, si->floor, si->best_floor,
                  si->rebirths);
-    font_draw(52, y + 28, buf, C_DIM, 1);
-    (void)g;
+    font_draw(52, y + 18, buf, C_DIM, 1);
+}
+
+/* First visible row: keeps the selection inside the window of SLOT_ROWS. */
+static int slots_scroll(int sel)
+{
+    return CLAMP(sel - SLOT_ROWS / 2 + 1, 0, SAVE_SLOTS - SLOT_ROWS);
+}
+
+/* Up / down arrows beside the list when rows are hidden above / below. */
+static void slots_arrows(int top)
+{
+    int k;
+    for (k = 0; k < 4; k++) {
+        if (top > 0)
+            gfx_hline(306 - k, 44 + k, 1 + k * 2, C_SEL);
+        if (top + SLOT_ROWS < SAVE_SLOTS)
+            gfx_hline(306 - k, 180 - k, 1 + k * 2, C_SEL);
+    }
 }
 
 void slots_render(Game *g)
 {
-    int i;
+    int k, top = slots_scroll(g->slot_sel);
     char buf[128];
     title_backdrop(g->tick);
     font_draw_centered(14, g->slot_new ? "NEW GAME - CHOOSE A SLOT" : "LOAD GAME", C_SEL, C_SHADE, 2);
-    for (i = 0; i < SAVE_SLOTS; i++) {
+    for (k = 0; k < SLOT_ROWS; k++) {
+        int i = top + k, y = 40 + k * 36;
         const SlotInfo *si = &g->slots[i];
-        int y = 44 + i * 46;
         bool on = i == g->slot_sel;
-        game_ui_rect(20, y, 280, 40, on);
-        gfx_fill_rect(20, y, 280, 40, on ? RGB565(60, 30, 20) : RGB565(20, 12, 14));
-        gfx_rect(20, y, 280, 40, on ? C_SEL : RGB565(80, 60, 50));
-        snprintf(buf, sizeof buf, T("SLOT %d"), i + 1);
-        font_draw(28, y + 6, buf, on ? C_SEL : C_DIM, 1);
+        game_ui_rect(20, y, 280, 32, on);
+        gfx_fill_rect(20, y, 280, 32, on ? RGB565(60, 30, 20) : RGB565(20, 12, 14));
+        gfx_rect(20, y, 280, 32, on ? C_SEL : RGB565(80, 60, 50));
+        snprintf(buf, sizeof buf, "%d", i + 1);
+        font_draw(28, y + 12, buf, on ? C_SEL : C_DIM, 1);
         if (si->used)
             slot_row(g, i, y);
         else
-            font_draw(52, y + 22, si->status == SAVE_CORRUPT ? "DAMAGED SAVE" : "EMPTY",
+            font_draw(52, y + 12, si->status == SAVE_CORRUPT ? "DAMAGED SAVE" : "EMPTY",
                       si->status == SAVE_CORRUPT ? C_BAD : C_DIM, 1);
     }
-    font_draw_centered(190, "ENTER: SELECT   DEL: DELETE   ESC: BACK", C_DIM, C_SHADE, 1);
+    slots_arrows(top);
+    snprintf(buf, sizeof buf, T("SLOT %d"), g->slot_sel + 1);
+    font_draw_centered(184, buf, C_SEL, C_SHADE, 1);
+    font_draw_centered(196, "ENTER: SELECT   DEL: DELETE   ESC: BACK", C_DIM, C_SHADE, 1);
 }
 
 /* ------------------------------------------------------------- offline */

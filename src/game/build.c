@@ -211,6 +211,7 @@ static void add_defence(BuildRT *b, int kind, int arg, double v)
     case MOD_MINION_COUNT: b->minion_add += (int)v; break;
     case MOD_SIGNATURE:    signature_mod(b, arg, v); break;
     case MOD_SIG_FACET:    if (arg < SF_COUNT) b->facet[arg] = MAX(b->facet[arg], v); break;
+    case MOD_MYTHIC:       if (arg > MY_NONE && arg < MY_COUNT) b->myth[arg] = MAX(b->myth[arg], v); break;
     case MOD_ALL_RANKS: {
         int i;
         for (i = 0; i < CLASS_SKILLS; i++)
@@ -344,13 +345,41 @@ static void apply_passives(const Profile *p, BuildRT *b)
     }
 }
 
+/* Mythic powers that are plain numbers; the rest act in combat (world_myth.c). */
+static void apply_mythic(BuildRT *b)
+{
+    int k;
+    for (k = MY_NONE + 1; k < MY_COUNT; k++)
+        b->myth_any |= b->myth[k] > 0;
+    if (b->myth[MY_ONENAME] > 0)
+        b->x_all *= 1.0 + b->myth[MY_ONENAME] / 100.0;
+    if (b->myth[MY_UNDYING] > 0)
+        b->x_life *= b->myth[MY_UNDYING];
+}
+
+/* Endless Orbit: no skill costs anything, every cooldown shrinks. */
+static void apply_orbit(BuildRT *b)
+{
+    int s;
+    if (b->myth[MY_ORBIT] <= 0)
+        return;
+    for (s = 0; s < CLASS_SKILLS; s++) {
+        SkillRT *k = &b->skill[s];
+        if (k->cost > 0)
+            k->cost = 0;
+        k->cd_ticks = (int)(k->cd_ticks * (1.0 - b->myth[MY_ORBIT] / 100.0));
+    }
+}
+
 void resolve_build(const Profile *p, BuildRT *b)
 {
     int s;
     apply_signature(p, b);
+    apply_mythic(b);
     apply_passives(p, b);
     for (s = 0; s < CLASS_SKILLS; s++)
         resolve_skill(p, b, s, &b->skill[s]);
+    apply_orbit(b);
 }
 
 /* ------------------------------------------------------- auto planner */

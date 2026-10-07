@@ -28,7 +28,8 @@ typedef enum {
 } ConfirmKind;
 typedef enum { TOWN_LIST, TOWN_SMITH, TOWN_OCCULT, TOWN_JEWEL, TOWN_ALCHEMY, TOWN_GAMBLE, TOWN_COUNT } TownScreen;
 
-#define SAVE_SLOTS 3
+#define SAVE_SLOTS 15
+#define SLOT_ROWS  4      /* slot screen rows visible at once (the list scrolls) */
 
 /* What the slot screen shows without loading a whole profile into play. */
 typedef struct {
@@ -93,6 +94,7 @@ typedef struct {
     bool slot_new;              /* slot screen picks a slot for a NEW game */
     SlotInfo slots[SAVE_SLOTS];
     int autosave_t;
+    int hitstop_cool;           /* frames before the next hit stop may freeze the battle */
     OfflineReport off;
     char toast[112];
     uint16_t toast_color;

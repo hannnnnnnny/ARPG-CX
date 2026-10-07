@@ -218,11 +218,11 @@ static bool add_affix(Item *it, Rng *r, double mult, int cls)
 
 static Rarity roll_rarity(Rng *r, int ilvl, int luck, Rarity min_rarity)
 {
-    /* Per 100000: mythic 20 (torment), unique 300, legendary 2500, rare 12000, magic 30000. */
-    int roll = (int)(rng_next(r) % 100000u);
+    /* Per 1000000: mythic 4 (torment), unique 3000, legendary 25000, rare 120000, magic 300000. */
+    int roll = (int)(rng_next(r) % 1000000u);
     double boost = 1.0 + 0.10 * luck;
-    int my = ilvl > 50 ? (int)(20 * boost) : 0, un = ilvl >= 5 ? (int)(300 * boost) : 0;
-    int lg = (int)(2500 * boost), ra = (int)(12000 * boost), ma = (int)(30000 * boost);
+    int my = ilvl > 50 ? (int)(4 * boost) : 0, un = ilvl >= 5 ? (int)(3000 * boost) : 0;
+    int lg = (int)(25000 * boost), ra = (int)(120000 * boost), ma = (int)(300000 * boost);
     Rarity res = roll < my ? RAR_MYTHIC : roll < my + un ? RAR_UNIQUE : roll < my + un + lg ? RAR_LEGEND
                : roll < my + un + lg + ra ? RAR_RARE : roll < my + un + lg + ra + ma ? RAR_MAGIC : RAR_COMMON;
     return res < min_rarity ? min_rarity : res;
@@ -374,6 +374,8 @@ void item_make_unique(Item *it, Rng *r, int ilvl, int unique, bool ancestral, in
     it->ancestral = (uint8_t)(ancestral || u->mythic);
     it->power = (uint8_t)unique;
     it->power_roll = (uint16_t)rng_range(r, 0, 1000);
+    if (u->cls == ANY_CLASS && (u->slot == SLOT_WEAPON || u->slot == SLOT_OFFHAND))
+        roll_base(it, r, cls);                 /* a mythic weapon takes the wearer's weapon form */
     roll_main(it, r);
     roll_implicit(it, r);
     for (i = 0; i < 4 && it->naff < MAX_AFFIX; i++)

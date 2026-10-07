@@ -3,6 +3,7 @@
 #include "balance.h"
 #include "story.h"
 #include "events.h"
+#include "mythic.h"
 #include "../gfx/gfx.h"
 #include "../i18n/i18n.h"
 #include <stdio.h>
@@ -95,11 +96,17 @@ void session_tick(Session *s, Profile *p)
         s->w.ev_lore = 0;
     }
     if (s->w.ev_floor_done) {
-        int best = p->best_floor;
+        int best = p->best_floor, dive;
         s->floors_cleared++;
         act_cleared(s, p);
         prog_floor_cleared(p, is_boss_floor(p->floor));
+        dive = myth_dive(&s->w, p);
+        p->floor += dive;
+        p->best_floor = MAX(p->best_floor, p->floor);
+        p->best_floor_ever = MAX(p->best_floor_ever, p->best_floor);
         world_init_floor(&s->w, p, p->floor);
+        if (dive)
+            world_banner(&s->w, "THE ABYSS PULLS YOU DEEPER", RGB565(170, 90, 255));
         announce_floor(&s->w, p);
         check_act_intro(s, p);
         world_goal(&s->w, p, GE_FLOOR, 0);

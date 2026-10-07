@@ -178,13 +178,27 @@ bool prog_learn_aspect(Profile *p, const Item *it)
     return p->codex[it->power] != before;
 }
 
+/* Auto equip never trades a build-defining unique or a mythic for lesser
+ * gear, and always puts on a mythic where neither is worn. */
+static bool auto_wants(const Profile *p, const Item *it, int target)
+{
+    const Item *worn = &p->equip[target];
+    bool mythic = it->rarity == RAR_MYTHIC, worn_mythic = worn->used && worn->rarity == RAR_MYTHIC;
+    if (item_is_signature(worn) && !item_is_signature(it))
+        return false;
+    if (worn_mythic && !mythic)
+        return false;
+    if (mythic && !worn_mythic)
+        return true;
+    return !worn->used || item_upgrade_ratio(p, it) > 0.005;
+}
+
 LootResult prog_handle_loot(Profile *p, const Item *it, double *gold_gained)
 {
     int slot, worst, target = item_target_slot(p, it);
     *gold_gained = 0;
     prog_learn_aspect(p, it);
-    if (p->auto_equip && (!p->equip[target].used || item_upgrade_ratio(p, it) > 0.005)
-        && (!item_is_signature(&p->equip[target]) || item_is_signature(it))) {
+    if (p->auto_equip && auto_wants(p, it, target)) {
         equip_into(p, it, target);
         return LOOT_EQUIPPED;
     }

@@ -6,6 +6,7 @@
  *   ambush            a pack with a champion jumps the hero mid-floor
  *   cursed chest      touching it wakes guardians; beat them for the loot
  *   fallen adventurer carries one of the sixteen lost pages
+ *   blood harvest, cursed shrine, bloodmarked hunt, hell rift (events_d4.c)
  *
  * plus champion elites with named affixes, and the glue that turns
  * dungeon happenings into bounty progress, achievements and remarks.
@@ -26,6 +27,8 @@ bool events_object_pending(const World *w);
 void events_touch(World *w, Profile *p);
 bool events_wave_active(const World *w);
 void events_goblin_act(World *w, Monster *m);
+/* HUD line for a running event ("" when there is nothing to show). */
+void events_d4_status(const World *w, char *out, size_t cap);
 
 int  champion_affixes(int floor);
 void champion_roll(World *w, Monster *m);

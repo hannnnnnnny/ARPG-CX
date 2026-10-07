@@ -50,9 +50,6 @@ static void add_elixir_and_upgrades(BuildRT *b, const Profile *p)
         build_add_mod(b, MOD_X_ALL, 0, m);
         build_add_mod(b, MOD_LIFE_PCT, 0, m);
     }
-#ifdef PROBE_LIFE
-    b->x_life *= PROBE_LIFE;
-#endif
     if (renown_tier(p) > 0) {
         build_add_mod(b, MOD_X_ALL, 0, RENOWN_DMG_PCT * renown_tier(p));
         build_add_mod(b, MOD_LIFE_PCT, 0, RENOWN_DMG_PCT * renown_tier(p));
@@ -183,7 +180,12 @@ double stats_dps(const Stats *st, const Profile *p)
     const SkillRT *core = &st->b.skill[pr->bar[1] % CLASS_SKILLS];
     double add = typical_add(st, pr, core, c->attack_range <= 30);
     double sig = st->b.sig ? 1.0 + st->b.sig_power / 100.0 : 1.0;
-    return st->weapon * st->stat_mult * (1.0 + add / 100.0) * typical_mult(st, pr, p) * st->aps * sig;
+    double myth = 1.0;
+    int k;
+    for (k = MY_NONE + 1; k < MY_COUNT; k++)          /* a rough worth of each power, for comparing gear */
+        if (st->b.myth[k] > 0)
+            myth *= k == MY_ONENAME || k == MY_UNDYING ? 1.0 : 1.6;
+    return st->weapon * st->stat_mult * (1.0 + add / 100.0) * typical_mult(st, pr, p) * st->aps * sig * myth;
 }
 
 double stats_power(const Stats *st, const Profile *p, int floor)
