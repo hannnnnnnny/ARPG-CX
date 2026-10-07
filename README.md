@@ -1,5 +1,7 @@
 # ASHEN DEPTHS (ARPG-CX)
 
+**English** | [简体中文](README.zh-CN.md)
+
 An original action RPG for **Windows** (keyboard and mouse, sound, crisp
 Chinese text) and the **TI-Nspire CX / CX CAS (first generation)**, built
 around the systems of Diablo IV. Play the hero yourself, or let it fight on
@@ -13,14 +15,11 @@ gains when you come back.
 The systems follow Diablo IV's design. All code, pixel art, names, items
 and story are original.
 
-> 中文：原创 ARPG（暗黑破坏神 4 式系统）。Windows 版支持键盘鼠标亲自操作（WASD 移动、
-> 鼠标点击攻击、1-6 技能、Q 喝药、空格切换自动挂机）、合成音效、12px 清晰中文字体；
-> 同一份代码也能编译成 TI-Nspire CX 计算器版。下方动图与截图均为游戏本身渲染的真实画面。
 
-## Download (一键下载)
+## Download
 
 <p align="center">
-  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/AshenDepths-Windows.zip"><img src="https://img.shields.io/badge/%E4%B8%80%E9%94%AE%E4%B8%8B%E8%BD%BD-Windows%20%2B%20TI--Nspire%20zip-e8590c?style=for-the-badge&logo=windows" alt="Download zip"></a>
+  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/AshenDepths-Windows.zip"><img src="https://img.shields.io/badge/Download-Windows%20%2B%20TI--Nspire%20zip-e8590c?style=for-the-badge&logo=windows" alt="Download zip"></a>
 </p>
 
 **[AshenDepths-Windows.zip](https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/AshenDepths-Windows.zip)**
@@ -29,55 +28,52 @@ plus `AshenDepths.tns` for the calculator. Windows may say "Windows protected
 your PC" because the exe is unsigned: choose *More info* then *Run anyway*.
 All releases: [Releases](https://github.com/hannnnnnnny/ARPG-CX/releases).
 
-> 中文：点上面的按钮直接下载 zip，解压后双击 `AshenDepthsDesktop.exe` 就能玩，无需安装；
-> 若提示"Windows 已保护你的电脑"，点"更多信息"→"仍要运行"。zip 里同时附带计算器版 `AshenDepths.tns`。
 
-## Promo video (宣传视频)
+## Promo video
 
 <p align="center">
-  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo.mp4"><img src="docs/media/promo.gif" width="300" alt="Promo video preview"></a>
-  <br><em>32 s, 1080x1920. The preview above is silent:
-  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo.mp4"><b>download the mp4 with sound</b></a></em>
+  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo_en.mp4"><img src="docs/media/promo_en.gif" width="300" alt="Promo video preview"></a>
+  <br><em>32 s, 1080x1920, English. The preview above is silent:
+  <a href="https://github.com/hannnnnnnny/ARPG-CX/releases/latest/download/ashen_depths_promo_en.mp4"><b>download the mp4 with sound</b></a></em>
 </p>
 
 Every shot is recorded from the game itself and scored with its synthesized
-effects (`python tools/media/make_video.py` in ARPG-CX rebuilds it).
+effects (`python tools/media/make_video.py --en` in ARPG-CX rebuilds it).
 
-> 中文：上图为宣传视频的无声预览，点击图片或"download the mp4 with sound"下载 32 秒竖屏有声完整版；
-> 画面全部为游戏实机录制，音效来自游戏本身的合成音效。
 
 ## Demo
 
 <p align="center">
-  <img src="docs/media/desktop_play.gif" width="640" alt="Taking control: Space for manual, WASD, skill keys, clicking monsters">
+  <img src="docs/media/desktop_play_en.gif" width="640" alt="Taking control: Space for manual, WASD, skill keys, clicking monsters">
   <br><em>Auto battle, then Space for manual play: WASD, skill keys 1-6, clicking the monster under the cursor (red ring)</em>
 </p>
 
 <table>
   <tr>
-    <td><img src="docs/media/desktop_menus.gif" width="400" alt="Menus driven by the mouse"></td>
-    <td><img src="docs/media/desktop_battle.gif" width="400" alt="Necromancer battle at 640x480"></td>
+    <td><img src="docs/media/desktop_menus_en.gif" width="400" alt="Menus driven by the mouse"></td>
+    <td><img src="docs/media/desktop_battle_en.gif" width="400" alt="Necromancer battle at 640x480"></td>
   </tr>
   <tr>
     <td align="center"><em>Menus with the mouse: tabs, rows, options</em></td>
-    <td align="center"><em>640x480 rendering with 12px Chinese text</em></td>
+    <td align="center"><em>640x480 rendering (CJK text uses a crisp 12px font)</em></td>
   </tr>
 </table>
 
 | Title | Battle | Hero |
 |---|---|---|
-| ![Title](docs/media/desktop_title.png) | ![Battle](docs/media/desktop_battle.png) | ![Hero](docs/media/desktop_hero.png) |
+| ![Title](docs/media/desktop_title_en.png) | ![Battle](docs/media/desktop_battle_en.png) | ![Hero](docs/media/desktop_hero_en.png) |
 | **Skills** | **Goals** | **Options (sound, auto battle)** |
-| ![Skills](docs/media/desktop_skills.png) | ![Goals](docs/media/desktop_goals.png) | ![Options](docs/media/desktop_options.png) |
+| ![Skills](docs/media/desktop_skills_en.png) | ![Goals](docs/media/desktop_goals_en.png) | ![Options](docs/media/desktop_options_en.png) |
 
 Every frame is rendered by the game's own code at 640x480 through the
 headless runner built with the same `GFX_HD` renderer and 12px font as
 `AshenDepthsDesktop.exe`; scripted input drives it and the cursor arrow is
 painted on afterwards. The synthesized sound effects can't be shown in a
-GIF: run the exe from `dist/`. `python tools/media/make_media.py`
-regenerates everything after a build.
+GIF: run the exe from `dist/`. `python tools/media/make_media.py --en`
+regenerates these English shots after a build
+(without `--en`, the Chinese ones of README.zh-CN.md).
 
-## Meta builds (版本强势流派)
+## Meta builds
 
 Three signature builds sit at the top of the ladder. Each is switched on
 by a **build-defining unique** (dropped by act bosses and guardians) and
@@ -90,14 +86,14 @@ x300 on floor 300; RESONANCE on the HUD).
 
 <table>
   <tr>
-    <td><img src="docs/media/meta_storm_werewolf.gif" width="300" alt="Storm Werewolf druid fighting an act boss"></td>
-    <td><img src="docs/media/meta_bone_spear.gif" width="300" alt="Bone Spear necromancer"></td>
-    <td><img src="docs/media/meta_inferno.gif" width="300" alt="Inferno sorcerer"></td>
+    <td><img src="docs/media/meta_storm_werewolf_en.gif" width="300" alt="Storm Werewolf druid fighting an act boss"></td>
+    <td><img src="docs/media/meta_bone_spear_en.gif" width="300" alt="Bone Spear necromancer"></td>
+    <td><img src="docs/media/meta_inferno_en.gif" width="300" alt="Inferno sorcerer"></td>
   </tr>
   <tr>
-    <td align="center"><b>风暴狼德 Storm Werewolf</b></td>
-    <td align="center"><b>骨刺死灵 Bone Spear</b></td>
-    <td align="center"><b>火法 Inferno</b></td>
+    <td align="center"><b>Storm Werewolf</b></td>
+    <td align="center"><b>Bone Spear</b></td>
+    <td align="center"><b>Inferno</b></td>
   </tr>
 </table>
 
@@ -119,18 +115,18 @@ no rebirth) puts the three far ahead of everything else:
 | Inferno | 296 | 424 | 615 |
 | best other build | 263 | 303 | 469 |
 
-## Season: mythics, the Fleshrender, packed floors (赛季内容)
+## Season: mythics, the Fleshrender, packed floors
 
 <table>
   <tr>
-    <td><img src="docs/media/season_mythic.gif" width="300" alt="Mythic powers: stars, singularity, chain lightning"></td>
-    <td><img src="docs/media/season_butcher.gif" width="300" alt="The Fleshrender hunts the hero"></td>
-    <td><img src="docs/media/season_harvest.gif" width="300" alt="Blood harvest event"></td>
+    <td><img src="docs/media/season_mythic_en.gif" width="300" alt="Mythic powers: stars, singularity, chain lightning"></td>
+    <td><img src="docs/media/season_butcher_en.gif" width="300" alt="The Fleshrender hunts the hero"></td>
+    <td><img src="docs/media/season_harvest_en.gif" width="300" alt="Blood harvest event"></td>
   </tr>
   <tr>
-    <td align="center"><b>超级先祖暗金 Mythic powers</b></td>
-    <td align="center"><b>剁肉屠夫 The Fleshrender</b></td>
-    <td align="center"><b>嗜血收割 Blood harvest</b></td>
+    <td align="center"><b>Mythic powers</b></td>
+    <td align="center"><b>The Fleshrender</b></td>
+    <td align="center"><b>Blood harvest</b></td>
   </tr>
 </table>
 
@@ -167,7 +163,7 @@ from the Fleshrender; the simulator finds 5-27 over 300 hours. A mythic
 drop shakes the screen, auto equip always puts one on and never takes it
 off for ordinary gear.
 
-**The Fleshrender** (屠夫), a rare butcher in the spirit of Diablo IV's:
+**The Fleshrender**, a rare butcher in the spirit of Diablo IV's:
 about one ordinary floor in forty from floor 20, never a guardian floor.
 He walks in, hunts the hero across the map, throws a chain that drags the
 hero to his cleaver, enrages below 40% life and pays out like a guardian
@@ -269,7 +265,8 @@ An original fifteen-act story (Cindermere under the ash): acts I-V end
 with the epilogue on floor 50, acts VI-X (the Torment campaign) with the
 finale on floor 100, and acts XI-XV (the deep) take a whole Torment tier
 each, down to floor 350. Forty lost pages lie beside fallen adventurers;
-the last twenty-four only turn up below floor 100, one every ten floors. The story plays as subtitles over the battle; nothing waits for a
+the last twenty-four only turn up below floor 100, one every ten floors.
+The story plays as subtitles over the battle; nothing waits for a
 key press. OPTIONS > STORY switches to full pages, OPTIONS > JOURNAL
 rereads chapters and pages.
 
@@ -343,7 +340,7 @@ files from `.tools/fonts12/` (the 12px monospaced BDF release).
   floors, embers, story and options carry over; old gear is re-forged into
   new items of the same slot, rarity and item level; skill points are
   refunded and the closest build is rebuilt. Converted saves cannot be
-  opened by the old version any more (current format: v7).
+  opened by the old version any more (current format: v8).
 * Autosave every 2 minutes and on exit; CRC-checked, written atomically.
 
 ## Controls
@@ -395,7 +392,7 @@ calculator keeps the 8px font at 320x240.
 
 Ndless must already be installed. Copy `AshenDepths.tns` into the `ndless`
 folder with TI-Nspire Computer Link (replace the old one), then open it from
-My Documents. Saves `AshenDepths1.sav.tns` to `AshenDepths3.sav.tns` sit
+My Documents. Saves `AshenDepths1.sav.tns` to `AshenDepths15.sav.tns` sit
 next to it and are converted on first load.
 
 ## Build
@@ -415,5 +412,3 @@ Curves and prices live in `src/game/balance.c`; skill numbers in
 Code, pixel art and story: [MIT](LICENSE) (c) 2026 Yi Han. The bundled pixel
 fonts keep their own SIL Open Font License 1.1 (see `assets/fonts*/`).
 
-> 中文：代码、像素美术与剧情采用 MIT 许可证开源，可自由使用、修改和分发，保留版权声明即可；
-> 内置像素字体沿用各自的 SIL OFL 1.1 许可证。

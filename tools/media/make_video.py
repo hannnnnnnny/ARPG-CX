@@ -1,6 +1,9 @@
 """Vertical 9:16 promo video (1080x1920, 30 fps, ~36 s) for short-video apps.
 
-    sh tools/build_host.sh && python tools/media/make_video.py [out.mp4]
+    sh tools/build_host.sh && python tools/media/make_video.py [--en] [out.mp4]
+
+--en makes the English cut (English game UI and captions); the default is
+the Chinese one.
 
 Gameplay is recorded tick by tick through the 640x480 headless runner, and
 the runner's --sounds log scores it with the game's own synthesized effects
@@ -27,7 +30,39 @@ W, H, FPS, RATE = 1080, 1920, 30, 44100
 RUNNER = ROOT / "build" / ("ad_headless_hd.exe" if os.name == "nt" else "ad_headless_hd")
 TMP = ROOT / "build" / "video_tmp"
 GAME_Y = 430                      # top of the 1080x960 gameplay window
-ZH = ["--lang", "1"]
+EN = "--en" in sys.argv
+LANG = ["--lang", "0" if EN else "1"]
+SUFFIX = "_en" if EN else ""
+
+# Every caption of the video, per language.
+TEXTS = {
+    "zh": {
+        "footer": "灰烬深渊 Ashen Depths · 原创像素 ARPG",
+        "hook": ("在计算器上", "做了个暗黑4？", "风暴狼德 vs 空洞之王"),
+        "calc": ("掌上暗黑", "计算器版", "专为 TI-Nspire CX 计算器打造", "320×240 像素 · Ndless 运行"),
+        "pc": ("电脑版", "键盘鼠标亲自打", "空格切换 挂机 / 手动", "WASD 移动 · 鼠标点怪 · 1-6 技能 · Q 喝药"),
+        "wolf": ("风暴狼德", "每一击劈下天雷 · 永不掉血", "核心暗金「风暴嚎叫之皮」"),
+        "bone": ("骨刺死灵", "骨矛炸裂 · 巨型骨矛震屏", "核心暗金「初代守护者之脊」"),
+        "fire": ("陨石火法", "火球双爆 · 陨石如雨", "核心暗金「炼狱之心」"),
+        "stats": ("内容量管饱", "6 大职业", "18 种流派", "15 幕剧情", "300+ 小时"),
+        "cta": ("免费 · MIT 开源", "GitHub 搜 ARPG-CX", "解压，双击 exe 就能玩", "计算器版搜 ti-idle-arpg（需 Ndless）"),
+    },
+    "en": {
+        "footer": "Ashen Depths · an original pixel ARPG",
+        "hook": ("I built Diablo IV", "on a calculator?", "Storm Werewolf vs an act boss"),
+        "calc": ("Pocket ARPG", "Calculator edition", "Made for the TI-Nspire CX", "320×240 pixels · runs on Ndless"),
+        "pc": ("Windows edition", "Play it yourself", "Space: idle / manual play",
+               "WASD move · click to attack · 1-6 skills · Q potion"),
+        "wolf": ("Storm Werewolf", "Lightning every hit · never falls", "Build-defining unique: Stormhowl Pelt"),
+        "bone": ("Bone Spear", "Spears burst · giants shake the screen",
+                 "Build-defining unique: Spine of the First Keeper"),
+        "fire": ("Inferno", "Fireballs explode twice · meteor rain", "Build-defining unique: Heart of the Inferno"),
+        "stats": ("Packed with content", "6 classes", "18 builds", "15 story acts", "300+ hours"),
+        "cta": ("Free · MIT open source", "github.com/hannnnnnnny/ARPG-CX", "Unzip and double-click the exe",
+                "Calculator: ti-idle-arpg (needs Ndless)"),
+    },
+}
+TX = TEXTS["en" if EN else "zh"]
 PLAY = ('-:30 z:2 -:20 D@200/140:12 -:4 1@200/140:2 -:8 3@200/140:2 -:10 R@230/120:14 -:4 '
         '2@230/120:2 -:8 4@230/120:2 -:10 l@175/110:2 l@175/110:30 -:6 r@175/110:2 -:10 '
         'U@150/90:12 -:4 5@150/90:2 -:8 l@140/100:2 l@140/100:30 -:6 6@140/100:2 -:30')
@@ -56,7 +91,7 @@ def record(name):
     """Run the headless runner once; returns (frames, [(frame index, sound id, volume)])."""
     args, script, start, count = CLIPS[name]
     prefix, log = TMP / f"{name}_", TMP / f"{name}.snd"
-    cmd = [str(RUNNER)] + args + ZH + ["--script", script, "--record", f"{start}:{count}:1:{prefix}",
+    cmd = [str(RUNNER)] + args + LANG + ["--script", script, "--record", f"{start}:{count}:1:{prefix}",
                                        "--sounds", str(log)]
     r = subprocess.run(cmd, capture_output=True, text=True)
     if r.returncode != 0:
@@ -173,9 +208,20 @@ def write_wav(path, samples):
 
 # ---------------------------------------------------------------- visuals
 
+def fit_size(s, size, stroke=0, max_w=W - 80):
+    """The largest size up to 'size' at which s fits in max_w px."""
+    probe = ImageDraw.Draw(Image.new("L", (1, 1)))
+    while size > 20:
+        l, _, r, _ = probe.textbbox((0, 0), s, font=font(size), stroke_width=stroke)
+        if r - l <= max_w:
+            break
+        size -= 4
+    return size
+
+
 def text_layer(s, size, fill, glow, stroke=6):
     """Pre-rendered glowing title as a cropped RGBA image, scaled per frame for pop-ins."""
-    f = font(size)
+    f = font(fit_size(s, size, stroke + 6))
     l, t, r, b = ImageDraw.Draw(Image.new("L", (1, 1))).textbbox((0, 0), s, font=f, stroke_width=stroke)
     pad = 40
     lay = Image.new("RGBA", (r - l + pad * 2, b - t + pad * 2), (0, 0, 0, 0))
@@ -239,10 +285,10 @@ class Scene:
 def base_card(seed, caption, color=ORANGE, sub=None):
     img = background(seed, color, (W, H))
     if caption:
-        text(img, (W / 2, 1490), caption, 44, BONE, "mm")
+        text(img, (W / 2, 1490), caption, fit_size(caption, 44), BONE, "mm")
     if sub:
-        text(img, (W / 2, 1560), sub, 36, GOLD, "mm", bold=False)
-    text(img, (W / 2, 1850), "灰烬深渊 Ashen Depths · 原创像素 ARPG", 30, (150, 140, 150), "mm", bold=False)
+        text(img, (W / 2, 1560), sub, fit_size(sub, 36), GOLD, "mm", bold=False)
+    text(img, (W / 2, 1850), TX["footer"], 30, (150, 140, 150), "mm", bold=False)
     return img
 
 
@@ -285,15 +331,16 @@ def build_scene(clip, length, title, sub, color, caption, seed, avoid=None):
 
 
 def calc_scene():
-    gif = CALC_MEDIA / "late_game.gif"
+    gif = CALC_MEDIA / f"late_game{SUFFIX}.gif"
     with Image.open(gif) as im:
         shots = []
         for i in range(im.n_frames):
             im.seek(i)
             shots += [im.convert("RGB")] * 3                # 10 fps clip -> 30 fps
-    base = base_card(11, "专为 TI-Nspire CX 计算器打造", ORANGE, "320×240 像素 · Ndless 运行")
+    t = TX["calc"]
+    base = base_card(11, t[2], ORANGE, t[3])
     calculator(base, shots[0], 330, 470)
-    scene = Scene(75, base, None, headline("掌上暗黑", "计算器版", GOLD, FIRE), (), [(0, SND["SND_STAIRS"])])
+    scene = Scene(75, base, None, headline(t[0], t[1], GOLD, FIRE), (), [(0, SND["SND_STAIRS"])])
     scene.inset = (shots, (370, 518, 340, 255))
     return scene
 
@@ -302,20 +349,22 @@ def stats_scene(dim):
     backdrop = base_card(12, None)
     backdrop.paste(dim.filter(ImageFilter.GaussianBlur(10)), (0, GAME_Y))
     base = Image.blend(base_card(12, None), backdrop, 0.35)
-    items = (("6 大职业", 520), ("18 种流派", 760), ("15 幕剧情", 1000), ("300+ 小时", 1240))
-    titles = [(text_layer("内容量管饱", 110, GOLD, FIRE), (W / 2, 220), 0)]
+    t = TX["stats"]
+    items = ((t[1], 520), (t[2], 760), (t[3], 1000), (t[4], 1240))
+    titles = [(text_layer(t[0], 110, GOLD, FIRE), (W / 2, 220), 0)]
     titles += [(text_layer(s, 120, ORANGE, FIRE), (W / 2, y), 10 + k * 14) for k, (s, y) in enumerate(items)]
     stingers = [(10 + k * 14, SND["SND_DROP_RARE"]) for k in range(4)]
     return Scene(90, base, None, titles, (), stingers + [(0, SND["SND_LEVEL"])])
 
 
 def cta_scene():
-    base = base_card(13, "解压，双击 exe 就能玩", ORANGE, "计算器版搜 ti-idle-arpg（需 Ndless）")
-    title = still(MEDIA / "desktop_title.png").resize((800, 600), Image.NEAREST)
+    t = TX["cta"]
+    base = base_card(13, t[2], ORANGE, t[3])
+    title = still(MEDIA / f"desktop_title{SUFFIX}.png").resize((800, 600), Image.NEAREST)
     ImageDraw.Draw(base).rectangle([134, 694, 946, 1306], fill=ORANGE)
     base.paste(title, (140, 700))
-    titles = [(text_layer("免费 · MIT 开源", 110, GOLD, FIRE), (W / 2, 220), 0),
-              (text_layer("GitHub 搜 ARPG-CX", 78, BONE, ORANGE, 5), (W / 2, 380), 8)]
+    titles = [(text_layer(t[0], 110, GOLD, FIRE), (W / 2, 220), 0),
+              (text_layer(t[1], 78, BONE, ORANGE, 5), (W / 2, 380), 8)]
     return Scene(105, base, None, titles, (), [(0, SND["SND_DROP_UNIQUE"]), (8, SND["SND_DROP_LEGEND"])])
 
 
@@ -324,18 +373,18 @@ def scenes():
     wolf, bone, fire, play = (record(n) for n in ("wolf", "bone", "fire", "play"))
     hook_first = best_window(wolf, 90)
     hook_frames, hook_sounds = cut(wolf, hook_first, 90)
-    hook = Scene(90, base_card(10, "风暴狼德 vs 空洞之王", STORM), hook_frames,
-                 [(text_layer("在计算器上", 120, GOLD, FIRE), (W / 2, 190), 0),
-                  (text_layer("做了个暗黑4？", 128, ORANGE, FIRE), (W / 2, 335), 10)],
+    t, pt = TX["hook"], TX["pc"]
+    hook = Scene(90, base_card(10, t[2], STORM), hook_frames,
+                 [(text_layer(t[0], 120, GOLD, FIRE), (W / 2, 190), 0),
+                  (text_layer(t[1], 128, ORANGE, FIRE), (W / 2, 335), 10)],
                  hook_sounds, [(0, SND["SND_BOSS_DIE"]), (10, SND["SND_ELITE_DIE"])])
     pc_frames, pc_sounds = cut(play, 0, 150)
-    pc = Scene(150, base_card(14, "空格切换 挂机 / 手动", STORM, "WASD 移动 · 鼠标点怪 · 1-6 技能 · Q 喝药"),
-               pc_frames, headline("电脑版", "键盘鼠标亲自打", STORM, STORM), pc_sounds, [(0, SND["SND_UI_OK"])])
+    pc = Scene(150, base_card(14, pt[2], STORM, pt[3]),
+               pc_frames, headline(pt[0], pt[1], STORM, STORM), pc_sounds, [(0, SND["SND_UI_OK"])])
     return [hook, calc_scene(), pc,
-            build_scene(wolf, 150, "风暴狼德", "每一击劈下天雷 · 永不掉血", STORM, "核心暗金「风暴嚎叫之皮」", 15,
-                        (hook_first, 90)),
-            build_scene(bone, 150, "骨刺死灵", "骨矛炸裂 · 巨型骨矛震屏", BONE, "核心暗金「初代守护者之脊」", 16),
-            build_scene(fire, 150, "陨石火法", "火球双爆 · 陨石如雨", FIRE, "核心暗金「炼狱之心」", 17),
+            build_scene(wolf, 150, *TX["wolf"][:2], STORM, TX["wolf"][2], 15, (hook_first, 90)),
+            build_scene(bone, 150, *TX["bone"][:2], BONE, TX["bone"][2], 16),
+            build_scene(fire, 150, *TX["fire"][:2], FIRE, TX["fire"][2], 17),
             stats_scene(game_window(fire[0][60])), cta_scene()]
 
 
@@ -373,7 +422,8 @@ def encode(all_scenes, wav, out):
 
 def main():
     sys.stdout.reconfigure(encoding="utf-8")
-    out = pathlib.Path(sys.argv[1]) if len(sys.argv) > 1 else ROOT / "build" / "promo" / "ashen_depths_promo.mp4"
+    paths = [a for a in sys.argv[1:] if not a.startswith("--")]
+    out = pathlib.Path(paths[0]) if paths else ROOT / "build" / "promo" / f"ashen_depths_promo{SUFFIX}.mp4"
     out.parent.mkdir(parents=True, exist_ok=True)
     if not RUNNER.is_file():
         sys.exit(f"{RUNNER} missing: run sh tools/build_host.sh first")

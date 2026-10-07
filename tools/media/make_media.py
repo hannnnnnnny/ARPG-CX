@@ -2,6 +2,7 @@
 
     sh tools/build_host.sh && python tools/media/make_media.py   (project root)
     python tools/media/make_media.py --only season_butcher,season_mythic
+    python tools/media/make_media.py --en     (English UI, *_en files for README.md)
 
 Everything is rendered by the game itself through the 640x480 headless
 runner (build/ad_headless_hd: the same GFX_HD renderer and 12px CJK font as
@@ -22,7 +23,9 @@ RUNNER = os.path.join('build', 'ad_headless_hd.exe' if os.name == 'nt' else 'ad_
 OUT = os.path.join('docs', 'media')
 TMP = os.path.join('build', 'media_tmp')
 GFX_S = 2          # logical 320x240 -> 640x480
-ZH = ['--lang', '1']
+EN = '--en' in sys.argv          # English UI, files named *_en (README.md); default Chinese (README.zh-CN.md)
+LANG = ['--lang', '0' if EN else '1']
+SUFFIX = '_en' if EN else ''
 
 # Play by hand: auto battle, then Space (z) for manual, WASD, skill keys 1-6,
 # clicks into the pack.
@@ -36,30 +39,30 @@ MENUS = ('-:40 O:2 -:20 -@60/7:10 l@60/7:2 -:20 -@100/48:10 l@100/48:2 -:20 -@10
 
 CLIPS = [
     # name, runner args, script, (first tick, frames, ticks per frame), ms per frame
-    ('desktop_play', ['--new', '--class', '0', '--fast', '0.25'] + ZH, PLAY, (0, 130, 3), 100),
-    ('desktop_menus', ['--new', '--class', '1', '--fast', '1.5'] + ZH, MENUS, (30, 110, 3), 100),
-    ('desktop_battle', ['--new', '--class', '3', '--fast', '0.3'] + ZH, '-:400', (0, 125, 2), 66),
+    ('desktop_play', ['--new', '--class', '0', '--fast', '0.25'] + LANG, PLAY, (0, 130, 3), 100),
+    ('desktop_menus', ['--new', '--class', '1', '--fast', '1.5'] + LANG, MENUS, (30, 110, 3), 100),
+    ('desktop_battle', ['--new', '--class', '3', '--fast', '0.3'] + LANG, '-:400', (0, 125, 2), 66),
     # the three signature builds, wearing their build-defining uniques
-    ('meta_storm_werewolf', ['--new', '--class', '4', '--preset', '2', '--fast', '0.6', '--sig'] + ZH, '-:600',
+    ('meta_storm_werewolf', ['--new', '--class', '4', '--preset', '2', '--fast', '0.6', '--sig'] + LANG, '-:600',
      (180, 120, 3), 100),
-    ('meta_bone_spear', ['--new', '--class', '3', '--preset', '0', '--fast', '0.5', '--sig'] + ZH, '-:1100',
+    ('meta_bone_spear', ['--new', '--class', '3', '--preset', '0', '--fast', '0.5', '--sig'] + LANG, '-:1100',
      (640, 120, 3), 100),
-    ('meta_inferno', ['--new', '--class', '1', '--preset', '0', '--fast', '0.4', '--sig'] + ZH, '-:500',
+    ('meta_inferno', ['--new', '--class', '1', '--preset', '0', '--fast', '0.4', '--sig'] + LANG, '-:500',
      (20, 120, 3), 100),
     # season content: the Fleshrender, mythic powers, a blood harvest
-    ('season_butcher', ['--new', '--class', '0', '--fast', '1.5', '--butcher'] + ZH, '-:900', (20, 120, 3), 100),
-    ('season_mythic', ['--new', '--class', '3', '--preset', '1', '--fast', '1.0', '--mythic', '1,5,9,11,16'] + ZH,
+    ('season_butcher', ['--new', '--class', '0', '--fast', '1.5', '--butcher'] + LANG, '-:900', (20, 120, 3), 100),
+    ('season_mythic', ['--new', '--class', '3', '--preset', '1', '--fast', '1.0', '--mythic', '1,5,9,11,16'] + LANG,
      '-:900', (330, 120, 3), 100),
-    ('season_harvest', ['--new', '--class', '0', '--fast', '0.8', '--event', '6'] + ZH, '-:700', (40, 120, 3), 100),
+    ('season_harvest', ['--new', '--class', '0', '--fast', '0.8', '--event', '6'] + LANG, '-:700', (40, 120, 3), 100),
 ]
 
 SHOTS = [
-    ('desktop_title', ['--save', os.path.join(TMP, 'fresh.sav')] + ZH, '-:60', 50),
-    ('desktop_battle', ['--new', '--class', '0', '--fast', '0.25'] + ZH, '-:200@200/120:2 -:60', 150),
-    ('desktop_hero', ['--new', '--class', '3', '--fast', '1.5'] + ZH, '-:40 T:2 -:30', 70),
-    ('desktop_skills', ['--new', '--class', '1', '--fast', '1.5'] + ZH, '-:40 T:2 -:5 T:2 -:5 T:2 -:30', 80),
-    ('desktop_goals', ['--new', '--class', '5', '--fast', '6'] + ZH, '-:40' + ' T:2 -:5' * 6 + ' -:30', 105),
-    ('desktop_options', ['--new', '--class', '2', '--fast', '1'] + ZH, '-:40 B:2 -:30', 70),
+    ('desktop_title', ['--save', os.path.join(TMP, 'fresh.sav')] + LANG, '-:60', 50),
+    ('desktop_battle', ['--new', '--class', '0', '--fast', '0.25'] + LANG, '-:200@200/120:2 -:60', 150),
+    ('desktop_hero', ['--new', '--class', '3', '--fast', '1.5'] + LANG, '-:40 T:2 -:30', 70),
+    ('desktop_skills', ['--new', '--class', '1', '--fast', '1.5'] + LANG, '-:40 T:2 -:5 T:2 -:5 T:2 -:30', 80),
+    ('desktop_goals', ['--new', '--class', '5', '--fast', '6'] + LANG, '-:40' + ' T:2 -:5' * 6 + ' -:30', 105),
+    ('desktop_options', ['--new', '--class', '2', '--fast', '1'] + LANG, '-:40 B:2 -:30', 70),
 ]
 
 
@@ -94,7 +97,7 @@ def run(args, script, extra):
 def make_gif(name, frames, ms):
     palette = frames[len(frames) // 2].quantize(colors=255, method=Image.MEDIANCUT)
     q = [f.quantize(palette=palette, dither=Image.NONE) for f in frames]
-    path = os.path.join(OUT, f'{name}.gif')
+    path = os.path.join(OUT, f'{name}{SUFFIX}.gif')
     q[0].save(path, save_all=True, append_images=q[1:], duration=ms, loop=0, optimize=True)
     print(f'{path}: {len(frames)} frames, {os.path.getsize(path) // 1024} KB')
 
@@ -116,7 +119,7 @@ def shot(name, args, script, tick):
     run(args, script, ['--shot', f'{tick}:{path}'])
     timeline = mouse_timeline(script)
     draw_cursor(Image.open(path).convert('RGB'), timeline[tick] if tick < len(timeline) else None) \
-        .save(os.path.join(OUT, name + '.png'))
+        .save(os.path.join(OUT, name + SUFFIX + '.png'))
 
 
 def main():
