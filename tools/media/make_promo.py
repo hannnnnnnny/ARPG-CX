@@ -127,7 +127,7 @@ def page_cover():
     img = background(1)
     pill(img, (W / 2, 70), "原创独立游戏 · 免费开源", 32, anchor="m")
     glow_text(img, (W / 2, 230), "在计算器上", 128, GOLD, glow=FIRE)
-    glow_text(img, (W / 2, 390), "做了个暗黑4", 140, ORANGE, glow=FIRE)
+    glow_text(img, (W / 2, 390), "做了个类暗黑ARPG", 112, ORANGE, glow=FIRE)
     text(img, (W / 2, 505), "TI-Nspire CX 计算器版 + Windows 电脑版", 40, BONE, "mm")
     hero = shot(WOLF, 960)
     framed(img, hero, (60, 570))
@@ -218,7 +218,7 @@ def page_content():
              "楼层事件 · 悬赏 · 成就 · 离线收益 · 转生")
     for k, s in enumerate(lines):
         text(img, (W / 2, 1210 + k * 60), s, 36, BONE, "mm", bold=False)
-    text(img, (W / 2, H - 70), "系统对标暗黑4 · 代码、像素美术、剧情全部原创", 34, GOLD, "mm")
+    text(img, (W / 2, H - 70), "致敬暗黑4的系统设计 · 代码、像素美术、剧情全部原创", 34, GOLD, "mm")
     return img
 
 
@@ -268,7 +268,8 @@ def page_download():
         text(img, (240, y0 + 40), a, 36, BONE, bold=False)
         text(img, (240, y0 + 92), b, 46, GOLD)
     framed(img, crop_scale(still(MEDIA / "desktop_title.png"), (0, 0, 640, 480), 440), (320, 990))
-    text(img, (W / 2, H - 40), "计算器版：GitHub 搜 hannnnnnnny/ti-idle-arpg（需 Ndless）", 30, BONE, "ms", bold=False)
+    text(img, (W / 2, H - 76), "计算器版：GitHub 搜 hannnnnnnny/ti-idle-arpg（需 Ndless）", 30, BONE, "ms", bold=False)
+    text(img, (W / 2, H - 30), "独立原创项目，与暴雪娱乐、德州仪器无关联", 24, (150, 140, 150), "ms", bold=False)
     return img
 
 

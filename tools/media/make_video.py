@@ -38,8 +38,11 @@ SUFFIX = "_en" if EN else ""
 TEXTS = {
     "zh": {
         "footer": "灰烬深渊 Ashen Depths · 原创像素 ARPG",
-        "hook": ("在计算器上", "做了个暗黑4？", "风暴狼德 vs 空洞之王"),
-        "calc": ("掌上暗黑", "计算器版", "专为 TI-Nspire CX 计算器打造", "320×240 像素 · Ndless 运行"),
+        "disclaimer": "独立原创项目，与暴雪娱乐、德州仪器无关联",
+        "disclaimer": "独立原创项目，与暴雪娱乐、德州仪器无关联",
+        "disclaimer": "独立原创项目，与暴雪娱乐、德州仪器无关联",
+        "hook": ("在计算器上", "做了个类暗黑 ARPG！", "风暴狼德 vs 空洞之王"),
+        "calc": ("掌上刷宝", "计算器版", "专为 TI-Nspire CX 计算器打造", "320×240 像素 · Ndless 运行"),
         "pc": ("电脑版", "键盘鼠标亲自打", "空格切换 挂机 / 手动", "WASD 移动 · 鼠标点怪 · 1-6 技能 · Q 喝药"),
         "wolf": ("风暴狼德", "每一击劈下天雷 · 永不掉血", "核心暗金「风暴嚎叫之皮」"),
         "bone": ("骨刺死灵", "骨矛炸裂 · 巨型骨矛震屏", "核心暗金「初代守护者之脊」"),
@@ -49,7 +52,10 @@ TEXTS = {
     },
     "en": {
         "footer": "Ashen Depths · an original pixel ARPG",
-        "hook": ("I built Diablo IV", "on a calculator?", "Storm Werewolf vs an act boss"),
+        "disclaimer": "Independent project, not affiliated with Blizzard or Texas Instruments",
+        "disclaimer": "Independent project, not affiliated with Blizzard or Texas Instruments",
+        "disclaimer": "Independent project, not affiliated with Blizzard or Texas Instruments",
+        "hook": ("A Diablo-like ARPG", "on a calculator!", "Storm Werewolf vs an act boss"),
         "calc": ("Pocket ARPG", "Calculator edition", "Made for the TI-Nspire CX", "320×240 pixels · runs on Ndless"),
         "pc": ("Windows edition", "Play it yourself", "Space: idle / manual play",
                "WASD move · click to attack · 1-6 skills · Q potion"),
@@ -363,6 +369,9 @@ def cta_scene():
     title = still(MEDIA / f"desktop_title{SUFFIX}.png").resize((800, 600), Image.NEAREST)
     ImageDraw.Draw(base).rectangle([134, 694, 946, 1306], fill=ORANGE)
     base.paste(title, (140, 700))
+    text(base, (W / 2, 1800), TX["disclaimer"], fit_size(TX["disclaimer"], 26), (150, 140, 150), "mm", bold=False)
+    text(base, (W / 2, 1800), TX["disclaimer"], fit_size(TX["disclaimer"], 26), (150, 140, 150), "mm", bold=False)
+    text(base, (W / 2, 1800), TX["disclaimer"], fit_size(TX["disclaimer"], 26), (150, 140, 150), "mm", bold=False)
     titles = [(text_layer(t[0], 110, GOLD, FIRE), (W / 2, 220), 0),
               (text_layer(t[1], 78, BONE, ORANGE, 5), (W / 2, 380), 8)]
     return Scene(105, base, None, titles, (), [(0, SND["SND_DROP_UNIQUE"]), (8, SND["SND_DROP_LEGEND"])])
