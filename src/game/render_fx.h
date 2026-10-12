@@ -47,6 +47,14 @@ void render_myth_tint(const World *w, int view_h);
 void render_event_object(const World *w, int cam_x, int cam_y);
 void render_monster_extras(const World *w, const Monster *m, int x, int top);
 
+/* render_text.c: floating combat text, stacked so bursts stay readable. */
+typedef struct { int16_t x, y, w, h; bool shown; } TextBox;
+/* Boxes in priority order (index 0 keeps its place): each later box that
+ * covers an earlier shown one climbs a line at a time; one pushed above
+ * min_y, or still overlapping after a few lines, is hidden. */
+void fx_stack_boxes(TextBox *boxes, int n, int min_y);
+void render_floaters(const World *w, int cam_x, int cam_y);
+
 /* Shared drawing helpers (render_fx.c). */
 int  fx_hash(int a, int b);
 int  fx_cx(int x, int r, int phase);

@@ -27,6 +27,7 @@
 #include "../src/game/world_int.h"
 #include "../src/gfx/sprites.h"
 #include "../src/gfx/tiles.h"
+#include "../src/game/render_fx.h"
 #include "../src/data/art.h"
 #include "../src/data/icons.h"
 #include "../src/gfx/font.h"
@@ -1008,6 +1009,24 @@ static void test_monster_art(void)
     CHECK(memcmp(crypt, spr_mon(0, 0, false)->px, sizeof crypt) == 0);
 }
 
+static void test_text_stack(void)
+{
+    TextBox b[4] = { { 100, 100, 30, 8, false }, { 105, 102, 30, 8, false },
+                     { 110, 98, 20, 8, false }, { 200, 100, 20, 8, false } };
+    int i, j;
+    fx_stack_boxes(b, 4, 22);
+    CHECK(b[0].x == 100 && b[0].y == 100 && b[0].shown);   /* the newest keeps its place */
+    CHECK(b[3].y == 100 && b[3].shown);                     /* far away: untouched */
+    for (i = 0; i < 4; i++)
+        for (j = i + 1; j < 4; j++)                         /* nothing shown overlaps */
+            CHECK(!(b[i].shown && b[j].shown && b[i].x < b[j].x + b[j].w && b[j].x < b[i].x + b[i].w
+                    && b[i].y < b[j].y + b[j].h && b[j].y < b[i].y + b[i].h));
+    CHECK(b[1].shown && b[1].y < b[0].y && b[2].shown && b[2].y < b[1].y);
+    b[0].y = 30; b[1].y = 30; b[0].shown = b[1].shown = false;
+    fx_stack_boxes(b, 2, 25);                                /* no room above: the older one gives way */
+    CHECK(b[0].shown && !b[1].shown);
+}
+
 static int brightness(const uint16_t *px)
 {
     int i, sum = 0;
@@ -1117,6 +1136,7 @@ int main(void)
     printf("sprites\n");       test_sprites();
     printf("monster art\n");   test_monster_art();
     printf("tiles\n");         test_tiles();
+    printf("text stack\n");    test_text_stack();
     printf("dungeon\n");       test_dungeon_connectivity();
     test_d4(&g_checks, &g_fail);
     printf("idle sim\n");      test_idle_simulation();

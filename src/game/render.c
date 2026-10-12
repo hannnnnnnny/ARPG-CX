@@ -376,25 +376,6 @@ static void draw_overlays(const World *w)
             fx_draw_effect(&w->fx[i], cam_x, cam_y);
 }
 
-static void draw_floaters(const World *w)
-{
-    int i;
-    for (i = 0; i < MAX_FLOAT; i++)
-        if (w->fl[i].alive) {
-            const Floater *f = &w->fl[i];
-            int scale = f->kind == FL_MEGA ? (f->t < 5 ? 3 : 2) : f->kind == FL_BIG ? 2 : 1;
-            int x = f->x - cam_x - font_text_width(f->text, scale) / 2, y = f->y - cam_y - f->t / 2;
-            if (f->kind == FL_MEGA) {              /* signature hits: a thick outline that pops */
-                font_draw(x - 1, y, f->text, 0, scale);
-                font_draw(x + 2, y, f->text, 0, scale);
-                font_draw(x, y - 1, f->text, 0, scale);
-                font_draw(x, y + 2, f->text, 0, scale);
-            }
-            font_draw(x + 1, y + 1, f->text, 0, scale);
-            font_draw(x, y, f->text, f->color, scale);
-        }
-}
-
 void render_camera(int *x, int *y)
 {
     *x = cam_x;
@@ -414,5 +395,5 @@ void render_world(const World *w, const Profile *p)
     draw_overlays(w);
     render_myth_tint(w, VIEW_H);
     render_sig_flash(w, VIEW_H);
-    draw_floaters(w);
+    render_floaters(w, cam_x, cam_y);
 }
