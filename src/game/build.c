@@ -125,7 +125,7 @@ static void add_skill_mod(BuildRT *b, int kind, int sk, double v)
     case MOD_SK_CD:     b->sk_cd[sk] += v; break;
     case MOD_SK_COST:   b->sk_cost[sk] += v; break;
     case MOD_SK_DUR:    b->sk_dur[sk] += (int)v; break;
-    case MOD_SK_FLAGS:  b->sk_flags[sk] |= (uint16_t)v; break;
+    case MOD_SK_FLAGS:  b->sk_flags[sk] |= (uint32_t)v; break;
     case MOD_SK_STATUS: b->sk_status[sk] = (uint8_t)v; break;
     case MOD_SK_ELEM:   b->sk_elem[sk] = (uint8_t)(v + 1); break;
     case MOD_SK_RANKS:  b->ranks[sk] += (int)v; break;

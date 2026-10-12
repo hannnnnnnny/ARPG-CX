@@ -171,7 +171,8 @@ typedef struct { uint8_t kind, arg; uint16_t need, have; } Bounty;
 
 /* ---------------------------------------------------------- profile */
 
-#define ASPECT_MAX 64        /* codex capacity (aspects defined in aspects.c) */
+#define ASPECT_MAX 96        /* codex capacity (aspects defined in aspects.c) */
+#define ASPECT_MAX_V9 64     /* codex size in saves before v10 */
 
 typedef struct {
     /* hero */

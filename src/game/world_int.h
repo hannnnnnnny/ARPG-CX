@@ -21,6 +21,9 @@ bool field_waypoint(const World *w, const int16_t field[MAP_H][MAP_W], fx x, fx 
 /* field_waypoint plus look-ahead along the path while the line is clear. */
 bool smooth_waypoint(const World *w, const int16_t field[MAP_H][MAP_W], fx x, fx y, int half, fx *wx, fx *wy);
 
+#define CHAIN_PER_SECOND 8   /* RF_CHAIN bursts allowed each second */
+#define ECHO_TICKS (TICK_HZ / 2)   /* RF_ECHO: the second cast follows half a second later */
+#define ECHO_MULT 0.6
 void floater(World *w, int x, int y, const char *text, uint16_t color);
 void floater_kind(World *w, int x, int y, const char *text, uint16_t color, FloatKind k);
 /* Returns the new effect (or NULL if the pool is full) so callers can set its vfx. */

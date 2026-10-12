@@ -4,7 +4,7 @@
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
  *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE] [--side]
- *               [--mythic ID,ID...] [--butcher] [--event KIND] [--drop RARITY] [--away HOURS] [--doors]
+ *               [--mythic ID,ID...] [--butcher] [--event KIND] [--drop RARITY] [--away HOURS] [--doors] [--aspect ID]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
@@ -16,8 +16,8 @@
  * makes the Fleshrender walk in; --event replaces the floor's event with
  * one of events_d4.c (FloorEventKind); --drop drops an item of that rarity
  * (3 legendary, 4 unique, 5 mythic) beside the hero; --away opens on the
- * offline report for HOURS away; --doors opens a door choice. All act after
- * --fast.
+ * offline report for HOURS away; --doors opens a door choice; --aspect wears
+ * that legendary aspect on a fitting slot. All act after --fast.
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
  * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
@@ -170,6 +170,22 @@ static void record_frame(const Record *r, int tick)
     png_write_rgb565(path, g_fb, FB_W, FB_H);
 }
 
+/* --aspect: the first equipped item that can hold the aspect becomes a
+ * legendary with it at its best roll (power clips). */
+static void wear_aspect(World *w, Profile *p, int id)
+{
+    const AspectDef *a = aspect_def(id);
+    int s;
+    for (s = 0; a && s < SLOT_COUNT; s++)
+        if (p->equip[s].used && p->equip[s].rarity < RAR_UNIQUE && aspect_fits_slot(a, (Slot)s)) {
+            p->equip[s].rarity = RAR_LEGEND;
+            p->equip[s].power = (uint8_t)id;
+            p->equip[s].power_roll = 1000;
+            world_refresh_stats(w, p);
+            return;
+        }
+}
+
 /* --drop: an item of that rarity lands beside the hero (drop moment clips). */
 static void demo_drop(World *w, Profile *p, Rarity r)
 {
@@ -237,6 +253,7 @@ int main(int argc, char **argv)
     int event = 0, drop = -1;
     double away = 0;
     bool doors = false;
+    int aspect = 0;
     uint32_t now = 2000000000u;
     Input in;
 
@@ -253,6 +270,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--drop") && i + 1 < argc) drop = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--away") && i + 1 < argc) away = atof(argv[++i]);
         else if (!strcmp(argv[i], "--doors")) doors = true;
+        else if (!strcmp(argv[i], "--aspect") && i + 1 < argc) aspect = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--mythic") && i + 1 < argc) mythics = argv[++i];
         else if (!strcmp(argv[i], "--class") && i + 1 < argc) cls = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
@@ -297,6 +315,8 @@ int main(int argc, char **argv)
     }
     if (drop >= RAR_LEGEND && drop < RAR_COUNT)
         demo_drop(&g_game.s.w, &g_game.p, (Rarity)drop);
+    if (aspect > 0)
+        wear_aspect(&g_game.s.w, &g_game.p, aspect);
     if (doors) {                                   /* as if a floor had just been cleared at the controls */
         doors_roll(g_game.s.doors, &g_game.s.w.rng);
         g_game.s.door_sel = doors_auto_pick(g_game.s.doors, g_game.p.door_pref);

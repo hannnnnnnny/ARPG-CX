@@ -69,6 +69,8 @@ Hit skill_hit(const World *w, int i, double mult)
     h.crit_add = s->crit_add;
     h.op_add = s->op_add;
     h.lucky = s->lucky;
+    if (w->h.echoing)
+        h.base *= ECHO_MULT;
     /* Imbuements turn other skills' hits into their element and status. */
     if (w->h.buff_t[BUFF_IMBUE] > 0 && s->tag != TAG_IMBUE && s->cat <= CAT_CORE) {
         h.element = w->h.imbue_el;
@@ -169,12 +171,31 @@ static void fire_projectiles(World *w, int idx, const SkillRT *s, const Monster 
         pj->ground = (s->flags & RF_GROUND) != 0;
         pj->explode = (s->flags & RF_EXPLODE) != 0;
         pj->wander = (s->flags & RF_WANDER) != 0;
+        pj->ret = (s->flags & RF_RETURN) != 0;
         pj->vfx = s->vfx;
         sig_spear_cast(w, pj);
     }
 }
 
 /* ------------------------------------------------------------ chains */
+
+/* RF_FORK: from each jump a second bolt strikes another foe in reach (it
+ * does not chain on). */
+static void fork_bolt(World *w, Profile *p, int x, int y, int skip, uint64_t *hit, const Hit *h, const SkillRT *s)
+{
+    int i, best = -1, bd = s->radius + 1;
+    for (i = 0; i < w->nmon; i++)
+        if (i != skip && w->mon[i].alive && !((*hit >> i) & 1u)) {
+            int d = dist_px(FX_FROM_INT(x), FX_FROM_INT(y), w->mon[i].x, w->mon[i].y);
+            if (d < bd) { bd = d; best = i; }
+        }
+    if (best < 0)
+        return;
+    *hit |= (uint64_t)1 << best;
+    tag(effect(w, FX_BOLT, x, y, FX_TO_INT(w->mon[best].x), FX_TO_INT(w->mon[best].y), 0, 8,
+               element_color((Element)h->element)), s);
+    deal_damage(w, p, best, h);
+}
 
 static void chain(World *w, Profile *p, int idx, const SkillRT *s, int first)
 {
@@ -194,6 +215,8 @@ static void chain(World *w, Profile *p, int idx, const SkillRT *s, int first)
                 int d = dist_px(FX_FROM_INT(fxp), FX_FROM_INT(fyp), w->mon[i].x, w->mon[i].y);
                 if (d < bd) { bd = d; next = i; }
             }
+        if (s->flags & RF_FORK)
+            fork_bolt(w, p, fxp, fyp, next, &hit, &h, s);
         /* Nobody new in reach: the bolt arcs back into the same foe, weaker. */
         if (next < 0 && m->alive && j < s->count) {
             next = cur;
@@ -363,6 +386,10 @@ bool cast_skill(World *w, Profile *p, int i, const SkillRT *s, const Monster *tg
         };
         cast_extras(w, s);
         world_sound(w, cast_snd[s->element % EL_COUNT]);
+        if ((s->flags & RF_ECHO) && !w->h.echoing) {
+            w->h.echo_t = ECHO_TICKS;
+            w->h.echo_skill = (uint8_t)i;
+        }
     }
     return ok;
 }
@@ -427,8 +454,27 @@ static void update_dash(World *w, Profile *p)
     }
 }
 
+/* RF_ECHO: the skill casts itself again at the nearest foe, weaker. */
+static void update_echo(World *w, Profile *p)
+{
+    int i, best = -1, bd = 1 << 30;
+    if (w->h.echo_t <= 0 || --w->h.echo_t > 0)
+        return;
+    for (i = 0; i < w->nmon; i++)
+        if (w->mon[i].alive) {
+            int d = dist_px(w->h.x, w->h.y, w->mon[i].x, w->mon[i].y);
+            if (d < bd) { bd = d; best = i; }
+        }
+    if (best < 0)
+        return;
+    w->h.echoing = true;
+    cast_skill(w, p, w->h.echo_skill, &w->st.b.skill[w->h.echo_skill % CLASS_SKILLS], &w->mon[best]);
+    w->h.echoing = false;
+}
+
 void update_channel_strike_dash(World *w, Profile *p)
 {
+    update_echo(w, p);
     update_channel(w, p);
     update_strike(w, p);
     update_dash(w, p);

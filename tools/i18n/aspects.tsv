@@ -93,3 +93,15 @@ OFFENSIVE	进攻	進攻	攻撃	공격
 MOBILITY	机动	機動	機動	기동
 RESOURCE	资源	資源	リソース	자원
 UTILITY	功能	功能	ユーティリティ	유틸리티
+WHIRLWIND PULLS ENEMIES IN AND DEALS [x]#%	旋风斩把敌人吸过来，并造成[x]#%伤害	旋風斬把敵人吸過來，並造成[x]#%傷害	旋風が敵を引き寄せ、[x]#%ダメージ	소용돌이가 적을 끌어당기고 [x]#% 피해
+GROUND SLAM STRIKES AGAIN A MOMENT LATER, [x]#% DAMAGE	震地猛击片刻后再砸一次，[x]#%伤害	震地猛擊片刻後再砸一次，[x]#%傷害	グラウンドスラムが少し後にもう一度、[x]#%ダメージ	대지 강타가 잠시 후 한 번 더, [x]#% 피해
+CHAIN LIGHTNING FORKS AT EVERY JUMP, [x]#% DAMAGE	连锁闪电每次跳跃都会分叉，[x]#%伤害	連鎖閃電每次跳躍都會分叉，[x]#%傷害	チェインライトニングが跳ぶたびに分岐、[x]#%ダメージ	연쇄 번개가 튈 때마다 갈라짐, [x]#% 피해
+METEOR KILLS BURST INTO FIRE THAT CAN FELL THE NEXT, [x]#%	陨石术击杀会爆出火焰，连带击倒下一个，[x]#%	隕石術擊殺會爆出火焰，連帶擊倒下一個，[x]#%	メテオで倒した敵が炎上爆発し次を倒す、[x]#%	운석 처치 시 화염이 터져 다음 적까지, [x]#%
+PENETRATING SHOT FLIES BACK TO YOU, [x]#% DAMAGE	穿透射击会飞回你身边，[x]#%伤害	穿透射擊會飛回你身邊，[x]#%傷害	貫通ショットが手元に戻る、[x]#%ダメージ	관통 사격이 되돌아옴, [x]#% 피해
+RAIN OF ARROWS FALLS TWICE, [x]#% DAMAGE	箭雨落下两次，[x]#%伤害	箭雨落下兩次，[x]#%傷害	アローレインが二度降る、[x]#%ダメージ	화살비가 두 번 내림, [x]#% 피해
+BONE SPEAR FLIES BACK TO YOU, [x]#% DAMAGE	白骨之矛会飞回你身边，[x]#%伤害	白骨之矛會飛回你身邊，[x]#%傷害	ボーンスピアが手元に戻る、[x]#%ダメージ	뼈창이 되돌아옴, [x]#% 피해
+CORPSE EXPLOSION KILLS EXPLODE AGAIN, [x]#% DAMAGE	尸体爆炸击杀的敌人会再次爆炸，[x]#%伤害	屍體爆炸擊殺的敵人會再次爆炸，[x]#%傷害	死体爆破で倒した敵がまた爆発、[x]#%ダメージ	시체 폭발로 처치한 적이 다시 폭발, [x]#% 피해
+TORNADOES DRAG ENEMIES TO YOU, [x]#% DAMAGE	龙卷风把敌人拖到你身边，[x]#%伤害	龍捲風把敵人拖到你身邊，[x]#%傷害	竜巻が敵を引き寄せる、[x]#%ダメージ	회오리가 적을 끌어옴, [x]#% 피해
+LANDSLIDE STRIKES TWICE, [x]#% DAMAGE	山崩打击两次，[x]#%伤害	山崩打擊兩次，[x]#%傷害	ランドスライドが二度打つ、[x]#%ダメージ	산사태가 두 번 내리침, [x]#% 피해
+QUILL VOLLEY FLIES BACK TO YOU, [x]#% DAMAGE	羽刃齐射会飞回你身边，[x]#%伤害	羽刃齊射會飛回你身邊，[x]#%傷害	クイルボレーが手元に戻る、[x]#%ダメージ	깃털 일제사격이 되돌아옴, [x]#% 피해
+CRUSHING PALM PULLS ENEMIES IN, [x]#% DAMAGE	碎岩掌把敌人吸过来，[x]#%伤害	碎岩掌把敵人吸過來，[x]#%傷害	粉砕掌が敵を引き寄せる、[x]#%ダメージ	분쇄 장이 적을 끌어당김, [x]#% 피해

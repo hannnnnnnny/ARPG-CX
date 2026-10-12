@@ -54,7 +54,13 @@ enum {
     RF_EXPLODE = 1u << 10, /* projectiles explode at the end */
     RF_HASTE   = 1u << 11, /* casting grants +20% attack speed */
     RF_BURST   = 1u << 12, /* projectiles fly in one line (no fan) */
-    RF_ALT     = 1u << 13  /* summon: the alternate minion kind */
+    RF_ALT     = 1u << 13, /* summon: the alternate minion kind */
+    /* Powers that change how a skill plays (legendary aspects): */
+    RF_PULL    = 1u << 14, /* hits drag enemies toward the hero */
+    RF_ECHO    = 1u << 15, /* the skill casts itself again a moment later, weaker */
+    RF_FORK    = 1u << 16, /* every chain jump also strikes a second foe */
+    RF_RETURN  = 1u << 17, /* projectiles fly back to the hero, hitting again */
+    RF_CHAIN   = 1u << 18  /* kills with the skill burst where the foe fell */
 };
 
 /* An Enhancement or Upgrade: deltas on top of the skill. */
@@ -68,7 +74,7 @@ typedef struct {
     int16_t d_dur;        /* + ticks duration */
     int8_t  status;       /* StatusKind applied (0 = keep) */
     int8_t  element;      /* -1 keep, else Element */
-    uint16_t flags;       /* RF_* */
+    uint32_t flags;       /* RF_* */
     int8_t  d_cost;       /* + % resource cost */
     int8_t  d_crit;       /* + % crit chance for this skill */
     int8_t  d_op;         /* + % overpower chance for this skill */
@@ -89,7 +95,7 @@ typedef struct {
     double      cooldown;     /* seconds */
     int16_t     radius, range, count, duration; /* duration in ticks */
     uint8_t     lucky;        /* lucky hit chance % */
-    uint16_t    flags;        /* RF_* the skill always has */
+    uint32_t    flags;        /* RF_* the skill always has */
     uint16_t    color;
     RuneDef     enh;
     RuneDef     upg[2];
@@ -125,7 +131,7 @@ enum {
 typedef struct {
     bool     usable;       /* learned and on the bar */
     uint8_t  cat, behavior, element, status, buff, tag;
-    uint16_t flags;
+    uint32_t flags;
     uint8_t  vfx;          /* VX_* */
     int      rank;         /* points + gear ranks */
     double   coef;

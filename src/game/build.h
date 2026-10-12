@@ -107,7 +107,7 @@ typedef struct {
     /* per-skill reshapers from aspects / uniques */
     int     sk_count[CLASS_SKILLS], sk_dur[CLASS_SKILLS];
     double  sk_radius[CLASS_SKILLS], sk_cd[CLASS_SKILLS], sk_cost[CLASS_SKILLS];
-    uint16_t sk_flags[CLASS_SKILLS];
+    uint32_t sk_flags[CLASS_SKILLS];
     uint8_t sk_status[CLASS_SKILLS], sk_elem[CLASS_SKILLS];   /* 0 / 0xFF = keep */
     uint8_t key;                      /* KeyPassive */
     uint8_t sig;                      /* Signature from the build-defining unique */

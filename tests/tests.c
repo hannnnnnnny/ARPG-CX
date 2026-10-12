@@ -185,6 +185,105 @@ static void test_temper_and_masterwork(void)
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
 }
 
+/* ------------------------------------------------- powers that change play */
+
+/* A line of four foes beside the hero, every other monster gone. */
+static void line_up(World *w)
+{
+    int i;
+    for (i = 0; i < w->nmon; i++)
+        w->mon[i].alive = 0;
+    for (i = 0; i < 4 && i < w->nmon; i++) {
+        Monster *m = &w->mon[i];
+        m->alive = 1;
+        m->boss = m->special = m->goblin = 0;
+        m->max_hp = m->hp = 1e12;
+        m->x = w->h.x + FX_FROM_INT(12 + 10 * i);
+        m->y = w->h.y + FX_FROM_INT(i == 3 ? 10 : 0);
+    }
+}
+
+static int count_hurt(const World *w)
+{
+    int i, n = 0;
+    for (i = 0; i < 4; i++)
+        n += w->mon[i].hp < w->mon[i].max_hp;
+    return n;
+}
+
+static void test_skill_powers(void)
+{
+    static World w;
+    SkillRT s;
+    Hit h = { 0 };
+    Proj *pj;
+    int i, d0, plain, forked, grounds = 0;
+    prog_new(&P, 61, CLASS_SORCERER);
+    world_init_floor(&w, &P, 12);
+    /* RF_FORK: chain lightning strikes more foes when it forks. */
+    line_up(&w);
+    s = w.st.b.skill[3];
+    s.flags &= ~(uint32_t)(RF_FORK | RF_ECHO);
+    s.count = 1;
+    CHECK(s.behavior == SB_CHAIN && cast_skill(&w, &P, 3, &s, &w.mon[0]));
+    plain = count_hurt(&w);
+    line_up(&w);
+    s.flags |= RF_FORK;
+    CHECK(cast_skill(&w, &P, 3, &s, &w.mon[0]));
+    forked = count_hurt(&w);
+    CHECK(forked > plain);
+    /* RF_ECHO: the skill casts itself again half a second later. */
+    line_up(&w);
+    s.flags = (s.flags & ~(uint32_t)RF_FORK) | RF_ECHO;
+    CHECK(cast_skill(&w, &P, 3, &s, &w.mon[0]) && w.h.echo_t == ECHO_TICKS);
+    for (i = 0; i < 4; i++)
+        w.mon[i].max_hp = w.mon[i].hp;               /* forget the first cast */
+    for (i = 0; i < ECHO_TICKS; i++)
+        update_channel_strike_dash(&w, &P);
+    CHECK(count_hurt(&w) > 0 && w.h.echo_t == 0 && !w.h.echoing);
+    /* RF_PULL: a hit drags the foe toward the hero. */
+    line_up(&w);
+    w.mon[3].x = w.h.x + FX_FROM_INT(40);
+    w.mon[3].y = w.h.y;
+    d0 = dist_px(w.h.x, w.h.y, w.mon[3].x, w.mon[3].y);
+    h.base = 1;
+    h.skill = NO_SKILL;
+    h.flags = RF_PULL;
+    deal_damage(&w, &P, 3, &h);
+    CHECK(dist_px(w.h.x, w.h.y, w.mon[3].x, w.mon[3].y) < d0 || !world_walkable(&w, px_to_cell(w.mon[3].x - FX_FROM_INT(3)), px_to_cell(w.mon[3].y)));
+    /* RF_CHAIN: a kill bursts where the foe fell, within the budget. */
+    h.flags = RF_CHAIN;
+    w.chain_left = 1;
+    w.mon[1].hp = 0.5;
+    deal_damage(&w, &P, 1, &h);
+    w.mon[2].hp = 0.5;
+    deal_damage(&w, &P, 2, &h);                        /* budget spent: no second burst */
+    for (i = 0; i < MAX_GROUND; i++)
+        grounds += w.gr[i].alive;
+    CHECK(!w.mon[1].alive && !w.mon[2].alive && grounds == 1 && w.chain_left == 0);
+    /* RF_RETURN: the projectile turns back once and ends at the hero. */
+    for (i = 0; i < w.nmon; i++)
+        w.mon[i].alive = 0;
+    pj = spawn_proj(&w);
+    pj->kind = PJ_SKILL;
+    pj->x = pj->px = w.h.x;
+    pj->y = pj->py = w.h.y - FX_FROM_INT(4);
+    pj->vx = FX(4.0);
+    pj->life = 10;
+    pj->ret = 1;
+    for (i = 0; i < 200 && pj->alive; i++) {
+        projectiles_update(&w, &P);
+        if (i == 15)
+            CHECK(pj->returned && pj->pierce);
+    }
+    CHECK(!pj->alive && dist_px(pj->x, pj->y, w.h.x, w.h.y - FX_FROM_INT(4)) <= 10);
+    /* Every behaviour power is a legendary aspect of its class. */
+    for (i = 1, d0 = 0; i <= aspect_count; i++)
+        if (aspect_def(i)->kind2 == MOD_SK_FLAGS && (uint32_t)aspect_def(i)->v2 >= RF_PULL)
+            d0++;
+    CHECK(d0 == 12 && aspect_count < ASPECT_MAX);
+}
+
 /* ---------------------------------------------------------- doors, finds */
 
 static int door_curse_weight(int c) { return c == DC_MON_DMG ? 3 : c == DC_NO_ORBS ? 1 : 2; }
@@ -1354,6 +1453,7 @@ int main(void)
     printf("door rolls\n");    test_door_rolls();
     printf("door floor\n");    test_door_floor();
     printf("finds\n");         test_finds();
+    printf("skill powers\n");  test_skill_powers();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();

@@ -84,7 +84,7 @@ typedef struct {
     uint8_t  element, status;
     int16_t  status_dur;
     uint8_t  skill;       /* class skill index, NO_SKILL for weapon / thorns */
-    uint16_t flags;       /* RF_VULN ... */
+    uint32_t flags;       /* RF_VULN ... */
     bool     dot, minion;
     uint8_t  sig;         /* thrown by a signature power: never triggers another */
     double   crit_add, op_add, lucky;
@@ -94,6 +94,7 @@ typedef enum { PJ_SKILL, PJ_ENEMY, PJ_MINION } ProjKind;
 typedef struct {
     uint8_t alive, kind;
     uint8_t pierce, ground, vfx, explode, wander;
+    uint8_t ret, returned;   /* RF_RETURN: turns back once, then flies home */
     uint8_t sig;             /* SIGP_* (world_sig.c) */
     int16_t radius;          /* explosion radius, 0 = single target */
     int16_t life;
@@ -242,9 +243,12 @@ typedef struct {
     int buff_t[BUFF_COUNT];
     double buff_val[BUFF_COUNT];
     uint8_t imbue_el, imbue_st;
-    uint16_t imbue_flags;
+    uint32_t imbue_flags;
     uint8_t imbue_skill;
     int haste_t;
+    int echo_t;              /* RF_ECHO: ticks until the skill casts again */
+    uint8_t echo_skill;
+    bool echoing;            /* the current cast is an echo (weaker, never echoes) */
     int potions, potion_cd;
     int stacks, stacks_t; /* ferocity / berserker stacks */
     int target_kind, target_idx;
@@ -304,6 +308,7 @@ typedef struct {
     HeroCommand cmd;
     ControlRT ctl;
     Door door;
+    int16_t chain_left;        /* RF_CHAIN bursts left this second (keeps chain reactions sane) */
     /* Carried across floors: the shrine blessing, the remarks, recent loot. */
     LootLog loot;
     uint8_t shrine;            /* ShrineKind of the active blessing */

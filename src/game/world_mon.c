@@ -255,20 +255,46 @@ static void enemy_proj(World *w, Profile *p, Proj *pj, bool wall)
     }
 }
 
+/* RF_RETURN: instead of ending, the projectile turns around once and flies
+ * back through everything to the hero. */
+static bool turn_back(Proj *pj)
+{
+    if (!pj->ret || pj->returned)
+        return false;
+    pj->returned = 1;
+    pj->pierce = 1;
+    pj->hit_mask = 0;
+    pj->life = 90;
+    return true;
+}
+
+static void fly_home(World *w, Proj *pj)
+{
+    step_toward(pj->x, pj->y, w->h.x, w->h.y - FX_FROM_INT(4), FX(4.0), &pj->vx, &pj->vy);
+    if (dist_px(pj->x, pj->y, w->h.x, w->h.y - FX_FROM_INT(4)) <= 6)
+        pj->life = 0;                       /* caught: ends below as usual */
+}
+
 static void hero_proj(World *w, Profile *p, Proj *pj, bool wall)
 {
     int t = proj_target(w, pj);
     if (pj->wander && w->tick % 6 == 0)
         wander(w, pj);
+    if (pj->returned) {
+        fly_home(w, pj);
+        wall = false;                       /* the way home goes over the walls */
+    }
     if (t >= 0) {
         projectile_hit(w, p, pj, t);
         pj->hit_mask |= (uint64_t)1 << t;
-        if (!pj->pierce) {
+        if (!pj->pierce && !turn_back(pj)) {
             pj->alive = 0;
             if (pj->explode)
                 projectile_explode(w, p, pj);
         }
-    } else if (wall || --pj->life <= 0) {
+    } else if ((wall || --pj->life <= 0) && turn_back(pj)) {
+        return;
+    } else if (wall || pj->life <= 0) {
         if (pj->radius > 0 || pj->ground)
             projectile_hit(w, p, pj, -1);
         if (pj->explode)

@@ -20,6 +20,11 @@
 #define DOT_TICKS 90         /* DoTs last 3 s unless the skill says otherwise */
 #define DOT_EVERY 10         /* and pulse 3x per second */
 #define VULN_TICKS 90        /* Vulnerable lasts 3 s */
+#define PULL_CLOSE 12        /* RF_PULL stops this close to the hero */
+#define PULL_STEP 3          /* px per hit */
+#define CHAIN_MULT 0.5       /* RF_CHAIN burst damage of the killing hit */
+#define CHAIN_RADIUS 22
+#define CHAIN_TICKS 16       /* one pulse */
 
 #define C_NORMAL RGB565(240, 240, 240)
 #define C_CRIT   RGB565(255, 220, 50)
@@ -275,6 +280,34 @@ static void hit_feel(World *w, Monster *m, const HitLog *l, const Hit *h)
     move_body(w, &m->x, &m->y, dx, dy, MON_HALF);
 }
 
+/* RF_PULL: each hit drags the foe a step toward the hero (not bosses). */
+static void pull_toward_hero(World *w, Monster *m)
+{
+    fx vx, vy, nx, ny;
+    if (m->boss || m->special || dist_px(m->x, m->y, w->h.x, w->h.y) <= PULL_CLOSE)
+        return;
+    step_toward(m->x, m->y, w->h.x, w->h.y, FX_FROM_INT(PULL_STEP), &vx, &vy);
+    nx = m->x + vx;
+    ny = m->y + vy;
+    if (world_walkable(w, px_to_cell(nx), px_to_cell(ny))) {
+        m->x = nx;
+        m->y = ny;
+    }
+}
+
+/* RF_CHAIN: the fallen foe bursts, a short patch that can fell the next. */
+static void chain_burst(World *w, const Monster *m, const Hit *h)
+{
+    Hit b = *h;
+    if (w->chain_left <= 0 || h->sig)
+        return;
+    w->chain_left--;
+    b.base *= CHAIN_MULT;
+    b.dot = false;
+    world_spawn_ground(w, FX_TO_INT(m->x), FX_TO_INT(m->y), CHAIN_RADIUS, CHAIN_TICKS, &b, false, VX_CORPSE_BOOM);
+    effect(w, FX_BOOM, FX_TO_INT(m->x), FX_TO_INT(m->y), 0, 0, CHAIN_RADIUS, 12, element_color((Element)h->element));
+}
+
 void deal_damage(World *w, Profile *p, int i, const Hit *h)
 {
     Monster *m = &w->mon[i];
@@ -300,8 +333,13 @@ void deal_damage(World *w, Profile *p, int i, const Hit *h)
         sig_on_hit(w, p, i, h, l.is_crit);
     if (w->st.b.myth_any && m->alive)
         myth_on_hit(w, p, i, h, l.is_crit);
-    if (m->hp <= 0 && m->alive)
+    if ((h->flags & RF_PULL) && !h->dot && m->alive)
+        pull_toward_hero(w, m);
+    if (m->hp <= 0 && m->alive) {
         kill_rewards(w, p, m);
+        if (h->flags & RF_CHAIN)
+            chain_burst(w, m, h);
+    }
 }
 
 void tick_dots(World *w, Profile *p, int i)

@@ -158,7 +158,7 @@ static void write_crafting(Writer *w, const Profile *p)
 static void read_crafting(Reader *r, Profile *p)
 {
     int i, j;
-    for (i = 0; i < ASPECT_MAX; i++) p->codex[i] = r16(r);
+    for (i = 0; i < (r->version >= 10 ? ASPECT_MAX : ASPECT_MAX_V9); i++) p->codex[i] = r16(r);
     p->iron = rf(r); p->souls = rf(r);
     for (i = 0; i < GEM_KINDS; i++)
         for (j = 0; j < GEM_TIERS; j++)

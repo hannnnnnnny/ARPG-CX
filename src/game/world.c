@@ -293,6 +293,8 @@ void world_tick(World *w, Profile *p)
     w->tick++;
     w->ev_died = w->ev_floor_done = w->ev_stuck = false;
     w->snd = 0;
+    if (w->tick % TICK_HZ == 1)
+        w->chain_left = CHAIN_PER_SECOND;
     if (w->tick % 10 == 1)
         bfs_field(w, w->fh, px_to_cell(w->h.x), px_to_cell(w->h.y));
     hero_update(w, p);
