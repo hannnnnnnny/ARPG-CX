@@ -11,6 +11,8 @@
 static uint16_t g_pool[POOL_PIXELS];
 static int g_used;
 static Sprite g_mon[MON_ART_COUNT][2][2]; /* [type][frame][boss] */
+static uint16_t *g_mon_px[MON_ART_COUNT][2][2];
+static int g_mon_theme;
 static Sprite g_ally[3][2];
 static Sprite g_icon[SLOT_ICONS][RAR_COUNT];
 
@@ -27,38 +29,51 @@ typedef struct { bool used; uint8_t icon; uint16_t color; uint32_t stamp; uint16
 static IconCache g_icons[ICON_CACHE];
 static uint32_t g_stamp;
 
+/* Dark-fantasy palette: muted, hue-shifted ramps lit from the top left.
+ * Saturated colours are kept for what the player must notice: glowing eyes,
+ * fire, loot. Uppercase/extra letters are the darker or lighter ramp steps. */
 uint16_t palette_color(char c)
 {
     switch (c) {
-    case 'k': return RGB565(12, 10, 16);
-    case 'w': return RGB565(250, 250, 250);
-    case 's': return RGB565(195, 200, 212);
-    case 'S': return RGB565(118, 124, 140);
-    case 'd': return RGB565(60, 60, 72);
-    case 'r': return RGB565(220, 52, 48);
-    case 'R': return RGB565(128, 22, 32);
-    case 'y': return RGB565(250, 212, 80);
-    case 'Y': return RGB565(232, 132, 40);
-    case 'n': return RGB565(124, 82, 46);
-    case 'N': return RGB565(70, 44, 26);
-    case 'g': return RGB565(112, 170, 92);
-    case 'G': return RGB565(58, 98, 52);
-    case 'p': return RGB565(156, 86, 206);
-    case 'P': return RGB565(82, 40, 122);
-    case 'b': return RGB565(72, 122, 222);
-    case 'B': return RGB565(30, 50, 112);
-    case 'o': return RGB565(232, 222, 192);
-    case 'O': return RGB565(168, 158, 128);
-    case 'e': return RGB565(255, 64, 40);
-    case 'c': return RGB565(90, 224, 232);
-    case 'f': return RGB565(226, 178, 138);
+    case 'k': return RGB565(20, 12, 16);
+    case 'w': return RGB565(232, 224, 206);
+    case 's': return RGB565(170, 172, 180);
+    case 'S': return RGB565(98, 100, 116);
+    case 'T': return RGB565(206, 208, 214);
+    case 'd': return RGB565(48, 44, 54);
+    case 'D': return RGB565(30, 26, 34);
+    case 'r': return RGB565(176, 36, 36);
+    case 'R': return RGB565(92, 18, 26);
+    case 'j': return RGB565(222, 90, 64);
+    case 'y': return RGB565(226, 184, 86);
+    case 'Y': return RGB565(206, 104, 34);
+    case 'n': return RGB565(112, 74, 48);
+    case 'N': return RGB565(58, 38, 28);
+    case 'g': return RGB565(128, 146, 92);
+    case 'G': return RGB565(72, 92, 62);
+    case 'u': return RGB565(186, 196, 120);
+    case 'v': return RGB565(40, 56, 40);
+    case 'p': return RGB565(122, 74, 156);
+    case 'P': return RGB565(60, 34, 86);
+    case 'I': return RGB565(170, 120, 204);
+    case 'b': return RGB565(66, 98, 162);
+    case 'B': return RGB565(30, 38, 74);
+    case 'H': return RGB565(244, 238, 214);
+    case 'o': return RGB565(214, 200, 166);
+    case 'O': return RGB565(150, 134, 104);
+    case 'q': return RGB565(92, 78, 64);
+    case 'e': return RGB565(255, 92, 40);
+    case 'c': return RGB565(110, 206, 214);
+    case 'f': return RGB565(204, 158, 124);
+    case 'F': return RGB565(156, 106, 84);
+    case 'E': return RGB565(96, 56, 46);
     default:  return COLOR_KEY;
     }
 }
 
 /* ------------------------------------------------------------ grids */
 
-typedef struct { int w, h; char cell[24][17]; } Grid;
+typedef struct { int w, h; char cell[BOSS_N][BOSS_N + 1]; } Grid;
 
 static void grid_clear(Grid *g, int w, int h)
 {
@@ -87,7 +102,7 @@ static bool grid_stamp(Grid *g, const char *const *rows, int count, int dy)
 }
 
 /* Letter -> colour; 'x' (and per-sprite swaps) via the map, else palette. */
-typedef struct { char from[8]; uint16_t to[8]; int n; } ColorMap;
+typedef struct { char from[12]; uint16_t to[12]; int n; } ColorMap;
 
 static uint16_t map_color(const ColorMap *m, char c)
 {
@@ -121,6 +136,136 @@ static bool commit(Sprite *s, const Grid *g, int scale, const ColorMap *m)
 
 /* ----------------------------------------------------------- static art */
 
+/* ------------------------------------------------------------ bosses */
+
+/* Bosses are drawn at 32x32. The butcher has hand-finished art; the others
+ * are their 16px art grown with EPX (Scale2x), which rounds the diagonals,
+ * then thinned back to a 1px outline and edge-lit, so they keep the same
+ * pixel density as everything around them instead of looking blown up. */
+static void grid_epx(const Grid *s, Grid *d)
+{
+    int x, y;
+    grid_clear(d, s->w * 2, s->h * 2);
+    for (y = 0; y < s->h; y++)
+        for (x = 0; x < s->w; x++) {
+            char p = s->cell[y][x];
+            char a = y > 0 ? s->cell[y - 1][x] : '.', dn = y + 1 < s->h ? s->cell[y + 1][x] : '.';
+            char l = x > 0 ? s->cell[y][x - 1] : '.', r = x + 1 < s->w ? s->cell[y][x + 1] : '.';
+            d->cell[2 * y][2 * x] = (l == a && l != dn && a != r) ? a : p;
+            d->cell[2 * y][2 * x + 1] = (a == r && a != l && r != dn) ? r : p;
+            d->cell[2 * y + 1][2 * x] = (dn == l && dn != r && l != a) ? l : p;
+            d->cell[2 * y + 1][2 * x + 1] = (r == dn && r != a && dn != l) ? dn : p;
+        }
+}
+
+static char cell_at(const Grid *g, int x, int y)
+{
+    return x >= 0 && y >= 0 && x < g->w && y < g->h ? g->cell[y][x] : '.';
+}
+
+/* Outer outline pixels touch transparency (8-neighbourhood). */
+static bool outer_k(const Grid *g, int x, int y)
+{
+    int i, j;
+    if (cell_at(g, x, y) != 'k')
+        return false;
+    for (j = -1; j <= 1; j++)
+        for (i = -1; i <= 1; i++)
+            if (cell_at(g, x + i, y + j) == '.')
+                return true;
+    return false;
+}
+
+/* Upscaling doubles the outline; the inner layer takes its neighbour's colour. */
+static void grid_thin(Grid *g)
+{
+    static const int dx[4] = { 1, -1, 0, 0 }, dy[4] = { 0, 0, 1, -1 };
+    static Grid src;                       /* static: keep 1 KB off the calculator's stack */
+    int x, y, k;
+    src = *g;
+    for (y = 0; y < g->h; y++)
+        for (x = 0; x < g->w; x++) {
+            char fill = 0;
+            bool by_outer = false;
+            if (src.cell[y][x] != 'k' || outer_k(&src, x, y))
+                continue;
+            for (k = 0; k < 4; k++) {
+                char c = cell_at(&src, x + dx[k], y + dy[k]);
+                by_outer |= outer_k(&src, x + dx[k], y + dy[k]);
+                if (c != '.' && c != 'k' && !fill)
+                    fill = c;
+            }
+            if (by_outer && fill)
+                g->cell[y][x] = fill;
+        }
+}
+
+/* One ramp step lighter / darker (see the ramps listed in data/art.c). */
+static char ramp_step(char c, bool up)
+{
+    static const char up_from[] = "oqgGvFErRpPsSdON", up_to[] = "HougGfFjrIpTsSon";
+    static const char dn_from[] = "HougGfFjrIpTsSwOn", dn_to[] = "oOgGvFErRpPsSdOqN";
+    const char *from = up ? up_from : dn_from, *to = up ? up_to : dn_to;
+    const char *hit = strchr(from, c);
+    return c && hit ? to[hit - from] : c;
+}
+
+/* Light from the top left: exposed top/left edges brighten, bottom/right darken. */
+static void grid_bevel(Grid *g)
+{
+    static Grid src;
+    int x, y;
+    src = *g;
+    for (y = 0; y < g->h; y++)
+        for (x = 0; x < g->w; x++) {
+            char c = src.cell[y][x], u = cell_at(&src, x, y - 1), l = cell_at(&src, x - 1, y);
+            char dn = cell_at(&src, x, y + 1), r = cell_at(&src, x + 1, y);
+            bool lit = u == '.' || u == 'k' || l == '.' || l == 'k';
+            bool dark = dn == '.' || dn == 'k' || r == '.' || r == 'k';
+            if (c == '.' || c == 'k' || lit == dark)
+                continue;
+            g->cell[y][x] = ramp_step(c, lit);
+        }
+}
+
+static bool mon_grid(int t, int f, bool boss, Grid *g)
+{
+    static Grid small;
+    if (boss && t == MON_BUTCHER) {
+        grid_clear(g, BOSS_N, BOSS_N);
+        return grid_stamp(g, art_butcher_big[f], BOSS_N, 0);
+    }
+    grid_clear(boss ? &small : g, 16, 16);
+    if (!grid_stamp(boss ? &small : g, art_mon[t][f], 16, 0))
+        return false;
+    if (boss) {
+        grid_epx(&small, g);
+        grid_thin(g);
+        grid_bevel(g);
+    }
+    return true;
+}
+
+/* ---------------------------------------------------------- monsters */
+
+#define C(r, g, b) RGB565(r, g, b)
+/* The same monsters in each depth's colours: yellowed bone in the catacombs,
+ * charred in the hellforge, frost-bitten, void-touched. */
+static const ColorMap theme_maps[5] = {
+    { { 0 }, { 0 }, 0 },
+    { { 'o', 'H', 'O', 'q' }, { C(206, 186, 140), C(232, 218, 170), C(140, 118, 84), C(84, 66, 48) }, 4 },
+    { { 'o', 'H', 'O', 'q', 'e', 'g', 'u', 'G', 'v' },
+      { C(170, 140, 120), C(214, 182, 150), C(112, 82, 70), C(64, 40, 36), C(255, 196, 64),
+        C(150, 120, 84), C(196, 160, 104), C(96, 70, 52), C(56, 36, 30) }, 9 },
+    { { 'o', 'H', 'O', 'q', 'e', 'g', 'u', 'G', 'v' },
+      { C(190, 208, 222), C(228, 240, 248), C(122, 148, 172), C(64, 82, 108), C(120, 220, 255),
+        C(112, 150, 154), C(168, 212, 214), C(64, 98, 108), C(32, 54, 66) }, 9 },
+    { { 'o', 'H', 'O', 'q', 'e', 'g', 'u', 'G', 'v' },
+      { C(186, 168, 208), C(226, 212, 244), C(124, 102, 152), C(72, 54, 98), C(226, 120, 255),
+        C(118, 112, 152), C(170, 160, 206), C(70, 62, 104), C(40, 32, 64) }, 9 },
+};
+#undef C
+
 static bool build_monsters(void)
 {
     int t, f, b;
@@ -128,18 +273,36 @@ static bool build_monsters(void)
         for (f = 0; f < 2; f++)
             for (b = 0; b < 2; b++) {
                 Grid g;
-                grid_clear(&g, 16, 16);
-                if (!grid_stamp(&g, art_mon[t][f], 16, 0) || !commit(&g_mon[t][f][b], &g, b ? 2 : 1, NULL))
+                g_mon_px[t][f][b] = g_pool + g_used;
+                if (!mon_grid(t, f, b, &g) || !commit(&g_mon[t][f][b], &g, 1, NULL))
                     return false;
             }
+    g_mon_theme = 0;
     return true;
+}
+
+void sprites_set_theme(int theme)
+{
+    int t, f, b;
+    theme = ((theme % 5) + 5) % 5;
+    if (theme == g_mon_theme)
+        return;
+    g_mon_theme = theme;
+    for (t = 0; t < MON_ART_COUNT; t++)
+        for (f = 0; f < 2; f++)
+            for (b = 0; b < 2; b++) {
+                Grid g;
+                if (mon_grid(t, f, b, &g))
+                    grid_paint(&g, g_mon_px[t][f][b], 1, &theme_maps[theme]);
+            }
 }
 
 static bool build_allies(void)
 {
     /* Raised skeletons have green eyes; mages are spectral purple. */
     ColorMap warrior = { { 'e' }, { RGB565(90, 255, 140) }, 1 };
-    ColorMap mage = { { 'e', 'o', 'O' }, { RGB565(120, 255, 220), RGB565(190, 150, 240), RGB565(120, 80, 180) }, 3 };
+    ColorMap mage = { { 'e', 'o', 'O', 'H', 'q' }, { RGB565(120, 255, 220), RGB565(190, 150, 240), RGB565(120, 80, 180),
+                                                 RGB565(226, 200, 250), RGB565(76, 46, 120) }, 5 };
     int f;
     for (f = 0; f < 2; f++) {
         Grid g;

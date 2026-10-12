@@ -26,6 +26,8 @@
 #include "../src/game/stats.h"
 #include "../src/game/world_int.h"
 #include "../src/gfx/sprites.h"
+#include "../src/gfx/tiles.h"
+#include "../src/data/art.h"
 #include "../src/data/icons.h"
 #include "../src/gfx/font.h"
 #include "../src/i18n/i18n.h"
@@ -964,6 +966,79 @@ static void test_sprites(void)
         CHECK(spr_skill_icon(i, RGB565(200, 100, 50))->w == 16);
 }
 
+/* Every painted letter in the monster art must have a real colour, or it
+ * would silently turn transparent. */
+static void check_grid_letters(const char *const *rows, int n)
+{
+    int y;
+    const char *c;
+    for (y = 0; y < n; y++)
+        for (c = rows[y]; *c; c++)
+            if (*c != '.')
+                CHECK(palette_color(*c) != COLOR_KEY);
+}
+
+static int opaque_count(const Sprite *s)
+{
+    int i, n = 0;
+    for (i = 0; i < s->w * s->h; i++)
+        n += s->px[i] != COLOR_KEY;
+    return n;
+}
+
+static void test_monster_art(void)
+{
+    uint16_t crypt[256];
+    int t, f;
+    for (t = 0; t < MON_ART_COUNT; t++)
+        for (f = 0; f < 2; f++) {
+            const Sprite *small = spr_mon(t, f, false), *big = spr_mon(t, f, true);
+            check_grid_letters(art_mon[t][f], 16);
+            CHECK(small->w == 16 && small->h == 16);
+            CHECK(big->w == BOSS_N && big->h == BOSS_N);    /* native size, not stretched */
+            CHECK(opaque_count(big) > opaque_count(small) * 3);
+        }
+    for (f = 0; f < 2; f++)
+        check_grid_letters(art_butcher_big[f], BOSS_N);
+    sprites_set_theme(0);
+    memcpy(crypt, spr_mon(0, 0, false)->px, sizeof crypt);
+    sprites_set_theme(3);                          /* frost-bitten bone in the frozen halls */
+    CHECK(memcmp(crypt, spr_mon(0, 0, false)->px, sizeof crypt) != 0);
+    sprites_set_theme(0);
+    CHECK(memcmp(crypt, spr_mon(0, 0, false)->px, sizeof crypt) == 0);
+}
+
+static int brightness(const uint16_t *px)
+{
+    int i, sum = 0;
+    for (i = 0; i < 256; i++)
+        sum += (px[i] >> 11) + ((px[i] >> 5) & 63) / 2 + (px[i] & 31);
+    return sum;
+}
+
+static void test_tiles(void)
+{
+    int theme, t, s;
+    for (theme = 0; theme < THEME_COUNT; theme++) {
+        tiles_build(theme);
+        for (t = 0; t < TL_COUNT; t++)
+            for (s = 0; s < SHADES; s++) {
+                int i;
+                for (i = 0; i < 256; i++)
+                    CHECK(tile_px(t, s)[i] != COLOR_KEY);
+                if (s > 0)       /* never brighter; near-black tiles can bottom out in RGB565 */
+                    CHECK(brightness(tile_px(t, s)) <= brightness(tile_px(t, s - 1)));
+            }
+        for (t = 0; t < TL_COUNT; t++)
+            CHECK(brightness(tile_px(t, SHADES - 1)) < brightness(tile_px(t, 0)) * 2 / 3);
+        /* walls must stand apart from the floor they rise from */
+        CHECK(brightness(tile_px(TL_WALL_FRONT, 0)) > brightness(tile_px(TL_FLOOR0, 0)) * 11 / 10);
+        CHECK(brightness(tile_px(TL_FLOOR_SHADOW, 0)) < brightness(tile_px(TL_FLOOR0, 0)));
+    }
+    tiles_build(2);                                /* hellforge lava keeps glowing in the dark */
+    CHECK(brightness(tile_px(TL_FLOOR_DECO_A, SHADES - 1)) > brightness(tile_px(TL_FLOOR0, SHADES - 1)) * 6 / 5);
+}
+
 /* Every monster and the stairs must be reachable from the hero's spawn. */
 static void test_dungeon_connectivity(void)
 {
@@ -1040,6 +1115,8 @@ int main(void)
     printf("languages\n");     test_languages();
     printf("slots\n");         test_slot_paths();
     printf("sprites\n");       test_sprites();
+    printf("monster art\n");   test_monster_art();
+    printf("tiles\n");         test_tiles();
     printf("dungeon\n");       test_dungeon_connectivity();
     test_d4(&g_checks, &g_fail);
     printf("idle sim\n");      test_idle_simulation();

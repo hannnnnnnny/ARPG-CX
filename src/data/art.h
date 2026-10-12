@@ -4,6 +4,8 @@
 #define AD_ART_H
 
 #define MON_ART_COUNT 8   /* the 7 monster kinds and the butcher */
+#define MON_BUTCHER 7
+#define BOSS_N 32         /* boss sprites are drawn at 32x32 */
 #define HAIR_STYLES 6
 #define FACE_STYLES 5
 #define SLOT_ICONS 9   /* weapon, off-hand, helm, chest, gloves, pants, boots, amulet, ring */
@@ -17,6 +19,7 @@ extern const char *const art_pauldrons[2][2];
 extern const char *const art_legs[2][3][6];
 extern const char *const art_wolf[2][16];
 extern const char *const art_mon[MON_ART_COUNT][2][16];
+extern const char *const art_butcher_big[2][BOSS_N];
 extern const char *const art_icons[SLOT_ICONS][8];
 
 #endif

@@ -31,6 +31,8 @@ void hero_look_from(HeroLook *l, const Profile *p);
 /* Built and cached on first use (a handful of looks stay cached). */
 const Sprite *spr_hero_look(const HeroLook *l, int frame);
 const Sprite *spr_mon(int type, int frame, bool boss);
+/* Recolour monsters for a depth theme (0..4); a no-op when unchanged. */
+void sprites_set_theme(int theme);
 const Sprite *spr_ally(int kind, int frame);
 const Sprite *spr_icon(int slot, int rarity);
 /* 16x16 skill icon: glyph on a background tinted with 'color'. */

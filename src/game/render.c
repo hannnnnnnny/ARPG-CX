@@ -1,10 +1,10 @@
 /*
  * render.c - the battle view (320x200 above the HUD).
  *
- * 3/4 top-down: a wall cell with open floor below shows its brick face,
- * other walls show a dark cap. Torchlight: each visible cell picks one of
- * four pre-shaded tile copies by distance from the hero; unexplored cells
- * stay black (fog of war). Entities are drawn back-to-front by feet Y.
+ * 3/4 top-down: a wall cell with open floor below shows its stone face,
+ * other walls show a dark cap. Light: each visible cell picks one of eight
+ * pre-shaded tile copies, by distance from the hero or from the nearest wall
+ * torch, whichever is brighter; unexplored cells stay black (fog of war). Entities are drawn back-to-front by feet Y.
  * Legendary and better loot stands in a pillar of light you can see from
  * across the room, like in Diablo IV.
  */
@@ -19,9 +19,10 @@
 #include "../gfx/font.h"
 #include "../core/trig.h"
 #include <stdlib.h>
+#include <string.h>
 
 #define VIEW_H 200
-#define LIGHT_PX 120 /* torchlight radius */
+#define LIGHT_PX 120 /* hero light radius: monsters further away stay hidden */
 
 typedef struct { int16_t y; uint8_t kind; uint8_t idx; } DrawItem;
 enum { DI_DROP, DI_MON, DI_HERO, DI_PROJ, DI_ALLY };
@@ -47,12 +48,22 @@ static void compute_camera(const World *w)
     cam_y = CLAMP(ipx(w->h.py, w->h.y) - VIEW_H / 2, 0, MAP_H * TILE_SIZE - VIEW_H) + render_sig_shake(w, 1);
 }
 
-/* Light falls off with the pixel distance from the hero to each tile's
- * centre, so as the hero walks single tiles change shade one at a time. */
-static int light_px(const World *w, fx x, fx y)
+/* Hero light falls off with the pixel distance to each tile's centre, so as
+ * the hero walks single tiles change shade one step at a time. */
+static int hero_shade(const World *w, int cx, int cy)
 {
-    int d = dist_px(w->h.x, w->h.y, x, y);
-    return d <= 56 ? 0 : d <= 88 ? 1 : d <= LIGHT_PX ? 2 : 3;
+    int d = dist_px(w->h.x, w->h.y, cell_center(cx), cell_center(cy));
+    return d <= 40 ? 0 : MIN(SHADES - 1, (d - 40) / 14 + 1);
+}
+
+static int floor_tile(const World *w, int cx, int cy)
+{
+    int v = w->var[cy][cx], h = (cx * 5 + cy * 3) & 3;
+    if (cy > 0 && w->cell[cy - 1][cx] == CELL_WALL)
+        return TL_FLOOR_SHADOW;                  /* the wall face above casts it */
+    if (v == 7)                                  /* clutter on about one floor in sixteen */
+        return h == 0 ? TL_FLOOR_DECO_A : h == 1 ? TL_FLOOR_DECO_B : TL_FLOOR0;
+    return v < 4 ? TL_FLOOR0 : v < 6 ? TL_FLOOR1 : TL_FLOOR2;
 }
 
 static int tile_for(const World *w, int cx, int cy)
@@ -61,39 +72,81 @@ static int tile_for(const World *w, int cx, int cy)
     if (c == CELL_STAIRS || (cx == w->stairs_x && cy == w->stairs_y))
         return TL_STAIRS;
     if (c == CELL_FLOOR)
-        return w->var[cy][cx] < 5 ? TL_FLOOR0 : w->var[cy][cx] < 7 ? TL_FLOOR1 : TL_FLOOR2;
-    return (cy + 1 < MAP_H && w->cell[cy + 1][cx] != CELL_WALL) ? TL_WALL_FRONT : TL_WALL_TOP;
+        return floor_tile(w, cx, cy);
+    if (cy + 1 < MAP_H && w->cell[cy + 1][cx] != CELL_WALL)
+        return w->var[cy][cx] == 3 && (cx & 1) ? TL_WALL_FRONT2 : TL_WALL_FRONT;
+    return TL_WALL_TOP;
 }
 
+static bool is_torch(const World *w, int cx, int cy)
+{
+    return tile_for(w, cx, cy) == TL_WALL_FRONT && w->var[cy][cx] == 0 && (cx % 3) == 0;
+}
+
+/* Torchlight per cell, worked out once per floor (the map never changes). */
+static uint8_t g_torch[MAP_H][MAP_W];
+static uint32_t g_torch_key = 0xFFFFFFFFu;
+
+static void light_around(int tx, int ty)
+{
+    static const uint8_t by_d2[19] = { 1, 1, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 6, 6, 6, 6, 6 };
+    int dx, dy;
+    for (dy = -4; dy <= 4; dy++)
+        for (dx = -4; dx <= 4; dx++) {
+            int x = tx + dx, y = ty + dy, d2 = dx * dx + dy * dy;
+            if (x >= 0 && y >= 0 && x < MAP_W && y < MAP_H && d2 < 19)
+                g_torch[y][x] = MIN(g_torch[y][x], by_d2[d2]);
+        }
+}
+
+static void update_torchlight(const World *w)
+{
+    uint32_t key = (uint32_t)w->floor * 2654435761u ^ (uint32_t)(w->stairs_x << 8 | w->stairs_y);
+    int cx, cy, i;
+    for (i = 0; i < 16; i++)                   /* a few cells tell two maps on one floor apart */
+        key = key * 31u + w->var[(i * 7) % MAP_H][(i * 13) % MAP_W];
+    if (key == g_torch_key)
+        return;
+    g_torch_key = key;
+    memset(g_torch, SHADES - 1, sizeof g_torch);
+    for (cy = 0; cy < MAP_H; cy++)
+        for (cx = 0; cx < MAP_W; cx++)
+            if (is_torch(w, cx, cy))
+                light_around(cx, cy);
+}
+
+/* An iron sconce and a flame that flickers between two shapes. */
 static void draw_torch(int sx, int sy, int tick)
 {
-    uint16_t flame = (tick >> 4) & 1 ? RGB565(255, 190, 60) : RGB565(255, 150, 40);
-    gfx_fill_rect(sx + 7, sy + 7, 2, 6, RGB565(90, 60, 30));
-    gfx_fill_rect(sx + 6, sy + 3, 4, 4, flame);
-    gfx_pixel(sx + 7, sy + 2 - ((tick >> 3) & 1), RGB565(255, 240, 160));
+    bool f = (tick >> 4) & 1;
+    gfx_fill_rect(sx + 5, sy + 8, 6, 1, RGB565(96, 90, 96));
+    gfx_fill_rect(sx + 7, sy + 9, 2, 4, RGB565(70, 46, 30));
+    gfx_fill_rect(sx + 6, sy + 5, 4, 3, f ? RGB565(255, 132, 40) : RGB565(240, 110, 34));
+    gfx_fill_rect(sx + 7, sy + 4 - f, 2, 2 + f, RGB565(255, 196, 90));
+    gfx_pixel(sx + 7 + f, sy + 3 - f, RGB565(255, 240, 180));
 }
 
 static void draw_map(const World *w)
 {
     int cx0 = cam_x >> TILE_SHIFT, cy0 = cam_y >> TILE_SHIFT, cx, cy;
+    update_torchlight(w);
     for (cy = cy0; cy <= (cam_y + VIEW_H - 1) >> TILE_SHIFT && cy < MAP_H; cy++)
         for (cx = cx0; cx <= (cam_x + SCREEN_W - 1) >> TILE_SHIFT && cx < MAP_W; cx++) {
-            int sx = cx * TILE_SIZE - cam_x, sy = cy * TILE_SIZE - cam_y, t, shade;
+            int sx = cx * TILE_SIZE - cam_x, sy = cy * TILE_SIZE - cam_y;
             if (!w->seen[cy][cx]) {
                 gfx_fill_rect(sx, sy, TILE_SIZE, MIN(TILE_SIZE, VIEW_H - sy), 0);
                 continue;
             }
-            t = tile_for(w, cx, cy);
-            shade = light_px(w, cell_center(cx), cell_center(cy));
-            gfx_blit_tile(tile_px(t, shade), sx, sy, true);
-            if (t == TL_WALL_FRONT && w->var[cy][cx] == 0 && (cx % 3) == 0 && shade < 3)
+            gfx_blit_tile(tile_px(tile_for(w, cx, cy), MIN(hero_shade(w, cx, cy), g_torch[cy][cx])),
+                          sx, sy, true);
+            if (is_torch(w, cx, cy))
                 draw_torch(sx, sy, w->tick + cx * 5);
         }
 }
 
 static bool visible_px(const World *w, fx x, fx y)
 {
-    return w->seen[px_to_cell(y)][px_to_cell(x)] && light_px(w, x, y) < 3;
+    return w->seen[px_to_cell(y)][px_to_cell(x)] && dist_px(w->h.x, w->h.y, x, y) <= LIGHT_PX;
 }
 
 static void shadow(int x, int y, int half)
@@ -350,7 +403,8 @@ void render_camera(int *x, int *y)
 
 void render_world(const World *w, const Profile *p)
 {
-    tiles_build(w->theme); /* no-op unless the depth theme changed */
+    tiles_build(w->theme);       /* both are no-ops unless the depth theme changed */
+    sprites_set_theme(w->theme);
     compute_camera(w);
     draw_map(w);
     draw_ground_items(w);
