@@ -39,6 +39,14 @@ void item_rescale(Item *it, int ilvl);      /* to a deeper item level, rolls kep
 int  item_power(const Item *it);
 double item_mw_mult(const Item *it);                      /* masterwork multiplier on the base stat */
 double item_affix_value(const Item *it, int i);          /* incl. masterwork */
+/* The range affix i could have rolled in, in the same units as
+ * item_affix_value (depth, greater and masterwork included). False when the
+ * affix has no range (e.g. +1 rank that cannot roll higher). */
+bool item_affix_range(const Item *it, int i, double *lo, double *hi);
+double item_affix_quality(const Item *it, int i);        /* 0..1 within the range, -1 if none */
+#define AFFIX_MAX_QUALITY 0.97                           /* shown as a max roll */
+bool affix_is_max(const Item *it, int i);
+void affix_range_text(char *out, size_t cap, const Item *it, int i);  /* "[2.0-5.0]", "[MAX]" or "" */
 /* All modifiers an equipped item grants (affixes, aspect / unique, gems). */
 int  item_mods(const Item *it, int cls, Mod *out, int cap);
 bool item_fits_slot(const Item *it, Slot s);            /* rings fit both ring slots */
@@ -60,6 +68,7 @@ int  class_weapon_kind(int cls, int pick);               /* pick-th weapon type 
 const char *temper_name(TemperRecipe t);
 bool temper_allowed(const Item *it, TemperRecipe t);
 bool item_temper(Item *it, Rng *r, TemperRecipe t);       /* uses a charge */
+int  item_tempered_affix(const Item *it, TemperRecipe t); /* index of the recipe's affix, -1 if none */
 bool item_masterwork(Item *it, Rng *r);                   /* one rank */
 /* Two candidate affixes to replace affix i; false if i cannot be enchanted. */
 bool item_enchant_options(const Item *it, int i, Rng *r, Affix out[2], int cls);

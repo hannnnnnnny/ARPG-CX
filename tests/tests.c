@@ -184,6 +184,66 @@ static void test_temper_and_masterwork(void)
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
 }
 
+/* Every affix sits inside the range it shows, however the item was made or changed. */
+static int affixes_in_range(const Item *it)
+{
+    int i, ranged = 0;
+    for (i = 0; i < it->naff; i++) {
+        double lo, hi, v = item_affix_value(it, i), q = item_affix_quality(it, i);
+        if (!item_affix_range(it, i, &lo, &hi))
+            continue;
+        ranged++;
+        CHECK(v >= lo - 1e-6 * hi && v <= hi + 1e-6 * hi);
+        CHECK(q >= 0.0 && q <= 1.0);
+    }
+    return ranged;
+}
+
+static void test_affix_ranges(void)
+{
+    Rng r;
+    Item it;
+    Affix opt[2];
+    char buf[48];
+    int k, ranged = 0, t;
+    double lo, hi;
+    rng_seed(&r, 77);
+    for (k = 0; k < 3000; k++) {
+        item_roll(&it, &r, 1 + k % 400, 0, (Rarity)(k % RAR_COUNT), k % CLASS_COUNT);
+        ranged += affixes_in_range(&it);
+        for (t = 0; t < TR_COUNT; t++)
+            if (temper_allowed(&it, (TemperRecipe)t) && item_temper(&it, &r, (TemperRecipe)t)) {
+                CHECK(item_tempered_affix(&it, (TemperRecipe)t) >= 0);
+                break;
+            }
+        if (item_enchant_options(&it, it.naff - 1, &r, opt, k % CLASS_COUNT))
+            item_enchant_apply(&it, it.naff - 1, &opt[k & 1]);
+        while (item_masterwork(&it, &r) && it.mw < (k % (MW_MAX + 1)))
+            ;
+        item_rescale(&it, it.ilvl + k % 50 + 1);
+        ranged += affixes_in_range(&it);
+    }
+    CHECK(ranged > 10000);
+    item_roll_slot(&it, &r, 30, 0, RAR_RARE, SLOT_GLOVES, CLASS_ROGUE);
+    CHECK(item_affix_range(&it, 1, &lo, &hi) && hi > lo);
+    it.aff[1].value = hi;                                  /* a top roll reads as perfect */
+    CHECK(affix_is_max(&it, 1));
+    affix_range_text(buf, sizeof buf, &it, 1);
+    CHECK(strcmp(buf, "[PERFECT]") == 0);
+    it.aff[1].value = lo;
+    CHECK(!affix_is_max(&it, 1) && item_affix_quality(&it, 1) < 0.01);
+    affix_range_text(buf, sizeof buf, &it, 1);
+    CHECK(buf[0] == '[' && strchr(buf, '-') != NULL);
+    CHECK(item_tempered_affix(&it, TR_ENDURANCE) == -1);   /* nothing tempered yet */
+    for (t = 1; t <= aspect_count && t < ASPECT_MAX; t++) {
+        const AspectDef *a = aspect_def(t);
+        char top[48];
+        aspect_range_text(top, sizeof top, a, 1000);
+        aspect_range_text(buf, sizeof buf, a, 0);
+        CHECK(top[0] == '\0' ? buf[0] == '\0' : strcmp(top, "[PERFECT]") == 0 && buf[0] == '[');
+    }
+}
+
 static void test_enchant_imprint_gems(void)
 {
     Rng r;
@@ -1166,6 +1226,7 @@ int main(void)
     printf("items\n");         test_items();
     printf("uniques\n");       test_uniques();
     printf("temper/mw\n");     test_temper_and_masterwork();
+    printf("affix ranges\n");  test_affix_ranges();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();

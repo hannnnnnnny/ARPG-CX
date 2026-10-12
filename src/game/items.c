@@ -170,17 +170,30 @@ static bool has_affix(const Item *it, int t)
     return false;
 }
 
-/* Value of a fresh affix roll. */
-static double roll_value(Rng *r, int t, int ilvl, double mult)
+/* An affix roll before depth scaling, as a value at item level ilvl. */
+static double scale_value(int t, double v, int ilvl)
 {
-    const AffixInfo *a = &affix_info[t];
-    double v = frand(r, a->lo, a->hi) * mult;
-    switch (a->scale) {
+    switch (affix_info[t].scale) {
     case SC_FLOOR: return v * floor_scale(ilvl);
     case SC_STAT:  return v * (1.0 + ilvl / 40.0);
     case SC_INT:   return (double)(int)(v + 0.5);
     default:       return v;
     }
+}
+
+/* Value of a fresh affix roll. */
+static double roll_value(Rng *r, int t, int ilvl, double mult)
+{
+    return scale_value(t, frand(r, affix_info[t].lo, affix_info[t].hi) * mult, ilvl);
+}
+
+/* Roll strength of affixes by rarity; uniques and mythics use the last two. */
+static const double rarity_affix_mult[RAR_COUNT] = { 1.0, 0.8, 1.0, 1.1, 1.2, 1.2 };
+#define TEMPER_MULT 0.8
+
+static double enchant_mult(const Item *it)
+{
+    return it->rarity == RAR_MAGIC ? 0.8 : 1.0;
 }
 
 static void set_affix(Affix *a, Rng *r, int t, int ilvl, double mult, int cls)
@@ -256,28 +269,41 @@ static void roll_main(Item *it, Rng *r)
         it->main = 8.0 * s * armor_share[it->slot] * frand(r, 0.85, 1.15);
 }
 
+/* The implicit affix of the item's base and its value range before depth scaling. */
+static bool implicit_bounds(const Item *it, int *t, double *lo, double *hi)
+{
+    if (it->slot == SLOT_WEAPON) {
+        *t = weapon_implicit[it->base % WK_COUNT].type, *lo = weapon_implicit[it->base % WK_COUNT].lo;
+        *hi = weapon_implicit[it->base % WK_COUNT].hi;
+    } else if (it->slot == SLOT_OFFHAND) {
+        *t = offhand_implicit[it->base % OK_COUNT].type, *lo = offhand_implicit[it->base % OK_COUNT].lo;
+        *hi = offhand_implicit[it->base % OK_COUNT].hi;
+    } else if (it->slot == SLOT_RING1 || it->slot == SLOT_RING2 || it->slot == SLOT_AMULET) {
+        *t = AF_RES_ALL, *lo = it->slot == SLOT_AMULET ? 6 : 4, *hi = it->slot == SLOT_AMULET ? 12 : 8;
+    } else if (it->slot == SLOT_BOOTS) {
+        *t = AF_MOVE, *lo = 4, *hi = 8;
+    } else {
+        return false;
+    }
+    return true;
+}
+
+static double implicit_scale(int t, int ilvl)
+{
+    return affix_info[t].scale == SC_FLOOR ? floor_scale(ilvl) : 1.0;
+}
+
 static void roll_implicit(Item *it, Rng *r)
 {
     Affix *a = &it->aff[0];
     double lo, hi;
     int t;
-    if (it->slot == SLOT_WEAPON) {
-        t = weapon_implicit[it->base % WK_COUNT].type, lo = weapon_implicit[it->base % WK_COUNT].lo;
-        hi = weapon_implicit[it->base % WK_COUNT].hi;
-    } else if (it->slot == SLOT_OFFHAND) {
-        t = offhand_implicit[it->base % OK_COUNT].type, lo = offhand_implicit[it->base % OK_COUNT].lo;
-        hi = offhand_implicit[it->base % OK_COUNT].hi;
-    } else if (it->slot == SLOT_RING1 || it->slot == SLOT_RING2 || it->slot == SLOT_AMULET) {
-        t = AF_RES_ALL, lo = it->slot == SLOT_AMULET ? 6 : 4, hi = it->slot == SLOT_AMULET ? 12 : 8;
-    } else if (it->slot == SLOT_BOOTS) {
-        t = AF_MOVE, lo = 4, hi = 8;
-    } else {
+    if (!implicit_bounds(it, &t, &lo, &hi))
         return;
-    }
     memset(a, 0, sizeof *a);
     a->type = (uint8_t)t;
     a->flags = AFX_IMPLICIT;
-    a->value = frand(r, lo, hi) * (affix_info[t].scale == SC_FLOOR ? floor_scale(it->ilvl) : 1.0);
+    a->value = frand(r, lo, hi) * implicit_scale(t, it->ilvl);
     it->naff = 1;
 }
 
@@ -291,7 +317,7 @@ static void make_greater(Item *it, Rng *r, int count)
         if (a->flags & (AFX_IMPLICIT | AFX_GREATER))
             continue;
         a->flags |= AFX_GREATER;
-        a->value = a->type == AF_RANKS || a->type == AF_MAX_RES ? a->value + 1 : a->value * 1.5;
+        a->value = affix_info[a->type].scale == SC_INT ? a->value + 1 : a->value * 1.5;
         count--;
     }
 }
@@ -353,9 +379,13 @@ void item_rescale(Item *it, int ilvl)
         return;
     k = floor_scale(ilvl) / floor_scale(it->ilvl);
     it->main *= k;
-    for (i = 0; i < it->naff; i++)
-        if (affix_info[it->aff[i].type % AF_COUNT].scale == SC_FLOOR)
+    for (i = 0; i < it->naff; i++) {
+        int scale = affix_info[it->aff[i].type % AF_COUNT].scale;
+        if (scale == SC_FLOOR)
             it->aff[i].value *= k;
+        else if (scale == SC_STAT)          /* main stat grows too, so it stays inside its range */
+            it->aff[i].value *= (1.0 + ilvl / 40.0) / (1.0 + it->ilvl / 40.0);
+    }
     it->ilvl = (uint16_t)ilvl;
 }
 
@@ -379,7 +409,7 @@ void item_make_unique(Item *it, Rng *r, int ilvl, int unique, bool ancestral, in
     roll_main(it, r);
     roll_implicit(it, r);
     for (i = 0; i < 4 && it->naff < MAX_AFFIX; i++)
-        set_affix(&it->aff[it->naff++], r, u->aff[i], it->ilvl, 1.2, cls);
+        set_affix(&it->aff[it->naff++], r, u->aff[i], it->ilvl, rarity_affix_mult[it->rarity], cls);
     if (u->mythic)
         make_greater(it, r, 4);
     else if (it->ancestral)
@@ -390,10 +420,9 @@ void item_make_unique(Item *it, Rng *r, int ilvl, int unique, bool ancestral, in
 static void roll_affixes(Item *it, Rng *r, int cls)
 {
     static const int count[RAR_COUNT] = { 0, 1, 2, 3, 0, 0 };
-    static const double mult[RAR_COUNT] = { 1.0, 0.8, 1.0, 1.1, 1.2, 1.2 };
     int i;
     for (i = 0; i < count[it->rarity]; i++)
-        add_affix(it, r, mult[it->rarity], cls);
+        add_affix(it, r, rarity_affix_mult[it->rarity], cls);
 }
 
 void item_roll_slot(Item *it, Rng *r, int ilvl, int luck, Rarity min_rarity, Slot slot, int cls)
@@ -446,13 +475,69 @@ double item_mw_mult(const Item *it)
     return 1.0 + 0.05 * it->mw;
 }
 
+/* What masterworking multiplies an affix by; implicits and whole-number affixes keep their roll. */
+static double affix_mw_factor(const Item *it, const Affix *a)
+{
+    if (a->flags & AFX_IMPLICIT || affix_info[a->type % AF_COUNT].scale == SC_INT)
+        return 1.0;
+    return item_mw_mult(it) * (1.0 + 0.25 * a->mwcrit);
+}
+
 double item_affix_value(const Item *it, int i)
 {
-    const Affix *a = &it->aff[i];
-    double v = a->value;
-    if (a->flags & AFX_IMPLICIT || a->type == AF_RANKS || a->type == AF_MAX_RES)
-        return v;
-    return v * item_mw_mult(it) * (1.0 + 0.25 * a->mwcrit);
+    return it->aff[i].value * affix_mw_factor(it, &it->aff[i]);
+}
+
+/* The roll strength is not saved: it follows from how the affix was made. */
+static double affix_roll_mult(const Item *it, const Affix *a)
+{
+    if (a->flags & AFX_TEMPERED)
+        return TEMPER_MULT;
+    if (a->flags & AFX_ENCHANT)
+        return enchant_mult(it);
+    return rarity_affix_mult[it->rarity % RAR_COUNT];
+}
+
+static void implicit_range(const Item *it, int t, double *lo, double *hi)
+{
+    *lo *= implicit_scale(t, it->ilvl);
+    *hi *= implicit_scale(t, it->ilvl);
+}
+
+bool item_affix_range(const Item *it, int i, double *lo, double *hi)
+{
+    const Affix *a;
+    double k;
+    int t;
+    if (!it->used || i < 0 || i >= it->naff || it->aff[i].type >= AF_COUNT)
+        return false;
+    a = &it->aff[i];
+    if (a->flags & AFX_IMPLICIT) {
+        if (!implicit_bounds(it, &t, lo, hi) || t != a->type)
+            return false;
+        implicit_range(it, t, lo, hi);
+        return true;
+    }
+    k = affix_roll_mult(it, a);
+    *lo = scale_value(a->type, affix_info[a->type].lo * k, it->ilvl);
+    *hi = scale_value(a->type, affix_info[a->type].hi * k, it->ilvl);
+    if (a->flags & AFX_GREATER) {
+        bool whole = affix_info[a->type].scale == SC_INT;
+        *lo = whole ? *lo + 1 : *lo * 1.5;
+        *hi = whole ? *hi + 1 : *hi * 1.5;
+    }
+    k = affix_mw_factor(it, a);
+    *lo *= k;
+    *hi *= k;
+    return *hi > *lo;
+}
+
+double item_affix_quality(const Item *it, int i)
+{
+    double lo, hi;
+    if (!item_affix_range(it, i, &lo, &hi))
+        return -1.0;
+    return CLAMP((item_affix_value(it, i) - lo) / (hi - lo), 0.0, 1.0);
 }
 
 static int gem_mods(int gem, Slot s, int ilvl, Mod *out, int cap);
@@ -541,7 +626,7 @@ void item_name(char *out, size_t cap, const Item *it)
 
 static void pct_text(char *num, size_t cap, double v)
 {
-    if (v < 10.0)
+    if (v < 9.95)                         /* 9.96 rounds to "10", not "9.0" */
         snprintf(num, cap, "%d.%d", (int)v, (int)(v * 10 + 0.5) % 10);
     else
         snprintf(num, cap, "%d", (int)(v + 0.5));
@@ -568,6 +653,37 @@ void affix_text(char *out, size_t cap, const Item *it, int i, int cls)
         fmt_num(num, sizeof num, v);
         snprintf(out, cap, "+%s %s", num, T(info->label));
     }
+}
+
+static void range_num(char *num, size_t cap, int t, double v)
+{
+    if (affix_info[t].scale == SC_INT)
+        snprintf(num, cap, "%d", (int)(v + 0.5));
+    else if (affix_is_percent((AffixType)t) || t == AF_LH_VULN)
+        pct_text(num, cap, v);
+    else
+        fmt_num(num, cap, v);
+}
+
+bool affix_is_max(const Item *it, int i)
+{
+    return item_affix_quality(it, i) >= AFFIX_MAX_QUALITY;
+}
+
+void affix_range_text(char *out, size_t cap, const Item *it, int i)
+{
+    double lo, hi;
+    char a[16], b[16];
+    out[0] = '\0';
+    if (!item_affix_range(it, i, &lo, &hi))
+        return;
+    if (affix_is_max(it, i)) {
+        snprintf(out, cap, "[%s]", T("PERFECT"));
+        return;
+    }
+    range_num(a, sizeof a, it->aff[i].type, lo);
+    range_num(b, sizeof b, it->aff[i].type, hi);
+    snprintf(out, cap, "[%s-%s]", a, b);
 }
 
 void item_main_text(char *out, size_t cap, const Item *it)
@@ -650,6 +766,12 @@ static int tempered_index(const Item *it, TemperRecipe t, int *count)
     return found;
 }
 
+int item_tempered_affix(const Item *it, TemperRecipe t)
+{
+    int count;
+    return t < TR_COUNT ? tempered_index(it, t, &count) : -1;
+}
+
 bool item_temper(Item *it, Rng *r, TemperRecipe t)
 {
     int count, slot_i = tempered_index(it, t, &count), type;
@@ -665,7 +787,7 @@ bool item_temper(Item *it, Rng *r, TemperRecipe t)
         return false;
     if (slot_i < 0)
         slot_i = it->naff++;
-    set_affix(&it->aff[slot_i], r, type, it->ilvl, 0.8, 0);
+    set_affix(&it->aff[slot_i], r, type, it->ilvl, TEMPER_MULT, 0);
     it->aff[slot_i].flags = AFX_TEMPERED;
     it->temper_left--;
     return true;
@@ -713,7 +835,7 @@ bool item_enchant_options(const Item *it, int i, Rng *r, Affix out[2], int cls)
         t = pick_affix(&probe, r, slot_pool[pool_slot((Slot)it->slot)]);
         if (t < 0)
             return false;
-        set_affix(&out[k], r, t, it->ilvl, it->rarity == RAR_MAGIC ? 0.8 : 1.0, cls);
+        set_affix(&out[k], r, t, it->ilvl, enchant_mult(it), cls);
         out[k].flags = AFX_ENCHANT;
     }
     return true;

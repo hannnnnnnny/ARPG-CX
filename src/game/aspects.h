@@ -51,6 +51,9 @@ double unique_value(const UniqueDef *u, int roll);
 /* Text with '#' filled in. */
 void aspect_text(char *out, size_t cap, const AspectDef *a, int roll);
 void unique_text(char *out, size_t cap, const UniqueDef *u, int roll);
+/* The range the '#' value rolls in: "[8-15]", "[PERFECT]", or "" if it cannot vary. */
+void aspect_range_text(char *out, size_t cap, const AspectDef *a, int roll);
+void unique_range_text(char *out, size_t cap, const UniqueDef *u, int roll);
 const char *aspect_cat_name(AspectCat c);
 /* Which aspect categories each slot accepts (bit per AspectCat). */
 bool aspect_fits_slot(const AspectDef *a, Slot s);

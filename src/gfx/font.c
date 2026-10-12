@@ -221,6 +221,13 @@ void font_draw_centered(int y, const char *s, uint16_t color, uint16_t shadow, i
 
 /* Length in bytes of the next line that fits max_w: breaks at spaces, or
  * between any two CJK characters (they have no spaces). */
+/* CJK closing punctuation never starts a line: it stays with the char before it. */
+static bool closing_punct(uint32_t cp)
+{
+    return cp == 0x3001 || cp == 0x3002 || cp == 0xFF0C || cp == 0xFF1A || cp == 0xFF1B || cp == 0xFF01
+        || cp == 0xFF1F || cp == 0xFF09 || cp == 0x300D || cp == 0x300F || cp == 0x30FC;
+}
+
 static int line_bytes(const char *s, int max_w, int *skip)
 {
     const char *p = s, *brk = NULL;
@@ -230,7 +237,7 @@ static int line_bytes(const char *s, int max_w, int *skip)
         uint32_t cp = utf8_next(&p);
         if (cp == ' ')
             brk = at;
-        else if (cp >= 0x80 && at != s)
+        else if (cp >= 0x80 && at != s && !closing_punct(cp))
             brk = at;                           /* may break before a CJK char */
         w += advance(cp);
         if (w - 1 > max_w) {

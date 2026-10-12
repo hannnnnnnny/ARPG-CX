@@ -60,20 +60,55 @@ static int recipe_of(const Item *it, int opt)
     return n ? ids[((opt % n) + n) % n] : 0;
 }
 
+/* "+6.2% CRITICAL STRIKE DAMAGE [4.0-10]": the roll and the range it came from. */
+static void affix_with_range(char *out, size_t cap, const Game *g, const Item *it, int i)
+{
+    char aff[96], range[32];
+    affix_text(aff, sizeof aff, it, i, g->p.cls);
+    affix_range_text(range, sizeof range, it, i);
+    snprintf(out, cap, "%s %s", aff, range);
+}
+
+static void temper_toast(Game *g, CraftResult r, TemperRecipe t)
+{
+    const Item *it = cur_item(g);
+    char roll[128], msg[112];
+    int i = item_tempered_affix(it, t);
+    if (r != CRAFT_OK || i < 0) {
+        menu_craft_toast(g, r, "TEMPERED: A NEW AFFIX");
+        return;
+    }
+    affix_with_range(roll, sizeof roll, g, it, i);
+    snprintf(msg, sizeof msg, "%s %s", T(affix_is_max(it, i) ? "PERFECT TEMPER!" : "TEMPERED:"), roll);
+    menu_craft_toast(g, r, msg);
+}
+
 static void smith_tick(Game *g, Input *in)
 {
     Item *it = cur_item(g);
+    TemperRecipe t = (TemperRecipe)recipe_of(it, g->town_opt);
     if (in_ok(in))
         menu_craft_toast(g, prog_masterwork(&g->p, (Slot)g->town_sel, &g->craft_rng),
                          it->mw % 4 == 3 ? "MASTERWORK! A CRITICAL UPGRADE" : "MASTERWORKED +5%");
     else if (in_alt(in))
-        menu_craft_toast(g, prog_temper(&g->p, (Slot)g->town_sel, (TemperRecipe)recipe_of(it, g->town_opt),
-                                        &g->craft_rng), "TEMPERED: A NEW AFFIX");
+        temper_toast(g, prog_temper(&g->p, (Slot)g->town_sel, t, &g->craft_rng), t);
+}
+
+/* The recipe's current affix with its range, so a reroll has a target. */
+static int temper_roll_render(const Game *g, const Item *it, TemperRecipe t, int x, int y)
+{
+    char buf[160];
+    int i = item_tempered_affix(it, t);
+    if (i < 0)
+        return font_draw_wrapped(x, y, "NOT TEMPERED YET", 160, C_DIM);
+    affix_with_range(buf, sizeof buf, g, it, i);
+    return font_draw_wrapped(x, y, buf, 160, affix_is_max(it, i) ? C_GOOD : C_TEMP);
 }
 
 static void smith_render(Game *g, int x, int y)
 {
     Item *it = cur_item(g);
+    TemperRecipe t = (TemperRecipe)recipe_of(it, g->town_opt);
     char buf[128];
     if (!it->used)
         return;
@@ -84,14 +119,14 @@ static void smith_render(Game *g, int x, int y)
         font_draw(x, y + 10, buf, C_DIM, 1);
     }
     font_draw_wrapped(x, y + 20, "+5% TO ALL AFFIXES PER RANK. RANKS 4, 8, 12 GIVE ONE AFFIX +25%.", 160, C_DIM);
-    snprintf(buf, sizeof buf, T("TEMPER: %s (DEL)"), T(temper_name((TemperRecipe)recipe_of(it, g->town_opt))));
-    font_draw(x, y + 60, buf, C_TEMP, 1);
+    snprintf(buf, sizeof buf, T("TEMPER: %s (DEL)"), T(temper_name(t)));
+    font_draw(x, y + 56, buf, C_SEL, 1);
+    y = temper_roll_render(g, it, t, x, y + 67);
     snprintf(buf, sizeof buf, T("CHARGES LEFT %d"), it->temper_left);
-    font_draw(x, y + 70, buf, C_DIM, 1);
-    font_draw(x, y + 80, "LEFT/RIGHT: RECIPE", C_DIM, 1);
+    font_draw(x, y + 2, buf, it->temper_left ? C_DIM : C_BAD, 1);
     cost_text(buf, sizeof buf, temper_gold(it), 1, 0);
-    font_draw(x, y + 90, buf, C_DIM, 1);
-    font_draw_wrapped(x, y + 102, "UP TO 2 TEMPERED AFFIXES. TEMPERING A RECIPE AGAIN REROLLS ITS AFFIX.", 160, C_DIM);
+    font_draw(x, y + 12, buf, C_DIM, 1);
+    font_draw_wrapped(x, y + 24, "LEFT/RIGHT: RECIPE. TEMPER AGAIN TO REROLL THE AFFIX AND ITS VALUE.", 160, C_DIM);
 }
 
 /* ------------------------------------------------------------- occultist */
@@ -196,7 +231,7 @@ static void occult_render(Game *g, int x, int y)
         int i = enchantable(it, g->town_opt);
         if (i < 0)
             return;
-        affix_text(buf, sizeof buf, it, i, g->p.cls);
+        affix_with_range(buf, sizeof buf, g, it, i);
         y = font_draw_wrapped(x, y + 12, buf, 160, C_AFFIX);
         cost_text(buf, sizeof buf, enchant_gold(it), 0, it->rarity >= RAR_LEGEND ? 1 : 0);
         font_draw(x, y + 2, buf, C_DIM, 1);
@@ -220,10 +255,10 @@ static void enchant_dialog(const Game *g)
         if (g->ench.pick == r)
             gfx_fill_rect(20, y - 4, 280, 18, C_HIL);
         if (r < 2)
-            tmp.aff[g->ench.affix] = g->ench.opt[r];
+            item_enchant_apply(&tmp, g->ench.affix, &g->ench.opt[r]);   /* as it would land, masterwork kept */
         else
             tmp.aff[g->ench.affix] = it->aff[g->ench.affix];
-        affix_text(buf, sizeof buf, &tmp, g->ench.affix, g->p.cls);
+        affix_with_range(buf, sizeof buf, g, &tmp, g->ench.affix);
         font_draw(26, y, r < 2 ? buf : "KEEP THE CURRENT AFFIX", g->ench.pick == r ? C_SEL : C_AFFIX, 1);
     }
 }

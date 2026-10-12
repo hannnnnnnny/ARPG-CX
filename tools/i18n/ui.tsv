@@ -220,7 +220,7 @@ KEEP THE CURRENT AFFIX	保留当前词缀	保留當前詞綴	今の特性を残�
 LAST: %s%s (%d)	上次：%s%s（%d）	上次：%s%s（%d）	前回：%s%s（%d）	지난번: %s%s (%d)
 LEFT/RIGHT: AFFIX  ENTER: REROLL. ONLY ONE AFFIX PER ITEM CAN BE ENCHANTED.	左右:词缀 ENTER:重铸。每件物品只能附魔一条词缀。	左右:詞綴 ENTER:重鑄。每件物品只能附魔一條詞綴。	左右:特性 ENTER:再抽選。1アイテム1特性のみ。	좌우:속성 ENTER:재굴림. 아이템당 하나만 가능.
 LEFT/RIGHT: ASPECT  ENTER: IMPRINT	左右:威能  ENTER:刻印	左右:威能  ENTER:刻印	左右:威能  ENTER:刻印	좌우:위상  ENTER:각인
-LEFT/RIGHT: RECIPE	左右：配方	左右：配方	左右：レシピ	좌우: 제작법
+LEFT/RIGHT: RECIPE. TEMPER AGAIN TO REROLL THE AFFIX AND ITS VALUE.	左右：配方。再次回火会重新随机词缀和数值。	左右：配方。再次回火會重新隨機詞綴和數值。	左右：レシピ。再度の焼き戻しで特性と数値を再抽選。	좌우: 제작법. 다시 담금질하면 속성과 수치를 다시 굴림.
 MASTERWORK %d/%d (ENTER)	精造 %d/%d（ENTER）	精造 %d/%d（ENTER）	名匠 %d/%d（ENTER）	명품화 %d/%d (ENTER)
 MASTERWORK AND TEMPER YOUR GEAR	精造与回火你的装备	精造與回火你的裝備	装備の名匠化と焼き戻し	장비 명품화와 담금질
 MASTERWORK! A CRITICAL UPGRADE	精造！暴击升级	精造！暴擊升級	名匠！会心の強化	명품화! 치명적 강화
@@ -237,7 +237,10 @@ POTIONS UPGRADED	药水已升级	藥水已升級	ポーション強化	물약 �
 SOCKET ADDED	已添加插槽	已添加插槽	ソケットを追加	홈 추가됨
 TEMPER: %s (DEL)	回火：%s（DEL）	回火：%s（DEL）	焼き戻し：%s（DEL）	담금질: %s (DEL)
 TEMPERED: A NEW AFFIX	回火完成：新词缀	回火完成：新詞綴	焼き戻し：新しい特性	담금질: 새 속성
-UP TO 2 TEMPERED AFFIXES. TEMPERING A RECIPE AGAIN REROLLS ITS AFFIX.	最多2条回火词缀。再次使用同一配方会重铸该词缀。	最多2條回火詞綴。再次使用同一配方會重鑄該詞綴。	焼き戻し特性は最大2つ。同じレシピで再抽選。	담금질 속성은 최대 2개. 같은 제작법은 다시 굴림.
+NOT TEMPERED YET	尚未回火	尚未回火	まだ焼き戻していない	아직 담금질 안 함
+TEMPERED:	回火	回火	焼き戻し	담금질
+PERFECT TEMPER!	完美回火！	完美回火！	完璧な焼き戻し！	완벽한 담금질!
+PERFECT	完美	完美	完璧	완벽
   LOCKED	  已锁定	  已鎖定	  ロック	  잠김
 %d ITEM POWER	%d 物品强度	%d 物品強度	アイテムパワー %d	아이템 위력 %d
 %s%d%% POWER	%s%d%% 战力	%s%d%% 戰力	%s%d%% 戦力	%s%d%% 전투력

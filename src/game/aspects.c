@@ -264,6 +264,29 @@ static void fill_hash(char *out, size_t cap, const char *fmt, double v)
     out[n] = '\0';
 }
 
+/* Compares the numbers as fill_hash prints them, so "[PERFECT]" means the
+ * shown value is the top of the shown range. */
+static void range_text(char *out, size_t cap, double lo, double hi, double v)
+{
+    int a = (int)(fabs(lo) + 0.5), b = (int)(fabs(hi) + 0.5), n = (int)(fabs(v) + 0.5);
+    if (a == b)
+        out[0] = '\0';
+    else if (n == b)
+        snprintf(out, cap, "[%s]", T("PERFECT"));
+    else
+        snprintf(out, cap, "[%d-%d]", a < b ? a : b, a < b ? b : a);
+}
+
+void aspect_range_text(char *out, size_t cap, const AspectDef *a, int roll)
+{
+    range_text(out, cap, a->lo, a->hi, aspect_value(a, roll));
+}
+
+void unique_range_text(char *out, size_t cap, const UniqueDef *u, int roll)
+{
+    range_text(out, cap, u->lo, u->hi, unique_value(u, roll));
+}
+
 void aspect_text(char *out, size_t cap, const AspectDef *a, int roll)
 {
     fill_hash(out, cap, T(a->desc), aspect_value(a, roll));

@@ -107,7 +107,7 @@ static int card_header(const Game *g, const Item *it, int x, int y, int w, const
 
 static int card_affixes(const Game *g, const Item *it, int x, int y, int w)
 {
-    char buf[128], line[144];
+    char buf[128], range[32], line[176];
     int i;
     item_main_text(buf, sizeof buf, it);
     if (buf[0]) {
@@ -119,8 +119,10 @@ static int card_affixes(const Game *g, const Item *it, int x, int y, int w)
         uint16_t c = a->flags & AFX_IMPLICIT ? C_DIM : a->flags & AFX_GREATER ? C_GREAT
                    : a->flags & AFX_TEMPERED ? C_TEMP : C_AFFIX;
         affix_text(buf, sizeof buf, it, i, g->p.cls);
-        snprintf(line, sizeof line, "%s%s%s%s", a->flags & AFX_GREATER ? "* " : a->flags & AFX_TEMPERED ? "T " : "",
-                 buf, a->mwcrit ? (a->mwcrit > 1 ? " ++" : " +") : "", a->flags & AFX_ENCHANT ? " (E)" : "");
+        affix_range_text(range, sizeof range, it, i);
+        snprintf(line, sizeof line, "%s%s%s%s%s%s", a->flags & AFX_GREATER ? "* " : a->flags & AFX_TEMPERED ? "T " : "",
+                 buf, range[0] ? " " : "", range, a->mwcrit ? (a->mwcrit > 1 ? " ++" : " +") : "",
+                 a->flags & AFX_ENCHANT ? " (E)" : "");
         y = card_wrap(x, y, line, w, c) - 1;
         if (a->flags & AFX_IMPLICIT) {
             gfx_hline(x, y, w, RGB565(60, 50, 50));
@@ -132,7 +134,7 @@ static int card_affixes(const Game *g, const Item *it, int x, int y, int w)
 
 static int card_power(const Game *g, const Item *it, int x, int y, int w)
 {
-    char buf[128];
+    char buf[128], range[32], line[176];
     if (item_is_signature(it)) {                 /* the core of a meta build */
         font_draw(x, y, "BUILD-DEFINING UNIQUE", RGB565(255, 160, 40), 1);
         y += 10;
@@ -140,10 +142,14 @@ static int card_power(const Game *g, const Item *it, int x, int y, int w)
     if (it->rarity == RAR_LEGEND && aspect_def(it->power)) {
         const AspectDef *a = aspect_def(it->power);
         aspect_text(buf, sizeof buf, a, it->power_roll);
-        y = card_wrap(x, y, buf, w, aspect_usable(a, g->p.cls) ? C_LEG : C_DIM);
+        aspect_range_text(range, sizeof range, a, it->power_roll);
+        snprintf(line, sizeof line, "%s%s%s", buf, range[0] ? " " : "", range);
+        y = card_wrap(x, y, line, w, aspect_usable(a, g->p.cls) ? C_LEG : C_DIM);
     } else if (it->rarity >= RAR_UNIQUE && unique_def(it->power)) {
         unique_text(buf, sizeof buf, unique_def(it->power), it->power_roll);
-        y = card_wrap(x, y, buf, w, rarity_color((Rarity)it->rarity));
+        unique_range_text(range, sizeof range, unique_def(it->power), it->power_roll);
+        snprintf(line, sizeof line, "%s%s%s", buf, range[0] ? " " : "", range);
+        y = card_wrap(x, y, line, w, rarity_color((Rarity)it->rarity));
     }
     return y;
 }
