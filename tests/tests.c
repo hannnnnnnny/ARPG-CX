@@ -1027,6 +1027,21 @@ static void test_text_stack(void)
     CHECK(b[0].shown && !b[1].shown);
 }
 
+static void test_stat_compare(void)
+{
+    StatDelta d[STAT_DELTAS];
+    Item same, better;
+    prog_new(&P, 1, CLASS_BARBARIAN);
+    CHECK(P.equip[SLOT_WEAPON].used);
+    same = P.equip[SLOT_WEAPON];
+    CHECK(stats_compare(&P, &same, d, STAT_DELTAS) == 0);     /* the same item changes nothing */
+    better = same;
+    better.main *= 3;                                         /* three times the weapon damage */
+    CHECK(stats_compare(&P, &better, d, STAT_DELTAS) >= 1);
+    CHECK(!strcmp(d[0].label, "DAMAGE") && d[0].relative && d[0].delta > 0.5);
+    CHECK(stats_compare(&P, &better, d, 0) == 0);             /* respects max */
+}
+
 static void test_loot_log(void)
 {
     static World w;
@@ -1153,6 +1168,7 @@ int main(void)
     printf("tiles\n");         test_tiles();
     printf("text stack\n");    test_text_stack();
     printf("loot log\n");      test_loot_log();
+    printf("stat compare\n");  test_stat_compare();
     printf("dungeon\n");       test_dungeon_connectivity();
     test_d4(&g_checks, &g_fail);
     printf("idle sim\n");      test_idle_simulation();

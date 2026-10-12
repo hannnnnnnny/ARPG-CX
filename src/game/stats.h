@@ -41,6 +41,14 @@ double stats_dps(const Stats *st, const Profile *p);
 double stats_damage_reduction(const Stats *st, int floor);   /* armor + DR */
 double stats_resist(const Stats *st, Element e);              /* 0..0.7 */
 double stats_power(const Stats *st, const Profile *p, int floor);
+/* One stat that would change if an item were equipped: an English label
+ * (pass it through T()), the change, and whether it is a relative change
+ * (+0.12 = +12%) or a difference in percentage points. */
+typedef struct { const char *label; double delta; bool relative; } StatDelta;
+#define STAT_DELTAS 8
+/* The key stats 'cand' would change against what it replaces, most
+ * important first, unchanged ones left out; returns how many. */
+int    stats_compare(const Profile *p, const Item *cand, StatDelta *out, int max);
 /* Which slot an item would replace (rings: the weaker ring). */
 int    item_target_slot(const Profile *p, const Item *cand);
 /* Power delta (ratio - 1) if 'cand' replaced the current item. */

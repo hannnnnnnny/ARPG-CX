@@ -82,6 +82,66 @@ static void bag_row(const Game *g, int i, int y)
         font_draw(306, y, "L", C_SEL, 1);
 }
 
+/* ------------------------------------------------- hover comparison */
+
+#define TIP_W 150
+
+/* Bag index under the mouse, or -1. */
+static int hovered_item(const Game *g, int top)
+{
+    int row, idx;
+    if (!g->mouse || g->my < 20 || g->my >= 20 + BAG_ROWS * 11 || g->mx < 4 || g->mx >= 300)
+        return -1;
+    row = (g->my - 20) / 11;
+    idx = top + row;
+    return idx < BAG_SIZE && g->p.bag[idx].used ? idx : -1;
+}
+
+static void tip_line(int x, int *y, const StatDelta *d)
+{
+    char buf[96];
+    double v = d->delta * 100.0;
+    uint16_t c = v > 0 ? C_GOOD : C_BAD;
+    /* relative changes as whole percents, percentage points with a decimal */
+    snprintf(buf, sizeof buf, d->relative ? "%s%.0f%% %s" : "%s%.1f%% %s", v > 0 ? "+" : "", v, T(d->label));
+    font_draw_fit(x, *y, buf, TIP_W - 8, c);
+    *y += 10;
+}
+
+/* A box at the cursor: what this item changes against what it would
+ * replace, stat by stat, and the overall power change. */
+static void hover_tooltip(Game *g, int idx)
+{
+    static StatDelta d[STAT_DELTAS];
+    static int n, cached = -1, cached_t;
+    const Item *it = &g->p.bag[idx];
+    char name[64], buf[64];
+    int i, h, x, y;
+    double r;
+    if (cached != idx || g->tick - cached_t > 15) {     /* a full stats pass: a few times a second */
+        n = stats_compare(&g->p, it, d, STAT_DELTAS);
+        cached = idx;
+        cached_t = g->tick;
+    }
+    h = 34 + MAX(n, 1) * 10;
+    x = MIN(g->mx + 10, SCREEN_W - TIP_W - 2);
+    y = MIN(g->my + 6, FOOTER_Y - h - 2);
+    gfx_fill_rect(x, y, TIP_W, h, C_BG);
+    gfx_rect(x, y, TIP_W, h, rarity_color((Rarity)it->rarity));
+    item_name(name, sizeof name, it);
+    font_draw_fit(x + 4, y + 3, name, TIP_W - 8, rarity_color((Rarity)it->rarity));
+    font_draw(x + 4, y + 13, T(g->p.equip[item_target_slot(&g->p, it)].used ? "VS EQUIPPED" : "SLOT IS EMPTY"),
+              C_DIM, 1);
+    y += 23;
+    for (i = 0; i < n; i++)
+        tip_line(x + 4, &y, &d[i]);
+    if (!n)
+        font_draw(x + 4, (y += 10) - 10, T("NO STAT CHANGES"), C_DIM, 1);
+    r = bag_ratio(g, idx) * 100.0;
+    snprintf(buf, sizeof buf, T("%s%d%% POWER"), r >= 0 ? "+" : "", (int)r);
+    font_draw(x + 4, y + 1, buf, r > 0.5 ? C_GOOD : r < -0.5 ? C_BAD : C_DIM, 1);
+}
+
 void bag_render(Game *g)
 {
     int sel = g->sel[PG_BAG], top = menu_scroll(sel, BAG_SIZE + 1, BAG_ROWS), i, used = 0;
@@ -104,4 +164,6 @@ void bag_render(Game *g)
         menu_item_card(g, it, 6, 112, 300, &g->p.equip[item_target_slot(&g->p, it)]);
     }
     menu_footer(g, "ENTER: EQUIP  DEL: SALVAGE  CTRL: LOCK");
+    if (hovered_item(g, top) >= 0)
+        hover_tooltip(g, hovered_item(g, top));
 }

@@ -216,6 +216,39 @@ int item_target_slot(const Profile *p, const Item *cand)
     return stats_power(&a, p, f) >= stats_power(&b, p, f) ? SLOT_RING1 : SLOT_RING2;
 }
 
+static double rel_change(double now, double with) { return now > 0 ? with / now - 1.0 : 0.0; }
+
+static double mean_resist(const Stats *st)
+{
+    double s = 0;
+    int e;
+    for (e = 0; e < EL_COUNT; e++)
+        s += stats_resist(st, (Element)e);
+    return s / EL_COUNT;
+}
+
+int stats_compare(const Profile *p, const Item *cand, StatDelta *out, int max)
+{
+    static Stats now, with;            /* large: keep them off the calculator's stack */
+    int f = MAX(p->floor, 1), n = 0, i;
+    StatDelta all[STAT_DELTAS];
+    stats_compute(&now, p);
+    stats_compute_with(&with, p, cand, item_target_slot(p, cand));
+    all[0] = (StatDelta){ "DAMAGE", rel_change(stats_dps(&now, p), stats_dps(&with, p)), true };
+    all[1] = (StatDelta){ "MAXIMUM LIFE", rel_change(now.max_hp, with.max_hp), true };
+    all[2] = (StatDelta){ "DAMAGE REDUCTION",
+                          stats_damage_reduction(&with, f) - stats_damage_reduction(&now, f), false };
+    all[3] = (StatDelta){ "CRITICAL STRIKE CHANCE", with.crit - now.crit, false };
+    all[4] = (StatDelta){ "CRITICAL STRIKE DAMAGE", with.crit_dmg - now.crit_dmg, false };
+    all[5] = (StatDelta){ "ATTACK SPEED", rel_change(now.aps, with.aps), true };
+    all[6] = (StatDelta){ "ALL RESISTANCE", mean_resist(&with) - mean_resist(&now), false };
+    all[7] = (StatDelta){ "MOVEMENT SPEED", with.move_pct - now.move_pct, false };
+    for (i = 0; i < STAT_DELTAS && n < max; i++)
+        if (all[i].delta > 0.004 || all[i].delta < -0.004)   /* below half a percent reads as noise */
+            out[n++] = all[i];
+    return n;
+}
+
 double item_upgrade_ratio(const Profile *p, const Item *cand)
 {
     Stats now, with;

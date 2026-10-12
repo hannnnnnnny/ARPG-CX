@@ -21,3 +21,8 @@ LOOT	战利品	戰利品	戦利品	전리품
 NOTHING YET	暂无	暫無	まだない	아직 없음
 FLOOR EVENT	本层事件	本層事件	階層イベント	층 이벤트
 NONE ON THIS FLOOR	本层没有	本層沒有	この階にはない	이 층에는 없음
+// Desktop: hovering a bag item compares it with what it would replace.
+DAMAGE	伤害	傷害	ダメージ	피해
+VS EQUIPPED	对比已装备	對比已裝備	装備中と比較	착용 장비와 비교
+SLOT IS EMPTY	该部位未装备	該部位未裝備	この部位は空き	이 부위는 비어 있음
+NO STAT CHANGES	属性无变化	屬性無變化	能力の変化なし	능력치 변화 없음
