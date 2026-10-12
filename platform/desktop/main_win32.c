@@ -11,6 +11,7 @@
 #include <windows.h>
 #include <mmsystem.h>
 #include <string.h>
+#include <wchar.h>
 #include "../../src/core/platform.h"
 #include "../../src/input/input.h"
 #include "../../src/game/runner.h"
@@ -26,6 +27,8 @@ static uint32_t  g_rgb[FB_W * FB_H];
 static bool      g_quit;
 static LARGE_INTEGER g_freq, g_t0;
 static char      g_save_path[MAX_PATH];
+
+static int window_zoom(void);
 
 static LRESULT CALLBACK wnd_proc(HWND h, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -55,8 +58,7 @@ static void pump_messages(void)
 bool plat_init(void)
 {
     WNDCLASSA wc;
-    /* 2x the 640x480 buffer when the screen has room, else 1x. */
-    int zoom = GetSystemMetrics(SM_CYSCREEN) >= FB_H * 2 + 120 ? 2 : 1;
+    int zoom = window_zoom();
     RECT r = { 0, 0, FB_W * zoom, FB_H * zoom };
     DWORD style = WS_OVERLAPPEDWINDOW;
     memset(&wc, 0, sizeof wc);
@@ -218,21 +220,37 @@ const char *plat_name(void) { return "WINDOWS DESKTOP SIMULATOR"; }
 
 const char *const *plat_control_lines(void) { return NULL; }
 
+/* Saves live next to the exe. The core opens files with narrow fopen, which
+ * mangles folder names outside the ANSI code page (e.g. a Chinese folder on
+ * an English Windows), so move into the exe's folder with the wide API and
+ * hand the core a plain relative file name. */
 static void init_save_path(void)
 {
-    char *slash;
-    DWORD n = GetModuleFileNameA(NULL, g_save_path, MAX_PATH);
-    if (n == 0 || n >= MAX_PATH - 20 || !(slash = strrchr(g_save_path, '\\'))) {
-        strcpy(g_save_path, "AshenDepths.sav");
+    wchar_t dir[MAX_PATH];
+    wchar_t *slash;
+    DWORD n = GetModuleFileNameW(NULL, dir, MAX_PATH);
+    strcpy(g_save_path, "AshenDepths.sav");
+    if (n == 0 || n >= MAX_PATH || !(slash = wcsrchr(dir, L'\\')))
         return;
-    }
-    strcpy(slash + 1, "AshenDepths.sav");
+    *slash = 0;
+    SetCurrentDirectoryW(dir);
+}
+
+/* Largest integer zoom whose window still fits the screen with its frame. */
+static int window_zoom(void)
+{
+    int zw = (GetSystemMetrics(SM_CXSCREEN) - 40) / FB_W;
+    int zh = (GetSystemMetrics(SM_CYSCREEN) - 120) / FB_H;
+    return MAX(1, MIN(zw, zh));
 }
 
 int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show)
 {
     int rc;
     (void)inst; (void)prev; (void)cmd; (void)show;
+    /* Without this, Windows bitmap-stretches the window at 125%/150% display
+     * scaling and the pixel art turns blurry. */
+    SetProcessDPIAware();
     init_save_path();
     if (!plat_init()) {
         MessageBoxA(NULL, "Could not create the game window.", "Ashen Depths", MB_ICONERROR);

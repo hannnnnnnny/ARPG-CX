@@ -335,9 +335,18 @@ SaveStatus save_deserialize(Profile *p, const uint8_t *buf, size_t len)
 SaveStatus save_load(Profile *p, const char *path)
 {
     static uint8_t buf[SAVE_MAX_BYTES + 1];
+    char tmp[300];
     size_t n;
     FILE *f;
-    if (!path || !(f = fopen(path, "rb")))
+    if (!path)
+        return SAVE_MISSING;
+    /* save_write removes the old file before renaming the new one in place;
+     * a crash in between leaves only "<path>.tmp", which is complete. */
+    if (!(f = fopen(path, "rb")) && strlen(path) + 5 <= sizeof tmp) {
+        snprintf(tmp, sizeof tmp, "%s.tmp", path);
+        f = fopen(tmp, "rb");
+    }
+    if (!f)
         return SAVE_MISSING;
     n = fread(buf, 1, sizeof buf, f);
     fclose(f);

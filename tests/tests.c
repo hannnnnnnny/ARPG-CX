@@ -469,6 +469,11 @@ static void test_save(void)
     CHECK(save_deserialize(&Q, buf, n - 1) == SAVE_CORRUPT);
     CHECK(save_write(&P, "build/test.sav") == SAVE_OK);
     CHECK(save_load(&Q, "build/test.sav") == SAVE_OK && Q.gold == P.gold);
+    /* crash between remove and rename: only the finished .tmp is left */
+    CHECK(rename("build/test.sav", "build/test.sav.tmp") == 0);
+    CHECK(save_load(&Q, "build/test.sav") == SAVE_OK && Q.gold == P.gold);
+    CHECK(save_write(&P, "build/test.sav") == SAVE_OK);
+    remove("build/test.sav.tmp");
     remove("build/test.sav");
     CHECK(save_load(&Q, "build/does_not_exist.sav") == SAVE_MISSING);
 }
