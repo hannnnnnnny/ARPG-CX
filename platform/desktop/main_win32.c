@@ -65,6 +65,7 @@ bool plat_init(void)
     wc.lpfnWndProc = wnd_proc;
     wc.hInstance = GetModuleHandleA(NULL);
     wc.hCursor = LoadCursor(NULL, IDC_ARROW);
+    wc.hIcon = LoadIconA(wc.hInstance, MAKEINTRESOURCEA(1));   /* app.rc; NULL falls back to the default */
     wc.lpszClassName = "AshenDepthsSim";
     if (!RegisterClassA(&wc))
         return false;

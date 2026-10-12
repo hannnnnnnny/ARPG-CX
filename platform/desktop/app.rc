@@ -1,0 +1,31 @@
+// app.rc - icon, version details and manifest for AshenDepthsDesktop.exe.
+// The icon comes from tools/media/make_icon.py.
+#include "../../src/core/version.h"
+
+1 ICON "app.ico"
+
+1 VERSIONINFO
+FILEVERSION GAME_VERSION_MAJOR, GAME_VERSION_MINOR, GAME_VERSION_PATCH, 0
+PRODUCTVERSION GAME_VERSION_MAJOR, GAME_VERSION_MINOR, GAME_VERSION_PATCH, 0
+FILEOS 0x40004
+FILETYPE 0x1
+BEGIN
+    BLOCK "StringFileInfo"
+    BEGIN
+        BLOCK "040904B0"
+        BEGIN
+            VALUE "CompanyName", "Yi Han"
+            VALUE "FileDescription", "Ashen Depths"
+            VALUE "FileVersion", GAME_VERSION_STR
+            VALUE "InternalName", "AshenDepthsDesktop"
+            VALUE "LegalCopyright", "Copyright (c) 2026 Yi Han. MIT License."
+            VALUE "OriginalFilename", "AshenDepthsDesktop.exe"
+            VALUE "ProductName", "Ashen Depths"
+            VALUE "ProductVersion", GAME_VERSION_STR
+        END
+    END
+    BLOCK "VarFileInfo"
+    BEGIN
+        VALUE "Translation", 0x409, 1200
+    END
+END

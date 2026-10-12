@@ -27,7 +27,16 @@ echo "[host] unit tests"
 $CC $CFLAGS -o build/tests$EXE $CORE $(ls tests/*.c | sort) -lm
 if [ -n "$EXE" ]; then
     echo "[host] windows simulator"
-    $CC $CFLAGS -DGFX_HD -o build/AshenDepthsDesktop.exe $CORE src/game/runner.c platform/desktop/main_win32.c platform/desktop/audio_win32.c \
+    DESKTOP=$(ls platform/desktop/*.c | sort)
+    # Icon and version details: zig cc compiles .rc itself; MinGW gcc needs windres.
+    RES=""
+    case "$CC" in
+        *ziglang*) RES=platform/desktop/app.rc;;
+        *) if command -v windres >/dev/null 2>&1; then
+               windres platform/desktop/app.rc -O coff -o build/app_res.o && RES=build/app_res.o
+           else echo "[host] windres not found: building without the icon"; fi;;
+    esac
+    $CC $CFLAGS -DGFX_HD -o build/AshenDepthsDesktop.exe $CORE src/game/runner.c $DESKTOP $RES \
         -lgdi32 -luser32 -lwinmm -Wl,--subsystem,windows
 fi
 echo "[host] done"
