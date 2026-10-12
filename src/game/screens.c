@@ -8,6 +8,7 @@
 #include "balance.h"
 #include "build.h"
 #include "paragon.h"
+#include "items.h"
 #include "../gfx/font.h"
 #include "../gfx/sprites.h"
 #include "../core/bignum.h"
@@ -362,29 +363,51 @@ void slots_render(Game *g)
 
 /* ------------------------------------------------------------- offline */
 
+/* One best find: icon, name in its rarity colour, and what it did for the hero. */
+static void offline_find(const OfflineReport *r, int i, int y)
+{
+    char buf[48], name[64];
+    const Item *it = &r->best[i];
+    gfx_blit(spr_icon(it->slot, it->rarity), 58, y, 0);
+    item_name(name, sizeof name, it);
+    font_draw_fit(72, y, name, 150, rarity_color((Rarity)it->rarity));
+    if (r->best_worn[i])
+        snprintf(buf, sizeof buf, "%s", T("WORN NOW"));
+    else
+        snprintf(buf, sizeof buf, T("%s%d%% POWER"), r->best_gain[i] >= 0 ? "+" : "", (int)(r->best_gain[i] * 100.0));
+    font_draw(262 - font_text_width(buf, 1), y, buf, r->best_worn[i] || r->best_gain[i] > 0.005 ? C_GOOD : C_DIM, 1);
+}
+
 void offline_render(Game *g)
 {
     char buf[128], n[16];
     const OfflineReport *r = &g->off;
     uint32_t h = r->seconds / 3600, m = (r->seconds / 60) % 60;
+    int i;
     title_backdrop(g->tick);
-    font_draw_centered(30, "WHILE YOU WERE AWAY", C_SEL, C_SHADE, 2);
+    font_draw_centered(24, "WHILE YOU WERE AWAY", C_SEL, C_SHADE, 2);
     snprintf(buf, sizeof buf, T("YOUR HERO FOUGHT FOR %uH %02uM"), (unsigned)h, (unsigned)m);
-    font_draw_centered(62, buf, C_TEXT, C_SHADE, 1);
+    font_draw_centered(52, buf, C_TEXT, C_SHADE, 1);
     if (r->raw_seconds > r->seconds)
-        font_draw_centered(74, "(OFFLINE TIME IS CAPPED - SEE EMBERS: PATIENCE)", C_DIM, C_SHADE, 1);
+        font_draw_centered(63, "(OFFLINE TIME IS CAPPED - SEE EMBERS: PATIENCE)", C_DIM, C_SHADE, 1);
     fmt_num(n, sizeof n, r->kills);
     snprintf(buf, sizeof buf, T("MONSTERS SLAIN   %s"), n);
-    font_draw(70, 96, buf, C_TEXT, 1);
+    font_draw(58, 74, buf, C_TEXT, 1);
     fmt_num(n, sizeof n, r->gold);
     snprintf(buf, sizeof buf, T("GOLD             %s"), n);
-    font_draw(70, 110, buf, RGB565(250, 212, 80), 1);
+    font_draw(58, 85, buf, RGB565(250, 212, 80), 1);
     fmt_num(n, sizeof n, r->xp);
     snprintf(buf, sizeof buf, T("EXPERIENCE       %s"), n);
-    font_draw(70, 124, buf, RGB565(190, 150, 255), 1);
+    font_draw(58, 96, buf, RGB565(190, 150, 255), 1);
     snprintf(buf, sizeof buf, T("LEVELS GAINED    %d"), r->levels);
-    font_draw(70, 138, buf, C_TEXT, 1);
+    font_draw(58, 107, buf, C_TEXT, 1);
     snprintf(buf, sizeof buf, T("ITEMS KEPT       %d  (SALVAGED %d)"), r->items_kept, r->items_salvaged);
-    font_draw(70, 152, buf, C_TEXT, 1);
-    font_draw_centered(176, "PRESS ENTER", (g->tick >> 4) & 1 ? C_SEL : C_DIM, C_SHADE, 1);
+    font_draw(58, 118, buf, C_TEXT, 1);
+    gfx_hline(58, 132, 204, RGB565(90, 60, 40));
+    font_draw(58, 137, "BEST FINDS", C_SEL, 1);
+    if (r->nbest == 0)
+        font_draw(58, 150, "NOTHING WORTH KEEPING THIS TIME", C_DIM, 1);
+    for (i = 0; i < r->nbest; i++)
+        offline_find(r, i, 150 + i * 12);
+    font_draw_centered(212, "PRESS ENTER", (g->tick >> 4) & 1 ? C_SEL : C_DIM, C_SHADE, 1);
 }

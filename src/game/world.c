@@ -1,4 +1,5 @@
 #include "world_int.h"
+#include "doors.h"
 #include "balance.h"
 #include "progress.h"
 #include "skills.h"
@@ -44,6 +45,8 @@ void spawn_monster(World *w, int type, int cx, int cy, bool elite, bool boss)
     m->dmg = 5.0 * s * (boss ? 2.64 : mon_defs[type].dmg * (elite ? 1.6 : 1.0));
     if (elite)
         champion_roll(w, m);
+    if (w->door.curse)
+        door_on_spawn(w, m);
     m->anim = (int16_t)rng_range(&w->rng, 0, 63);
     m->atk_cd = (int16_t)rng_range(&w->rng, 0, mon_defs[type].atk_ticks);
     m->slam_cd = 90;

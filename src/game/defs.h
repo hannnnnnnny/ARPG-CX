@@ -119,6 +119,7 @@ typedef struct {
 } Item;
 
 #define BAG_SIZE 36
+#define UNIQUE_BITS 256      /* unique ids are a byte (Item.power) */
 
 /* ------------------------------------------------------------ skills */
 
@@ -230,6 +231,8 @@ typedef struct {
     uint8_t  auto_battle;              /* the hero fights on its own when not steered */
     uint8_t  sound_vol;                /* 0..SOUND_VOLUMES-1 (sound.h) */
     uint8_t  music_vol;                /* 0..SOUND_VOLUMES-1, desktop music */
+    uint8_t  door_pref;                /* DoorPref: which door the hero takes on its own */
+    uint8_t  found_unique[UNIQUE_BITS / 8];   /* every unique / mythic ever found (the codex) */
     /* idle bookkeeping */
     uint32_t save_time;                /* unix seconds of last save */
     double   kpm;                      /* recent kills per minute (for offline gains) */

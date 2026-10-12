@@ -59,13 +59,26 @@ bool   prog_can_rebirth(const Profile *p);
 double prog_rebirth(Profile *p, int new_cls);       /* returns embers gained */
 bool   prog_buy_upgrade(Profile *p, UpgradeId id);
 
+#define OFFLINE_BEST 3
+
 typedef struct {
     uint32_t seconds;     /* credited (after cap) */
     uint32_t raw_seconds; /* actually elapsed */
     double kills, gold, xp;
     int levels;
     int items_kept, items_salvaged;
+    /* The best finds while away, rarest first: what the hero brings back. */
+    Item best[OFFLINE_BEST];
+    double best_gain[OFFLINE_BEST];    /* power change when found (upgrade ratio) */
+    bool best_worn[OFFLINE_BEST];      /* auto equip put it on */
+    int nbest;
 } OfflineReport;
+
+/* The codex of uniques and mythics found: true the first time one is found. */
+bool prog_mark_found(Profile *p, int unique);
+bool prog_found(const Profile *p, int unique);
+int  prog_found_count(const Profile *p);
+void prog_found_worn_uniques(Profile *p);   /* saves from before the codex */
 
 /* Credit time away since p->save_time. Returns false if nothing credited. */
 bool prog_offline(Profile *p, uint32_t now, OfflineReport *rep);

@@ -178,6 +178,9 @@ typedef struct {
     bool potion;
 } HeroCommand;
 
+/* The door the hero came through (doors.h): a curse and a reward on this floor; 0 = none. */
+typedef struct { uint8_t curse, reward; } Door;
+
 /* Manual control state, kept while the player steers. */
 typedef struct {
     int manual_t;         /* ticks of manual control left (auto battle resumes at 0) */
@@ -300,6 +303,7 @@ typedef struct {
     int16_t hook_t, hook_cd;   /* his chain: wind-up left, then cooldown */
     HeroCommand cmd;
     ControlRT ctl;
+    Door door;
     /* Carried across floors: the shrine blessing, the remarks, recent loot. */
     LootLog loot;
     uint8_t shrine;            /* ShrineKind of the active blessing */

@@ -4,6 +4,7 @@
 #include "build.h"
 #include "paragon.h"
 #include "skills.h"
+#include "mythic.h"
 #include "../core/platform.h"
 #include "../i18n/i18n.h"
 #include "../gfx/font.h"
@@ -161,6 +162,22 @@ static void toggle_auto(Game *g)
     game_sfx(g, SND_UI_OK);
 }
 
+/* Doors between floors: arrows or the pointer pick, OK or a click goes in. */
+static void door_input(Game *g, Input *in)
+{
+    int at = in->mouse ? door_card_at(in->mx, in->my) : -1;
+    if (at >= 0)
+        g->s.door_sel = at;
+    if (in_left(in) || in_right(in)) {
+        g->s.door_sel = (g->s.door_sel + (in_left(in) ? DOORS - 1 : 1)) % DOORS;
+        game_sfx(g, SND_UI_MOVE);
+    } else if (in_ok(in) || (in_click(in) && at >= 0)) {
+        session_take_door(&g->s, &g->p, g->s.door_sel);
+        game_sfx(g, SND_UI_OK);
+        input_block_held(in);
+    }
+}
+
 static void battle_tick(Game *g, Input *in, uint32_t now)
 {
     /* Hit stop: the world holds still for a frame or two after a heavy
@@ -168,7 +185,8 @@ static void battle_tick(Game *g, Input *in, uint32_t now)
      * gains tick the session directly. */
     if (g->hitstop_cool > 0) {
         g->hitstop_cool--;
-        g->s.w.sig.hitstop = 0;                      /* at most one freeze every 12 frames */
+        if (g->s.w.sig.hitstop < MYTHIC_HITSTOP)     /* at most one freeze every 12 frames, but a */
+            g->s.w.sig.hitstop = 0;                  /* mythic drop always gets its moment */
     }
     if (g->s.w.sig.hitstop > 0) {
         if (--g->s.w.sig.hitstop == 0)
@@ -179,12 +197,17 @@ static void battle_tick(Game *g, Input *in, uint32_t now)
         session_tick(&g->s, &g->p);
     }
     game_world_sounds(g);
+    g->s.w.snd = 0;                                  /* played once, even while a hit stop holds the world */
     subtitle_tick(g);
     if (++g->autosave_t >= AUTOSAVE_TICKS)
         game_save(g, now);
     battle_story(g, in);
     if (g->state != GS_BATTLE)
         return;
+    if (g->s.door_t > 0) {
+        door_input(g, in);
+        return;
+    }
     if (in_pressed(in, BTN_AUTO)) {
         toggle_auto(g);
     } else if (in_tab(in) || in_ok(in)) {
@@ -291,6 +314,8 @@ void game_render(Game *g)
         render_hud(&g->s.w, &g->p);
         subtitle_render(g);
         game_control_render(g);
+        if (g->s.door_t > 0)
+            render_doors(&g->s, &g->p);
         break;
     case GS_MENU:         menu_render(g); break;
     }

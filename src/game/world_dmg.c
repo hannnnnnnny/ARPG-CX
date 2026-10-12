@@ -3,6 +3,7 @@
  * effects, lucky hits, damage numbers and kill rewards.
  */
 #include "world_int.h"
+#include "doors.h"
 #include "mythic.h"
 #include "story.h"
 #include "balance.h"
@@ -387,18 +388,26 @@ static void announce_drop(World *w, Profile *p, const Item *it)
         world_goal(w, p, GE_ANCESTRAL, 0);
     if (it->rarity == RAR_MYTHIC)
         world_goal(w, p, GE_MYTHIC, 0);
-    world_sound(w, it->rarity >= RAR_UNIQUE ? SND_DROP_UNIQUE : it->rarity == RAR_LEGEND ? SND_DROP_LEGEND
-                 : it->rarity == RAR_RARE ? SND_DROP_RARE : SND_DROP);
+    world_sound(w, it->rarity == RAR_MYTHIC ? SND_DROP_MYTHIC : it->rarity == RAR_UNIQUE ? SND_DROP_UNIQUE
+                 : it->rarity == RAR_LEGEND ? SND_DROP_LEGEND : it->rarity == RAR_RARE ? SND_DROP_RARE : SND_DROP);
     if (it->rarity < RAR_UNIQUE && !it->ancestral)
         return;
     tjoin(buf, sizeof buf - 2, it->ancestral && it->rarity != RAR_MYTHIC ? "ANCESTRAL" : "",
           rarity_name((Rarity)it->rarity));
     strcat(buf, "!");
     world_banner(w, buf, rarity_color((Rarity)it->rarity));
-    if (it->rarity == RAR_MYTHIC) {                   /* the screen itself reacts */
+    if (it->rarity >= RAR_UNIQUE && prog_mark_found(p, it->power))
+        world_message(w, "NEW DISCOVERY! FIRST TIME FOUND", RGB565(255, 200, 90));
+    if (item_all_greater(it) && it->rarity < RAR_MYTHIC)   /* the affix chase: every affix greater */
+        world_message(w, "EVERY AFFIX IS GREATER!", RGB565(255, 160, 40));
+    if (it->rarity == RAR_MYTHIC) {                   /* the screen itself reacts, and holds its breath */
+        char name[64];
         sig_shake(w, 16, 4);
-        w->sig.flash_t = 4;
+        w->sig.flash_t = 8;
         w->sig.flash_color = rarity_color(RAR_MYTHIC);
+        w->sig.hitstop = MYTHIC_HITSTOP;
+        item_name(name, sizeof name, it);
+        floater_kind(w, FX_TO_INT(w->h.x), FX_TO_INT(w->h.y) - 30, name, rarity_color(RAR_MYTHIC), FL_MEGA);
     }
     bark(&w->bark, it->rarity == RAR_MYTHIC ? BK_MYTHIC : it->rarity == RAR_UNIQUE ? BK_UNIQUE : BK_ANCESTRAL,
          (uint32_t)w->tick);
@@ -418,6 +427,7 @@ Drop *world_drop_item(World *w, Profile *p, fx x, fx y, Rarity min, int luck)
                 d->x = x;                         /* never scatter loot into a wall */
                 d->y = y;
             }
+            luck += w->door.reward == DR_LOOT ? DOOR_LOOT_LUCK : 0;
             item_roll(&d->item, &w->rng, w->floor, p->up[UP_FORTUNE] + luck + torment_tier(w->floor), min, p->cls);
             announce_drop(w, p, &d->item);
             return d;
@@ -452,8 +462,9 @@ Drop *world_drop_unique(World *w, Profile *p, fx x, fx y, int unique)
 
 static void drop_item(World *w, Profile *p, const Monster *m)
 {
-    int chance = m->boss ? 100 : m->elite ? 40 : 7;
-    Rarity min = m->boss ? RAR_RARE : m->elite ? RAR_MAGIC : RAR_COMMON;
+    bool champions = m->elite && w->door.reward == DR_ELITE_LEGEND;
+    int chance = m->boss || champions ? 100 : m->elite ? 40 : 7;
+    Rarity min = champions ? RAR_LEGEND : m->boss ? RAR_RARE : m->elite ? RAR_MAGIC : RAR_COMMON;
     int count = m->boss ? 3 : 1, k;
     for (k = 0; k < count; k++) {
         if (rng_range(&w->rng, 0, 99) >= chance)
@@ -539,7 +550,8 @@ static void kill_goals(World *w, Profile *p, const Monster *m)
 void kill_rewards(World *w, Profile *p, Monster *m)
 {
     double mult = m->boss || m->special == MS_BUTCHER ? 25.0 : m->elite ? 3.0 : 1.0;
-    double gold = world_shrine(w, SH_GREED) ? 3.0 : 1.0, xp = world_shrine(w, SH_WISDOM) ? 3.0 : 1.0;
+    double gold = (world_shrine(w, SH_GREED) ? 3.0 : 1.0) * (w->door.reward == DR_GOLD ? 3.0 : 1.0);
+    double xp = (world_shrine(w, SH_WISDOM) ? 3.0 : 1.0) * (w->door.reward == DR_XP ? 2.0 : 1.0);
     int levels;
     m->alive = 0;
     w->kills++;
@@ -556,8 +568,10 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     p->souls += m->boss ? 5 : m->elite ? 1 : 0;   /* forgotten souls for the blacksmith */
     drop_item(w, p, m);
     drop_gem(w, p, m);
-    if (rng_range(&w->rng, 0, 99) < (m->boss ? 100 : m->elite ? 30 : 4))
+    if (w->door.curse != DC_NO_ORBS && rng_range(&w->rng, 0, 99) < (m->boss ? 100 : m->elite ? 30 : 4))
         orb_drop(w, m->x, m->y);
+    if (m->elite && w->door.reward == DR_MYTHIC)
+        mythic_try_drop(w, p, m->x, m->y, MYTHIC_ODDS_DOOR);
     kill_buffs(w, p, m);
     if (levels > 0)
         level_up_message(w, p, levels);

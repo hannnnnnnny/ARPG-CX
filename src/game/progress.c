@@ -690,6 +690,8 @@ double prog_rebirth(Profile *p, int new_cls)
     p->auto_battle = keep.auto_battle;
     p->sound_vol = keep.sound_vol;
     p->music_vol = keep.music_vol;
+    p->door_pref = keep.door_pref;
+    memcpy(p->found_unique, keep.found_unique, sizeof p->found_unique);
     p->low_power = keep.low_power;
     p->total_kills = keep.total_kills;
     p->play_seconds = keep.play_seconds;
@@ -714,6 +716,61 @@ uint32_t prog_offline_cap_seconds(const Profile *p)
     return (uint32_t)(OFFLINE_BASE_HOURS + OFFLINE_PATIENCE_HOURS * p->up[UP_PATIENCE]) * 3600u;
 }
 
+bool prog_found(const Profile *p, int unique)
+{
+    return unique > 0 && unique < UNIQUE_BITS && (p->found_unique[unique >> 3] >> (unique & 7)) & 1u;
+}
+
+bool prog_mark_found(Profile *p, int unique)
+{
+    if (unique <= 0 || unique >= UNIQUE_BITS || prog_found(p, unique))
+        return false;
+    p->found_unique[unique >> 3] |= (uint8_t)(1u << (unique & 7));
+    return true;
+}
+
+int prog_found_count(const Profile *p)
+{
+    int i, n = 0;
+    for (i = 1; i < UNIQUE_BITS; i++)
+        n += prog_found(p, i);
+    return n;
+}
+
+void prog_found_worn_uniques(Profile *p)
+{
+    int i;
+    for (i = 0; i < SLOT_COUNT; i++)
+        if (p->equip[i].used && p->equip[i].rarity >= RAR_UNIQUE)
+            prog_mark_found(p, p->equip[i].power);
+    for (i = 0; i < BAG_SIZE; i++)
+        if (p->bag[i].used && p->bag[i].rarity >= RAR_UNIQUE)
+            prog_mark_found(p, p->bag[i].power);
+}
+
+/* Rarity first (an ancestral counts as half a tier up), then the power it adds. */
+static double find_score(const Item *it, double gain)
+{
+    return (it->rarity * 2 + it->ancestral) * 1000.0 + CLAMP(gain, -1.0, 1.0);
+}
+
+static void keep_best(OfflineReport *rep, const Item *it, double gain, bool worn)
+{
+    int i;
+    double score = find_score(it, gain);
+    if (rep->nbest == OFFLINE_BEST && score <= find_score(&rep->best[OFFLINE_BEST - 1], rep->best_gain[OFFLINE_BEST - 1]))
+        return;
+    i = rep->nbest < OFFLINE_BEST ? rep->nbest++ : OFFLINE_BEST - 1;   /* append, or replace the weakest */
+    for (; i > 0 && score > find_score(&rep->best[i - 1], rep->best_gain[i - 1]); i--) {
+        rep->best[i] = rep->best[i - 1];
+        rep->best_gain[i] = rep->best_gain[i - 1];
+        rep->best_worn[i] = rep->best_worn[i - 1];
+    }
+    rep->best[i] = *it;
+    rep->best_gain[i] = gain;
+    rep->best_worn[i] = worn;
+}
+
 static void offline_loot(Profile *p, OfflineReport *rep, int n)
 {
     Rng r;
@@ -722,11 +779,17 @@ static void offline_loot(Profile *p, OfflineReport *rep, int n)
     for (i = 0; i < n; i++) {
         Item it;
         double g;
+        double gain;
+        LootResult res;
         item_roll(&it, &r, p->floor, p->up[UP_FORTUNE], RAR_COMMON, p->cls);
-        if (prog_handle_loot(p, &it, &g) == LOOT_EQUIPPED || g == 0)
+        gain = item_upgrade_ratio(p, &it);
+        res = prog_handle_loot(p, &it, &g);
+        if (res == LOOT_EQUIPPED || g == 0)
             rep->items_kept++;
         else
             rep->items_salvaged++;
+        if (it.rarity >= RAR_RARE)
+            keep_best(rep, &it, gain, res == LOOT_EQUIPPED);
     }
     for (i = 0; i < 20 && prog_auto_craft(p, &r) > 0; i++)
         ;

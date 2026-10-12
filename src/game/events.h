@@ -20,6 +20,8 @@
 #define SHRINE_TICKS (40 * TICK_HZ)
 
 void events_init(World *w, const Profile *p);
+/* The floor's event becomes a treasure goblin (the thief's door). */
+void events_force_goblin(World *w);
 void events_tick(World *w, Profile *p);
 void events_on_kill(World *w, Profile *p, Monster *m);
 /* The floor's object (shrine, chest, adventurer) is waiting to be touched. */

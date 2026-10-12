@@ -46,6 +46,8 @@ bool item_affix_range(const Item *it, int i, double *lo, double *hi);
 double item_affix_quality(const Item *it, int i);        /* 0..1 within the range, -1 if none */
 #define AFFIX_MAX_QUALITY 0.97                           /* shown as a max roll */
 bool affix_is_max(const Item *it, int i);
+/* Three or more rolled affixes and every one of them greater: the ancestral jackpot. */
+bool item_all_greater(const Item *it);
 void affix_range_text(char *out, size_t cap, const Item *it, int i);  /* "[2.0-5.0]", "[MAX]" or "" */
 /* All modifiers an equipped item grants (affixes, aspect / unique, gems). */
 int  item_mods(const Item *it, int cls, Mod *out, int cap);

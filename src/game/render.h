@@ -3,6 +3,7 @@
 #define AD_RENDER_H
 
 #include "world.h"
+#include "session.h"
 
 void render_world(const World *w, const Profile *p);
 /* Top-left world pixel of the last drawn battle view (mouse to world). */
@@ -14,5 +15,8 @@ void render_hud(const World *w, const Profile *p);
  * buffer: left in logical columns 0..79, right in 80..159. NULL world or
  * profile draws empty frames (title screen, menus without a run). */
 void render_side(const World *w, const Profile *p);
+/* The door choice over the held battle view (render_door.c). */
+void render_doors(const Session *s, const Profile *p);
+int  door_card_at(int mx, int my);          /* card under a logical pixel, -1 none */
 
 #endif

@@ -97,6 +97,12 @@ static void spawn_goblin(World *w)
     w->ev.kind = EV_GOBLIN;
 }
 
+void events_force_goblin(World *w)
+{
+    memset(&w->ev, 0, sizeof w->ev);
+    spawn_goblin(w);
+}
+
 /* Every ordinary floor rolls one event (weights out of 100). */
 static int pick_event(World *w, const Profile *p)
 {

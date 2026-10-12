@@ -48,6 +48,14 @@ static int nearest_monster(const World *w)
     return best;
 }
 
+/* Rare loot lies in its light a while before the hero takes it: the moment
+ * is the reward. */
+static int drop_land_ticks(const Item *it)
+{
+    return it->rarity == RAR_MYTHIC ? 3 * TICK_HZ : it->rarity == RAR_UNIQUE ? TICK_HZ * 3 / 2
+         : it->ancestral ? TICK_HZ : TICK_HZ / 2;
+}
+
 static int nearest_drop(const World *w)
 {
     int i, best = -1, bd = FAR;
@@ -273,6 +281,9 @@ void hero_act_on_target(World *w, Profile *p)
             return;
         }
     } else if (w->h.target_kind == TGT_DROP && (d <= PICKUP_RANGE || w->dr[w->h.target_idx].t > DROP_MAGNET)) {
+        const Drop *dr = &w->dr[w->h.target_idx];
+        if (dr->t <= drop_land_ticks(&dr->item))
+            return;                                /* stands in the light until it has landed */
         hero_pick_up(w, p, w->h.target_idx);
         w->h.target_kind = TGT_NONE;
         return;

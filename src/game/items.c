@@ -231,10 +231,11 @@ static bool add_affix(Item *it, Rng *r, double mult, int cls)
 
 static Rarity roll_rarity(Rng *r, int ilvl, int luck, Rarity min_rarity)
 {
-    /* Per 1000000: mythic 4 (torment), unique 3000, legendary 25000, rare 120000, magic 300000. */
+    /* Per 1000000: mythic 2 (torment), unique 3000, legendary 25000, rare 120000, magic 300000.
+     * With guardians and the Fleshrender a mythic comes about once per 30 hours of play. */
     int roll = (int)(rng_next(r) % 1000000u);
     double boost = 1.0 + 0.10 * luck;
-    int my = ilvl > 50 ? (int)(4 * boost) : 0, un = ilvl >= 5 ? (int)(3000 * boost) : 0;
+    int my = ilvl > 50 ? (int)(2 * boost) : 0, un = ilvl >= 5 ? (int)(3000 * boost) : 0;
     int lg = (int)(25000 * boost), ra = (int)(120000 * boost), ma = (int)(300000 * boost);
     Rarity res = roll < my ? RAR_MYTHIC : roll < my + un ? RAR_UNIQUE : roll < my + un + lg ? RAR_LEGEND
                : roll < my + un + lg + ra ? RAR_RARE : roll < my + un + lg + ra + ma ? RAR_MAGIC : RAR_COMMON;
@@ -530,6 +531,19 @@ bool item_affix_range(const Item *it, int i, double *lo, double *hi)
     *lo *= k;
     *hi *= k;
     return *hi > *lo;
+}
+
+bool item_all_greater(const Item *it)
+{
+    int i, n = 0;
+    for (i = 0; i < it->naff; i++) {
+        if (it->aff[i].flags & (AFX_IMPLICIT | AFX_TEMPERED))
+            continue;
+        if (!(it->aff[i].flags & AFX_GREATER))
+            return false;
+        n++;
+    }
+    return n >= 3;
 }
 
 double item_affix_quality(const Item *it, int i)

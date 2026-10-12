@@ -259,20 +259,34 @@ static uint16_t beam_color(const Item *it)
     }
 }
 
-/* A pillar of light over legendary, unique and mythic drops. Ancestral
- * items get a taller beam with a white core and rising sparks. */
+/* Beam height by how rare the drop is: a mythic reaches the top of the view. */
+static int beam_height(const Item *it, int y)
+{
+    if (it->rarity == RAR_MYTHIC)
+        return MAX(y, 8);
+    return it->rarity == RAR_UNIQUE ? 120 : it->ancestral ? 90 : 56;
+}
+
+/* A pillar of light over legendary, unique and mythic drops. Ancestral,
+ * unique and mythic beams get a white core and rising sparks; a mythic's
+ * is wider and pulses. */
 static void draw_beam(const World *w, const Drop *d, int x, int y)
 {
     uint16_t c = beam_color(&d->item);
-    int h = d->item.ancestral ? 90 : 56, k, pulse = (w->tick + d->t) & 31;
-    gfx_blend_rect(x - 2, y - h, 5, h, c);
+    bool mythic = d->item.rarity == RAR_MYTHIC;
+    int h = beam_height(&d->item, y), k, pulse = (w->tick + d->t) & 31, half = mythic ? 3 + (pulse < 16) : 2;
+    gfx_blend_rect(x - half, y - h, half * 2 + 1, h, c);
     gfx_blend_rect(x - 1, y - h - 10, 3, 10, c);
-    if (d->item.ancestral) {
+    if (d->item.ancestral || d->item.rarity >= RAR_UNIQUE) {
+        int sparks = mythic ? 10 : 4;
+        uint16_t sc = mythic ? RGB565(255, 220, 255) : RGB565(255, 90, 60);
         gfx_vline(x, y - h, h, RGB565(255, 245, 230));
-        for (k = 0; k < 4; k++)
-            gfx_pixel(x - 4 + (fx_hash(k, d->t / 8) % 9), y - ((w->tick * 2 + k * 23) % h), RGB565(255, 90, 60));
+        for (k = 0; k < sparks; k++)
+            gfx_pixel(x - 6 + (fx_hash(k, d->t / 8) % 13), y - ((w->tick * 2 + k * 23) % h), sc);
     }
     fx_ellipse(x, y + 2, 6 + pulse / 8, c);
+    if (mythic)
+        fx_ellipse(x, y + 2, 14 + (d->t % 24), c);       /* a ring keeps spreading from it */
 }
 
 static void draw_drop(const World *w, const Drop *d)
@@ -282,7 +296,7 @@ static void draw_drop(const World *w, const Drop *d)
     if (d->item.rarity >= RAR_LEGEND)
         draw_beam(w, d, x, y);
     gfx_blit(spr_icon(d->item.slot, d->item.rarity), x - 4, y - 4 - pop + ((d->t >> 4) & 1), 0);
-    if (d->item.rarity >= RAR_RARE && dist_px(w->h.x, w->h.y, d->x, d->y) < 70) {
+    if (d->item.rarity >= RAR_UNIQUE || (d->item.rarity >= RAR_RARE && dist_px(w->h.x, w->h.y, d->x, d->y) < 70)) {
         char name[64];
         int tw;
         item_name(name, sizeof name, &d->item);

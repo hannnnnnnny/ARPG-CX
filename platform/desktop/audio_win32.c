@@ -42,6 +42,7 @@ static const Recipe recipes[SND_COUNT] = {
     [SND_DROP_RARE]      = { { W_TRI, 880, 1.19f, 180, 0, .25f, 3 }, { W_NOISE, 0, 0, 0, 0, 0, 0 } },
     [SND_DROP_LEGEND]    = { { W_SQUARE, 659, 1.33f, 450, 0, .22f, 4 }, { W_SINE, 1318, 1318, 600, 100, .18f, 0 } },
     [SND_DROP_UNIQUE]    = { { W_SAW, 523, 1.5f, 500, 0, .22f, 3 }, { W_SINE, 1046, 2093, 700, 150, .18f, 0 } },
+    [SND_DROP_MYTHIC]    = { { W_SAW, 98, 49, 1200, 0, .32f, 0 }, { W_SINE, 523, 1.19f, 1800, 300, .20f, 8 } },
     [SND_GOLD]           = { { W_SQUARE, 1568, 2093, 40, 0, .10f, 0 }, { W_SQUARE, 2093, 2637, 40, 40, .08f, 0 } },
     [SND_CAST_PHYS]      = { { W_NOISE, 0, 0, 80, 0, .25f, 0 }, { W_SQUARE, 150, 80, 90, 0, .15f, 0 } },
     [SND_CAST_FIRE]      = { { W_NOISE, 0, 0, 220, 0, .30f, 0 }, { W_SAW, 120, 60, 220, 0, .18f, 0 } },

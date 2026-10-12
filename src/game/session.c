@@ -61,6 +61,7 @@ void session_start(Session *s, Profile *p)
 {
     s->story_pending = -1;
     s->story_count = 0;
+    s->door_t = 0;
     world_init_floor(&s->w, p, p->floor);
     goals_refill(p, &s->w.rng);         /* saves from before v6 have no bounties */
     check_act_intro(s, p);
@@ -86,8 +87,32 @@ static void announce_tier(World *w, const Profile *p)
     world_message(w, "THE DEPTHS GROW DARKER. LOOT GROWS RICHER.", RGB565(255, 150, 90));
 }
 
+void session_take_door(Session *s, Profile *p, int i)
+{
+    const Door *d = &s->doors[CLAMP(i, 0, DOORS - 1)];
+    world_apply_door(&s->w, p, *d);
+    s->door_t = 0;
+    world_banner(&s->w, door_name(d), door_color(d));
+}
+
+/* A player at the controls chooses; an idle hero walks straight through its preferred door. */
+static void offer_doors(Session *s, Profile *p, bool interactive)
+{
+    doors_roll(s->doors, &s->w.rng);
+    s->door_sel = doors_auto_pick(s->doors, p->door_pref);
+    if (interactive)
+        s->door_t = DOOR_WAIT;
+    else
+        session_take_door(s, p, s->door_sel);
+}
+
 void session_tick(Session *s, Profile *p)
 {
+    if (s->door_t > 0) {                   /* the world waits behind the doors */
+        if (--s->door_t == 0)
+            session_take_door(s, p, s->door_sel);
+        return;
+    }
     world_tick(&s->w, p);
     if (p->auto_craft && s->w.tick % (5 * TICK_HZ) == 0 && prog_auto_craft(p, &s->w.rng) > 0)
         world_refresh_stats(&s->w, p);
@@ -97,6 +122,7 @@ void session_tick(Session *s, Profile *p)
     }
     if (s->w.ev_floor_done) {
         int best = p->best_floor, dive;
+        bool interactive = s->w.ctl.manual_t > 0 || !p->auto_battle;
         s->floors_cleared++;
         act_cleared(s, p);
         prog_floor_cleared(p, is_boss_floor(p->floor));
@@ -114,6 +140,8 @@ void session_tick(Session *s, Profile *p)
             announce_tier(&s->w, p);
         if (p->best_floor > best && p->best_floor > MAX(p->best_floor_ever, 10))
             bark(&s->w.bark, BK_RECORD, (uint32_t)s->w.tick + (uint32_t)p->floor);
+        if (!dive && doors_open_on(p->floor))
+            offer_doors(s, p, interactive);
     } else if (s->w.ev_stuck) {
         s->stuck_resets++;
         world_init_floor(&s->w, p, p->floor);

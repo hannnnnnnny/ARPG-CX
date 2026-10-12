@@ -151,6 +151,10 @@ static int card_power(const Game *g, const Item *it, int x, int y, int w)
         snprintf(line, sizeof line, "%s%s%s", buf, range[0] ? " " : "", range);
         y = card_wrap(x, y, line, w, rarity_color((Rarity)it->rarity));
     }
+    if (it->rarity == RAR_MYTHIC) {               /* rarity is part of the item */
+        snprintf(line, sizeof line, T("ONE OF THE RAREST ITEMS IN THE DEPTHS. FOUND ON FLOOR %d."), it->ilvl);
+        y = card_wrap(x, y + 2, line, w, C_DIM);
+    }
     return y;
 }
 

@@ -375,3 +375,35 @@ YOU HAVE FALLEN... RETREATING	你倒下了……撤退中	你倒下了……撤�
 NEW ASPECT IN CODEX	典籍新增威能	典籍新增威能	写本に新しい威能	도감에 새 위상
 LONG	长发	長髮	ロング	긴 머리
 ANC	先祖	先祖	祖先	선조
+EVERY AFFIX IS GREATER!	全部词缀都是精良词缀！	全部詞綴都是精良詞綴！	全特性がグレーター！	모든 속성이 상급!
+ONE OF THE RAREST ITEMS IN THE DEPTHS. FOUND ON FLOOR %d.	深渊中最稀有的装备之一。于第%d层获得。	深淵中最稀有的裝備之一。於第%d層獲得。	深淵で最も希少な装備の一つ。%d階で入手。	심연에서 가장 희귀한 장비 중 하나. %d층에서 획득.
+BEST FINDS	最佳收获	最佳收穫	最高の戦利品	최고의 전리품
+WORN NOW	已穿上	已穿上	装備中	착용 중
+NOTHING WORTH KEEPING THIS TIME	这次没有值得保留的装备	這次沒有值得保留的裝備	今回は残す価値のある装備なし	이번엔 남길 만한 장비가 없음
+NEW DISCOVERY! FIRST TIME FOUND	新发现！首次获得	新發現！首次獲得	新発見！初入手	새로운 발견! 첫 획득
+FLOOR %d - CHOOSE A DOOR	第%d层 - 选择一扇门	第%d層 - 選擇一扇門	%d階 - 扉を選べ	%d층 - 문을 선택
+EACH DOOR CURSES THE FLOOR AND PAYS FOR IT	每扇门都给这一层加一个诅咒，也给一份奖励	每扇門都給這一層加一個詛咒，也給一份獎勵	扉ごとに呪いと報酬がある	문마다 저주와 보상이 있다
+LEFT/RIGHT, ENTER: GO IN   %d	左右选择，ENTER进入   %d	左右選擇，ENTER進入   %d	左右で選択、ENTERで入る   %d	좌우 선택, ENTER 입장   %d
+CURSE	诅咒	詛咒	呪い	저주
+REWARD	奖励	獎勵	報酬	보상
+DOOR OF FORTUNE	财富之门	財富之門	幸運の扉	행운의 문
+DOOR OF GREED	贪婪之门	貪婪之門	強欲の扉	탐욕의 문
+DOOR OF WISDOM	智慧之门	智慧之門	知恵の扉	지혜의 문
+DOOR OF THE THIEF	窃贼之门	竊賊之門	盗賊の扉	도둑의 문
+DOOR OF CHAMPIONS	勇者之门	勇者之門	勇者の扉	용사의 문
+DOOR OF THE ABYSS	深渊之门	深淵之門	深淵の扉	심연의 문
+MONSTERS +50% LIFE	怪物生命+50%	怪物生命+50%	モンスターのライフ+50%	몬스터 생명력 +50%
+MONSTERS +40% DAMAGE	怪物伤害+40%	怪物傷害+40%	モンスターのダメージ+40%	몬스터 피해 +40%
+NO HEALTH ORBS	不掉落生命球	不掉落生命球	回復オーブなし	생명력 구슬 없음
+1 IN 4 MONSTERS IS AN ELITE	四分之一的怪物是精英	四分之一的怪物是精英	4体に1体がエリート	몬스터 4마리 중 1마리가 정예
+BETTER LOOT X2	稀有掉落×2	稀有掉落×2	レア掉落×2	희귀 전리품 ×2
+GOLD X3	金币×3	金幣×3	ゴールド×3	골드 ×3
+EXPERIENCE X2	经验×2	經驗×2	経験値×2	경험치 ×2
+A TREASURE GOBLIN INSIDE	门后有宝藏哥布林	門後有寶藏哥布林	宝物ゴブリンがいる	보물 고블린이 있다
+ELITES DROP LEGENDARIES	精英必掉传奇	精英必掉傳奇	エリートがレジェンダリーを落とす	정예가 전설 장비를 떨어뜨림
+ELITES MAY DROP A MYTHIC (VERY RARE)	精英有极小几率掉落神话	精英有極小機率掉落神話	エリートが稀に神話を落とす	정예가 아주 드물게 신화를 떨어뜨림
+AUTO DOOR CHOICE	自动选门	自動選門	扉の自動選択	문 자동 선택
+SAFEST	最安全	最安全	最も安全	가장 안전
+BEST LOOT	最好的掉落	最好的掉落	最高の戦利品	최고의 전리품
+MOST GOLD	最多金币	最多金幣	最多ゴールド	골드 최대
+MOST EXPERIENCE	最多经验	最多經驗	最多経験値	경험치 최대

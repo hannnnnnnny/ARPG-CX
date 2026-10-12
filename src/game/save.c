@@ -4,6 +4,8 @@
 #include "build.h"
 #include "skills.h"
 #include "goals.h"
+#include "doors.h"
+#include "progress.h"
 #include "../core/sound.h"
 #include "../i18n/i18n.h"
 #include <stdio.h>
@@ -17,7 +19,7 @@
  * and the event counters.
  * v7: glyph progress, 64 lost pages (chapters XI-XV, Torment tiers).
  * v8: auto battle and sound volume (keyboard and mouse play, desktop). */
-#define SAVE_VERSION 9
+#define SAVE_VERSION 10
 
 uint32_t save_crc32(const uint8_t *data, size_t n)
 {
@@ -212,6 +214,8 @@ static void write_body(Writer *w, const Profile *p)
     for (i = 0; i < GLYPH_COUNT; i++) w16(w, p->glyph_xp[i]);
     w32(w, p->save_time); wf(w, p->kpm); wf(w, p->total_kills); wf(w, p->play_seconds); w32(w, p->seed);
     write_goals(w, p);
+    w8(w, p->door_pref);
+    for (i = 0; i < UNIQUE_BITS / 8; i++) w8(w, p->found_unique[i]);
 }
 
 static void read_body(Reader *r, Profile *p)
@@ -243,6 +247,12 @@ static void read_body(Reader *r, Profile *p)
     p->save_time = r32(r); p->kpm = rf(r); p->total_kills = rf(r); p->play_seconds = rf(r); p->seed = r32(r);
     if (r->version >= 6)
         read_goals(r, p);           /* older saves start with empty bounty slots */
+    if (r->version >= 10) {
+        p->door_pref = r8(r);
+        for (i = 0; i < UNIQUE_BITS / 8; i++) p->found_unique[i] = r8(r);
+    } else {
+        prog_found_worn_uniques(p); /* the codex starts with what the hero already has */
+    }
 }
 
 static bool tree_sane(const Profile *p)
@@ -270,7 +280,8 @@ static bool profile_sane(const Profile *p)
         return false;
     if (p->best_floor < p->floor || p->gold < 0 || p->xp < 0 || p->embers < 0 || p->paragon_level < 0)
         return false;
-    if (p->lang >= LANG_COUNT || p->auto_battle > 1 || p->sound_vol >= SOUND_VOLUMES || p->music_vol >= SOUND_VOLUMES)
+    if (p->lang >= LANG_COUNT || p->auto_battle > 1 || p->sound_vol >= SOUND_VOLUMES || p->music_vol >= SOUND_VOLUMES
+        || p->door_pref >= DP_COUNT)
         return false;
     for (i = 0; i < BOUNTY_SLOTS; i++)
         if (!bounty_sane(&p->bounty[i]))

@@ -4,7 +4,7 @@
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
  *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE] [--side]
- *               [--mythic ID,ID...] [--butcher] [--event KIND]
+ *               [--mythic ID,ID...] [--butcher] [--event KIND] [--drop RARITY] [--away HOURS] [--doors]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
@@ -14,7 +14,10 @@
  * lines, so a video can be scored with the game's own effects.
  * --mythic wears the listed mythic powers (mythic.h ids) and --butcher
  * makes the Fleshrender walk in; --event replaces the floor's event with
- * one of events_d4.c (FloorEventKind). All three act after --fast.
+ * one of events_d4.c (FloorEventKind); --drop drops an item of that rarity
+ * (3 legendary, 4 unique, 5 mythic) beside the hero; --away opens on the
+ * offline report for HOURS away; --doors opens a door choice. All act after
+ * --fast.
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
  * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
@@ -31,6 +34,7 @@
 #include "../../src/game/world_int.h"
 #include "../../src/game/items.h"
 #include "../../src/game/mythic.h"
+#include "../../src/game/progress.h"
 #include "../../src/game/events_int.h"
 #include "../../src/i18n/i18n.h"
 #include "png.h"
@@ -166,6 +170,16 @@ static void record_frame(const Record *r, int tick)
     png_write_rgb565(path, g_fb, FB_W, FB_H);
 }
 
+/* --drop: an item of that rarity lands beside the hero (drop moment clips). */
+static void demo_drop(World *w, Profile *p, Rarity r)
+{
+    fx x = w->h.x + FX_FROM_INT(24), y = w->h.y;
+    if (r == RAR_MYTHIC)
+        world_drop_unique(w, p, x, y, mythic_unique(1));
+    else
+        world_drop_item(w, p, x, y, r, 0);
+}
+
 /* --sig: wear the class's build-defining unique (demo clips). */
 static void equip_signature(Profile *p)
 {
@@ -220,7 +234,9 @@ int main(int argc, char **argv)
     int preset = 0, lang = -1;
     const char *save = NULL, *mythics = NULL;
     bool fresh = false, sig = false, butcher = false;
-    int event = 0;
+    int event = 0, drop = -1;
+    double away = 0;
+    bool doors = false;
     uint32_t now = 2000000000u;
     Input in;
 
@@ -234,6 +250,9 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--sig")) sig = true;
         else if (!strcmp(argv[i], "--butcher")) butcher = true;
         else if (!strcmp(argv[i], "--event") && i + 1 < argc) event = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--drop") && i + 1 < argc) drop = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--away") && i + 1 < argc) away = atof(argv[++i]);
+        else if (!strcmp(argv[i], "--doors")) doors = true;
         else if (!strcmp(argv[i], "--mythic") && i + 1 < argc) mythics = argv[++i];
         else if (!strcmp(argv[i], "--class") && i + 1 < argc) cls = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
@@ -275,6 +294,18 @@ int main(int argc, char **argv)
     if (event >= EV_HARVEST && event < EV_COUNT) {  /* this floor's event becomes the one asked for */
         memset(&g_game.s.w.ev, 0, sizeof g_game.s.w.ev);
         events_d4_init(&g_game.s.w, event);
+    }
+    if (drop >= RAR_LEGEND && drop < RAR_COUNT)
+        demo_drop(&g_game.s.w, &g_game.p, (Rarity)drop);
+    if (doors) {                                   /* as if a floor had just been cleared at the controls */
+        doors_roll(g_game.s.doors, &g_game.s.w.rng);
+        g_game.s.door_sel = doors_auto_pick(g_game.s.doors, g_game.p.door_pref);
+        g_game.s.door_t = DOOR_WAIT;
+    }
+    if (away > 0) {                                /* the hero comes back from time away */
+        g_game.p.save_time = 1000000u;
+        if (prog_offline(&g_game.p, 1000000u + (uint32_t)(away * 3600), &g_game.off))
+            g_game.state = GS_OFFLINE;
     }
     input_init(&in);
     for (s = 0; s <= nsteps; s++) {

@@ -16,6 +16,7 @@
 #include "../src/game/progress.h"
 #include "../src/game/save.h"
 #include "../src/game/session.h"
+#include "../src/game/doors.h"
 #include "../src/game/skills.h"
 #include "../src/game/build.h"
 #include "../src/game/story.h"
@@ -182,6 +183,126 @@ static void test_temper_and_masterwork(void)
     CHECK(crits == 3);                                     /* ranks 4, 8 and 12 */
     CHECK(item_affix_value(&it, 1) >= before * 1.6 - 1e-9);
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
+}
+
+/* ---------------------------------------------------------- doors, finds */
+
+static int door_curse_weight(int c) { return c == DC_MON_DMG ? 3 : c == DC_NO_ORBS ? 1 : 2; }
+static int door_reward_weight(int r) { return r == DR_MYTHIC ? 3 : r == DR_GOLD || r == DR_XP ? 1 : 2; }
+
+static void test_door_rolls(void)
+{
+    Rng r;
+    Door d[DOORS];
+    int k, i, mythic = 0;
+    rng_seed(&r, 31);
+    for (k = 0; k < 2000; k++) {
+        doors_roll(d, &r);
+        for (i = 0; i < DOORS; i++) {
+            CHECK(d[i].curse > DC_NONE && d[i].curse < DC_COUNT && d[i].reward > DR_NONE && d[i].reward < DR_COUNT);
+            CHECK(door_curse_weight(d[i].curse) == door_reward_weight(d[i].reward));   /* a fair price */
+            mythic += d[i].reward == DR_MYTHIC;
+        }
+        CHECK(d[0].reward != d[1].reward && d[1].reward != d[2].reward && d[0].reward != d[2].reward);
+    }
+    CHECK(mythic > 0 && mythic < 2000 * DOORS / 5);                /* the abyss door is the rare one */
+    d[0] = (Door){ DC_MON_DMG, DR_MYTHIC };
+    d[1] = (Door){ DC_NO_ORBS, DR_GOLD };
+    d[2] = (Door){ DC_MON_HP, DR_LOOT };
+    CHECK(doors_auto_pick(d, DP_SAFEST) == 1);
+    CHECK(doors_auto_pick(d, DP_LOOT) == 0);
+    CHECK(doors_auto_pick(d, DP_GOLD) == 1);
+    CHECK(doors_auto_pick(d, DP_XP) == 1);                          /* no xp door: the safest */
+    CHECK(!doors_open_on(DOOR_FLOOR - 1) && doors_open_on(DOOR_FLOOR + 1) && !doors_open_on(10));
+}
+
+/* Empties the floor and stands the hero on the stairs, then lets the session take them. */
+static void clear_to_stairs(Session *s, Profile *p)
+{
+    int i, floor = p->floor;
+    for (i = 0; i < s->w.nmon; i++)
+        s->w.mon[i].alive = 0;
+    s->w.kills = s->w.quota;
+    memset(&s->w.ev, 0, sizeof s->w.ev);
+    for (i = 0; i < MAX_DROP; i++)
+        s->w.dr[i].alive = 0;
+    s->w.h.x = cell_center(s->w.stairs_x);
+    s->w.h.y = cell_center(s->w.stairs_y);
+    for (i = 0; i < 300 && p->floor == floor; i++)
+        session_tick(s, p);
+}
+
+static void test_door_floor(void)
+{
+    static World w;
+    double hp[MAX_MON];
+    int i, elites = 0, elites_after = 0;
+    prog_new(&P, 41, CLASS_BARBARIAN);
+    world_init_floor(&w, &P, 23);
+    for (i = 0; i < w.nmon; i++) {
+        hp[i] = w.mon[i].max_hp;
+        elites += w.mon[i].elite;
+    }
+    world_apply_door(&w, &P, (Door){ DC_MON_HP, DR_GOBLIN });
+    for (i = 0; i < w.nmon; i++)
+        if (!w.mon[i].goblin && !w.mon[i].boss && !w.mon[i].special)
+            CHECK(fabs(w.mon[i].max_hp - hp[i] * DOOR_HP_MULT) < 1e-6 * hp[i]);
+    CHECK(w.ev.kind == EV_GOBLIN && w.door.reward == DR_GOBLIN);
+    world_init_floor(&w, &P, 23);
+    world_apply_door(&w, &P, (Door){ DC_ELITES, DR_XP });
+    for (i = 0; i < w.nmon; i++)
+        elites_after += w.mon[i].elite;
+    CHECK(elites_after > elites);
+    /* The session: an idle hero walks through its preferred door at once. */
+    memset(&S, 0, sizeof S);
+    prog_new(&P, 42, CLASS_ROGUE);
+    P.floor = 6;
+    session_start(&S, &P);
+    clear_to_stairs(&S, &P);
+    CHECK(P.floor == 7 && S.door_t == 0 && S.w.door.reward != DR_NONE);
+    P.auto_battle = 0;                                             /* at the controls: a choice waits */
+    clear_to_stairs(&S, &P);
+    CHECK(P.floor == 8 && S.door_t == DOOR_WAIT && S.w.door.reward == DR_NONE);
+    session_take_door(&S, &P, 2);
+    CHECK(S.door_t == 0 && S.w.door.reward == S.doors[2].reward);
+}
+
+static void test_finds(void)
+{
+    OfflineReport rep;
+    Item it;
+    Rng r;
+    int i;
+    prog_new(&P, 51, CLASS_NECRO);
+    P.floor = 90;
+    P.kpm = 600;
+    P.save_time = 1000;
+    CHECK(prog_offline(&P, 1000 + 8 * 3600, &rep));
+    CHECK(rep.nbest > 0 && rep.nbest <= OFFLINE_BEST);
+    for (i = 1; i < rep.nbest; i++)
+        CHECK(rep.best[i - 1].rarity * 2 + rep.best[i - 1].ancestral >= rep.best[i].rarity * 2 + rep.best[i].ancestral);
+    for (i = 0; i < rep.nbest; i++)
+        CHECK(rep.best[i].used && rep.best[i].rarity >= RAR_RARE);
+    /* The codex of finds survives a rebirth; old saves start with what is worn. */
+    memset(P.found_unique, 0, sizeof P.found_unique);
+    CHECK(prog_mark_found(&P, 9) && !prog_mark_found(&P, 9) && prog_found_count(&P) == 1);
+    CHECK(!prog_mark_found(&P, 0) && !prog_mark_found(&P, UNIQUE_BITS));
+    P.best_floor = 200;
+    prog_rebirth(&P, CLASS_DRUID);
+    CHECK(prog_found(&P, 9));
+    rng_seed(&r, 3);
+    item_make_unique(&P.equip[SLOT_HELM], &r, 40, 12, false, P.cls);
+    memset(P.found_unique, 0, sizeof P.found_unique);
+    prog_found_worn_uniques(&P);
+    CHECK(prog_found(&P, P.equip[SLOT_HELM].power) && prog_found_count(&P) >= 1);
+    /* Every affix greater: the ancestral jackpot. */
+    item_roll_slot(&it, &r, 80, 0, RAR_LEGEND, SLOT_GLOVES, CLASS_ROGUE);
+    for (i = 0; i < it.naff; i++)
+        if (!(it.aff[i].flags & (AFX_IMPLICIT | AFX_TEMPERED)))
+            it.aff[i].flags |= AFX_GREATER;
+    CHECK(item_all_greater(&it));
+    it.aff[1].flags &= (uint8_t)~AFX_GREATER;
+    CHECK(!item_all_greater(&it));
 }
 
 /* Every affix sits inside the range it shows, however the item was made or changed. */
@@ -518,6 +639,8 @@ static void test_save(void)
     P.story_seen = 1u << 21;
     P.n_goblins = 3;
     P.bounty[1].have = 1;
+    P.door_pref = DP_GOLD;
+    prog_mark_found(&P, 5);
     n = save_serialize(&P, buf, sizeof buf);
     CHECK(n > 1000 && n < SAVE_MAX_BYTES);
     CHECK(save_deserialize(&Q, buf, n) == SAVE_OK);
@@ -525,6 +648,7 @@ static void test_save(void)
     CHECK(Q.gold == P.gold && Q.look.hair == 4 && Q.gems[GEM_SKULL][3] == 7 && Q.codex[2] == 401);
     CHECK(Q.lang == LANG_KO && Q.ach == P.ach && Q.lore == P.lore && Q.story_seen == P.story_seen);
     CHECK(Q.n_goblins == 3 && !memcmp(Q.bounty, P.bounty, sizeof P.bounty));
+    CHECK(Q.door_pref == DP_GOLD && prog_found(&Q, 5) && !prog_found(&Q, 6));
     CHECK(Q.paragon_level == P.paragon_level && !memcmp(Q.para, P.para, sizeof P.para));
     for (i = 0; i < n; i += 13) { /* any flipped byte is caught */
         buf[i] ^= 0x41;
@@ -1227,6 +1351,9 @@ int main(void)
     printf("uniques\n");       test_uniques();
     printf("temper/mw\n");     test_temper_and_masterwork();
     printf("affix ranges\n");  test_affix_ranges();
+    printf("door rolls\n");    test_door_rolls();
+    printf("door floor\n");    test_door_floor();
+    printf("finds\n");         test_finds();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();

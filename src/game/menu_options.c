@@ -3,6 +3,7 @@
  * damage numbers, story mode, appearance, journal, saving).
  */
 #include "menu_int.h"
+#include "doors.h"
 #include "balance.h"
 #include "paragon.h"
 #include "story.h"
@@ -76,7 +77,7 @@ void embers_render(Game *g)
 /* ------------------------------------------------------------- options */
 
 enum {
-    OPT_LANG, OPT_SOUND, OPT_MUSIC, OPT_AUTO, OPT_EQUIP, OPT_SALVAGE, OPT_MODE, OPT_SKILLS, OPT_PARAGON, OPT_CRAFT, OPT_DMGNUM, OPT_STORY, OPT_HELM,
+    OPT_LANG, OPT_SOUND, OPT_MUSIC, OPT_AUTO, OPT_DOOR, OPT_EQUIP, OPT_SALVAGE, OPT_MODE, OPT_SKILLS, OPT_PARAGON, OPT_CRAFT, OPT_DMGNUM, OPT_STORY, OPT_HELM,
     OPT_LOOK, OPT_JOURNAL, OPT_RESET_PARA, OPT_POWER, OPT_FPS, OPT_SAVE, OPT_EXIT, OPT_COUNT
 };
 #define OPT_VISIBLE 12
@@ -105,6 +106,7 @@ static void toggle(Profile *p, int opt)
     case OPT_SOUND:   p->sound_vol = (uint8_t)((p->sound_vol + 1) % SOUND_VOLUMES); break;
     case OPT_MUSIC:   p->music_vol = (uint8_t)((p->music_vol + 1) % SOUND_VOLUMES); break;
     case OPT_AUTO:    p->auto_battle = !p->auto_battle; break;
+    case OPT_DOOR:    p->door_pref = (uint8_t)((p->door_pref + 1) % DP_COUNT); break;
     case OPT_EQUIP:   p->auto_equip = !p->auto_equip; break;
     case OPT_SALVAGE: p->salvage_upto = p->salvage_upto == 255 ? RAR_COMMON
                                       : p->salvage_upto >= RAR_RARE ? 255 : (uint8_t)(p->salvage_upto + 1); break;
@@ -164,6 +166,7 @@ static void option_value(const Profile *p, int opt, char *v, size_t cap)
     case OPT_SOUND:   snprintf(v, cap, "%s", vols[p->sound_vol % SOUND_VOLUMES]); break;
     case OPT_MUSIC:   snprintf(v, cap, "%s", vols[p->music_vol % SOUND_VOLUMES]); break;
     case OPT_AUTO:    snprintf(v, cap, "%s", p->auto_battle ? "ON" : "OFF"); break;
+    case OPT_DOOR:    snprintf(v, cap, "%s", door_pref_name(p->door_pref)); break;
     case OPT_EQUIP:   snprintf(v, cap, "%s", p->auto_equip ? "ON" : "OFF"); break;
     case OPT_SALVAGE: snprintf(v, cap, "%s", p->salvage_upto == 255 ? "OFF" : salv[MIN(p->salvage_upto, 2)]); break;
     case OPT_MODE:    snprintf(v, cap, "%s", p->mode == MODE_PUSH ? "PUSH" : "FARM"); break;
@@ -214,7 +217,7 @@ static void journal_render(Game *g)
 void options_render(Game *g)
 {
     static const char *const names[OPT_COUNT] = {
-        "LANGUAGE", "SOUND", "MUSIC", "AUTO BATTLE (SPACE)", "AUTO EQUIP UPGRADES", "AUTO SALVAGE UP TO", "FLOOR MODE", "AUTO SPEND SKILLS", "AUTO PARAGON",
+        "LANGUAGE", "SOUND", "MUSIC", "AUTO BATTLE (SPACE)", "AUTO DOOR CHOICE", "AUTO EQUIP UPGRADES", "AUTO SALVAGE UP TO", "FLOOR MODE", "AUTO SPEND SKILLS", "AUTO PARAGON",
         "AUTO CRAFT (FORGE, GEMS, ELIXIRS)", "DAMAGE NUMBERS", "STORY", "SHOW HELM", "APPEARANCE...", "JOURNAL...",
         "RESET PARAGON BOARD", "LOW POWER (15 FPS)", "FPS COUNTER", "SAVE NOW", "SAVE AND EXIT TO TITLE",
     };

@@ -47,11 +47,11 @@ static void run(int cls, int preset, double hours)
     }
     stats_compute(&st, &P);
     printf("%-11s %-15s floor %3d best %3d lv %2d+%3d deaths %4d stuck %3d gold %.3g dps %.3g hp %.3g "
-           "crit %.0f%% vuln %.0f%% op %.0f%%\n",
+           "crit %.0f%% vuln %.0f%% op %.0f%% mythic %u anc %u\n",
            class_defs[cls].name, class_defs[cls].preset[preset].name, P.floor, P.best_floor, P.level,
            P.paragon_level, S.deaths, S.stuck_resets, P.gold, stats_dps(&st, &P), st.max_hp,
            100.0 * S.w.hs.crits / (S.w.hs.hits + 1e-9), 100.0 * S.w.hs.vulns / (S.w.hs.hits + 1e-9),
-           100.0 * S.w.hs.ops / (S.w.hs.hits + 1e-9));
+           100.0 * S.w.hs.ops / (S.w.hs.hits + 1e-9), P.n_mythic, P.n_ancestral);
 }
 
 int main(int argc, char **argv)
