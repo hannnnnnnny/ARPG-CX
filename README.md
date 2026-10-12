@@ -29,6 +29,30 @@ your PC" because the exe is unsigned: choose *More info* then *Run anyway*.
 All releases: [Releases](https://github.com/hannnnnnnny/ARPG-CX/releases).
 
 
+## New in 1.4.0
+
+- **Shako-rare mythics**: about one per 30 hours of play. When one drops the
+  world holds its breath: a purple flash, its own sound, a beam to the top
+  of the screen and its name in large type.
+- **Affix ranges**: every affix shows the range it rolled in (`[8.0-15]`) or
+  `[PERFECT]`; tempering shows the roll you are rerolling for.
+- **Doors between floors**: three doors, each a curse paired with a reward
+  (more monster life for double loot, no health orbs for x2 experience...).
+  An idle hero takes the door you prefer (OPTIONS > AUTO DOOR CHOICE).
+- **Powers that change how a skill plays**: Whirlwind pulls enemies in, Chain
+  Lightning forks, Bone Spear flies back, Meteor kills chain, Ground Slam
+  strikes twice... twelve new legendary aspects.
+- **Dodge roll** (Shift, pad B): guardians telegraph their slam. Roll out of it
+  for a PERFECT DODGE: double damage for 3 s and an extra legendary.
+- **CODEX** tab: all 38 uniques and mythics, where each drops, and travel back
+  to a guardian you have reached to farm it.
+- **Runewords**: eight runes, sixteen runewords whose names stay hidden until
+  you bind them at the new Runesmith.
+- **Daily trial** (GOALS > DEL): the same floors and rules for everyone today,
+  ten minutes, and a share code for your score.
+- The offline report lists the best three finds. Save format v10 (older
+  saves load as before).
+
 ## Promo video
 
 <p align="center">
@@ -354,6 +378,7 @@ files from `.tools/fonts12/` (the 12px monospaced BDF release).
 | Core skill at the cursor | right click |
 | Skill bar slots | 1 - 6, or click the slot on the HUD |
 | Potion | Q, or click the potion |
+| Dodge roll (no damage while rolling) | Shift (gamepad B) |
 | Auto battle on / off | Space (also OPTIONS > AUTO BATTLE) |
 
 Any of these hands the hero to you; with auto battle on, it goes back to

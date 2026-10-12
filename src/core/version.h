@@ -4,8 +4,8 @@
 #define AD_VERSION_H
 
 #define GAME_VERSION_MAJOR 1
-#define GAME_VERSION_MINOR 3
+#define GAME_VERSION_MINOR 4
 #define GAME_VERSION_PATCH 0
-#define GAME_VERSION_STR "1.3.0"
+#define GAME_VERSION_STR "1.4.0"
 
 #endif

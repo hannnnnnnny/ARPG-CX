@@ -64,18 +64,19 @@ static int recipe_of(const Item *it, int opt)
 }
 
 /* "+6.2% CRITICAL STRIKE DAMAGE [4.0-10]": the roll and the range it came from. */
+#define AFFIX_LINE 160
 static void affix_with_range(char *out, size_t cap, const Game *g, const Item *it, int i)
 {
     char aff[96], range[32];
     affix_text(aff, sizeof aff, it, i, g->p.cls);
     affix_range_text(range, sizeof range, it, i);
-    snprintf(out, cap, "%s %s", aff, range);
+    snprintf(out, cap, "%s %s", aff, range);     /* callers pass AFFIX_LINE bytes */
 }
 
 static void temper_toast(Game *g, CraftResult r, TemperRecipe t)
 {
     const Item *it = cur_item(g);
-    char roll[128], msg[112];
+    char roll[AFFIX_LINE], msg[224];   /* the toast keeps what fits */
     int i = item_tempered_affix(it, t);
     if (r != CRAFT_OK || i < 0) {
         menu_craft_toast(g, r, "TEMPERED: A NEW AFFIX");
@@ -100,7 +101,7 @@ static void smith_tick(Game *g, Input *in)
 /* The recipe's current affix with its range, so a reroll has a target. */
 static int temper_roll_render(const Game *g, const Item *it, TemperRecipe t, int x, int y)
 {
-    char buf[160];
+    char buf[AFFIX_LINE];
     int i = item_tempered_affix(it, t);
     if (i < 0)
         return font_draw_wrapped(x, y, "NOT TEMPERED YET", 160, C_DIM);
@@ -206,7 +207,7 @@ static void occult_tick(Game *g, Input *in)
 static void occult_render(Game *g, int x, int y)
 {
     Item *it = cur_item(g);
-    char buf[96];
+    char buf[AFFIX_LINE];
     int known = 0, a;
     for (a = 1; a <= aspect_count && a < ASPECT_MAX; a++)
         known += codex_known(&g->p, a);
@@ -247,7 +248,7 @@ static void enchant_dialog(const Game *g)
 {
     const Item *it = &g->p.equip[g->ench.slot];
     Item tmp = *it;
-    char buf[128];
+    char buf[AFFIX_LINE];
     int r;
     gfx_fill_rect(16, 66, 288, 92, RGB565(24, 16, 20));
     gfx_rect(16, 66, 288, 92, C_SEL);
