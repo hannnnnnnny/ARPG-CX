@@ -5,6 +5,7 @@
 #include "world_int.h"
 #include "doors.h"
 #include "mythic.h"
+#include "codex.h"
 #include "story.h"
 #include "balance.h"
 #include "progress.h"
@@ -606,6 +607,11 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     p->souls += m->boss ? 5 : m->elite ? 1 : 0;   /* forgotten souls for the blacksmith */
     drop_item(w, p, m);
     drop_gem(w, p, m);
+    if (m->boss && !m->special && rng_range(&w->rng, 0, 99) < GUARDIAN_UNIQUE_PCT) {   /* its own uniques */
+        int u = codex_pick(w->theme, p->cls, &w->rng);
+        if (u)
+            world_drop_unique(w, p, m->x, m->y, u);
+    }
     if ((m->boss || m->special == MS_BUTCHER) && w->perfect_dodges > 0) {   /* fought by hand */
         world_drop_item(w, p, m->x, m->y, RAR_LEGEND, 4);
         world_message(w, "DODGED AND DEFEATED: AN EXTRA LEGENDARY", RGB565(255, 200, 90));

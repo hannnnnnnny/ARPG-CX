@@ -411,3 +411,17 @@ PERFECT DODGE!	完美闪避！	完美閃避！	完璧な回避！	완벽한 회�
 WEAK POINT X2	破绽 伤害×2	破綻 傷害×2	弱点 ×2	약점 ×2
 SIDESTEP	闪身	閃身	回避	회피
 DODGED AND DEFEATED: AN EXTRA LEGENDARY	闪避后击败：额外掉落一件传奇	閃避後擊敗：額外掉落一件傳奇	回避して撃破：レジェンダリー追加	회피 후 처치: 전설 장비 추가
+CODEX	图鉴	圖鑑	図鑑	도감
+NOT REACHED YET	尚未到达	尚未到達	まだ到達していない	아직 도달하지 못함
+TRAVELLED TO FLOOR %d	已前往第%d层	已前往第%d層	%d階へ移動	%d층으로 이동
+DROPS ANYWHERE IN TORMENT, VERY RARELY	折磨难度中任何地方都可能掉落，极为稀有	折磨難度中任何地方都可能掉落，極為稀有	トーメントのどこでも、ごく稀に落ちる	고문 난이도 어디서나, 아주 드물게 떨어짐
+GUARDIAN OF THE %s: FLOOR %d, THEN EVERY 50	%s守护者：第%d层，之后每50层一次	%s守護者：第%d層，之後每50層一次	%sの守護者：%d階、以後50階ごと	%s 수호자: %d층, 이후 50층마다
+ANYWHERE	任何地方	任何地方	どこでも	어디서나
+NOT FOUND YET. ITS POWER IS REVEALED WHEN IT DROPS.	尚未获得。掉落后才会揭示它的能力。	尚未獲得。掉落後才會揭示它的能力。	未入手。落ちたときに力が明かされる。	아직 얻지 못함. 떨어지면 힘이 드러남.
+%s ONLY	仅限%s	僅限%s	%s専用	%s 전용
+ENTER: TRAVEL TO THIS GUARDIAN	ENTER：前往这位守护者	ENTER：前往這位守護者	ENTER：この守護者へ移動	ENTER: 이 수호자에게 이동
+CODEX: %d/%d UNIQUES AND MYTHICS FOUND	图鉴：已获得暗金与神话 %d/%d	圖鑑：已獲得暗金與神話 %d/%d	図鑑：ユニークと神話 %d/%d	도감: 고유·신화 %d/%d 획득
+UP/DOWN: BROWSE   ENTER: TRAVEL   ESC: BATTLE	上下：浏览   ENTER：前往   ESC：战斗	上下：瀏覽   ENTER：前往   ESC：戰鬥	上下：閲覧   ENTER：移動   ESC：戦闘	위아래: 보기   ENTER: 이동   ESC: 전투
+SKILL	技能	技能	スキル	기술
+EMBER	余烬	餘燼	残り火	잔불
+SETUP	选项	選項	設定	설정

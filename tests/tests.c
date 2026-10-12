@@ -17,6 +17,7 @@
 #include "../src/game/save.h"
 #include "../src/game/session.h"
 #include "../src/game/doors.h"
+#include "../src/game/codex.h"
 #include "../src/game/skills.h"
 #include "../src/game/build.h"
 #include "../src/game/story.h"
@@ -183,6 +184,41 @@ static void test_temper_and_masterwork(void)
     CHECK(crits == 3);                                     /* ranks 4, 8 and 12 */
     CHECK(item_affix_value(&it, 1) >= before * 1.6 - 1e-9);
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
+}
+
+/* --------------------------------------------------------------- codex */
+
+static void test_codex(void)
+{
+    int ids[UNIQUE_BITS], n = codex_entries(ids, UNIQUE_BITS), i, t, mythic_done = 0, per[GUARDIANS] = { 0 };
+    Rng r;
+    CHECK(n == unique_count);
+    for (i = 0; i < n; i++) {
+        t = codex_guardian(ids[i]);
+        if (t < 0) {
+            CHECK(unique_def(ids[i])->mythic && !mythic_done);       /* mythics come first */
+        } else {
+            mythic_done = 1;
+            CHECK(t < GUARDIANS && !unique_def(ids[i])->mythic);
+            per[t]++;
+        }
+    }
+    for (t = 0; t < GUARDIANS; t++)
+        CHECK(per[t] > 0);                                         /* every guardian guards something */
+    /* Guardian floors: theme t at 10(t+1), then every 50; floor themes agree. */
+    for (t = 0; t < GUARDIANS; t++) {
+        int f = codex_guardian_floor_from(t, 1);
+        CHECK(f == 10 * (t + 1) && is_boss_floor(f) && ((f - 1) / 10) % 5 == t);
+        CHECK(codex_guardian_floor_from(t, f + 1) == f + 50 && codex_guardian_floor_below(t, f + 49) == f);
+        CHECK(codex_guardian_floor_below(t, f - 1) == 0);
+    }
+    rng_seed(&r, 5);
+    for (i = 0; i < 200; i++) {
+        int cls = i % CLASS_COUNT, u = codex_pick(i % GUARDIANS, cls, &r);
+        if (u)
+            CHECK(codex_guardian(u) == i % GUARDIANS
+                  && (unique_def(u)->cls == ANY_CLASS || unique_def(u)->cls == cls));
+    }
 }
 
 /* ------------------------------------------------------------- dodging */
@@ -1520,6 +1556,7 @@ int main(void)
     printf("finds\n");         test_finds();
     printf("skill powers\n");  test_skill_powers();
     printf("dodge\n");         test_dodge();
+    printf("codex\n");         test_codex();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();
