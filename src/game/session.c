@@ -57,12 +57,21 @@ static void act_cleared(Session *s, Profile *p)
         queue_story(s, p, STORY_FINALE);
 }
 
+void session_enter_floor(Session *s, Profile *p)
+{
+    if (s->rule.reward)
+        s->w.rng.s = 0;                    /* the seed alone: the same floor for everyone */
+    world_init_floor(&s->w, p, p->floor);
+    if (s->rule.reward)
+        world_apply_door(&s->w, p, s->rule);
+}
+
 void session_start(Session *s, Profile *p)
 {
     s->story_pending = -1;
     s->story_count = 0;
     s->door_t = 0;
-    world_init_floor(&s->w, p, p->floor);
+    session_enter_floor(s, p);
     goals_refill(p, &s->w.rng);         /* saves from before v6 have no bounties */
     check_act_intro(s, p);
 }
@@ -130,7 +139,7 @@ void session_tick(Session *s, Profile *p)
         p->floor += dive;
         p->best_floor = MAX(p->best_floor, p->floor);
         p->best_floor_ever = MAX(p->best_floor_ever, p->best_floor);
-        world_init_floor(&s->w, p, p->floor);
+        session_enter_floor(s, p);
         if (dive)
             world_banner(&s->w, "THE ABYSS PULLS YOU DEEPER", RGB565(170, 90, 255));
         announce_floor(&s->w, p);
@@ -140,15 +149,15 @@ void session_tick(Session *s, Profile *p)
             announce_tier(&s->w, p);
         if (p->best_floor > best && p->best_floor > MAX(p->best_floor_ever, 10))
             bark(&s->w.bark, BK_RECORD, (uint32_t)s->w.tick + (uint32_t)p->floor);
-        if (!dive && doors_open_on(p->floor))
+        if (!dive && !s->rule.reward && doors_open_on(p->floor))
             offer_doors(s, p, interactive);
     } else if (s->w.ev_stuck) {
         s->stuck_resets++;
-        world_init_floor(&s->w, p, p->floor);
+        session_enter_floor(s, p);
     } else if (s->w.ev_died) {
         s->deaths++;
         prog_died(p);
-        world_init_floor(&s->w, p, p->floor);
+        session_enter_floor(s, p);
         announce_floor(&s->w, p);
     }
 }

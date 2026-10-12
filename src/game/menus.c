@@ -208,7 +208,8 @@ bool menu_page_uses_lr(const Game *g)
 
 static bool menu_busy(const Game *g)
 {
-    return g->upgrade_pick >= 0 || g->ench.open || (g->page == PG_TOWN && g->town != TOWN_LIST);
+    return g->upgrade_pick >= 0 || g->ench.open || (g->page == PG_TOWN && g->town != TOWN_LIST)
+        || (g->page == PG_GOALS && g->trial.card);
 }
 
 void menu_tick(Game *g, Input *in, uint32_t now)

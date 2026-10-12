@@ -5,6 +5,7 @@
 #include "paragon.h"
 #include "skills.h"
 #include "mythic.h"
+#include "trial.h"
 #include "../core/platform.h"
 #include "../i18n/i18n.h"
 #include "../gfx/font.h"
@@ -30,8 +31,9 @@ void game_profile_changed(Game *g)
 
 void game_save(Game *g, uint32_t now)
 {
-    g->p.save_time = now;
-    g->save_status = g->save_path[0] ? save_write(&g->p, g->save_path) : SAVE_IO_ERROR;
+    Profile *p = trial_saved_profile(g);     /* never the daily trial's copy */
+    p->save_time = now;
+    g->save_status = g->save_path[0] ? save_write(p, g->save_path) : SAVE_IO_ERROR;
     g->autosave_t = 0;
 }
 
@@ -162,6 +164,29 @@ static void toggle_auto(Game *g)
     game_sfx(g, SND_UI_OK);
 }
 
+/* The daily trial owns the keys while it runs: Esc stops it, menus stay
+ * shut (nothing in them would be kept). Its result waits for OK. */
+static bool trial_input(Game *g, Input *in)
+{
+    if (g->trial.result) {
+        if (in_ok(in) || in_back(in) || in_click(in)) {
+            g->trial.result = false;
+            input_block_held(in);
+        }
+        return true;
+    }
+    if (!g->trial.active)
+        return false;
+    if (in_back(in) && !in_pressed(in, BTN_DODGE)) {
+        trial_end(g);
+        input_block_held(in);
+        return true;
+    }
+    if (in_pressed(in, BTN_AUTO))
+        toggle_auto(g);
+    return g->s.door_t == 0;                       /* no doors in a trial, but never stick */
+}
+
 /* Doors between floors: arrows or the pointer pick, OK or a click goes in. */
 static void door_input(Game *g, Input *in)
 {
@@ -202,7 +227,10 @@ static void battle_tick(Game *g, Input *in, uint32_t now)
     if (++g->autosave_t >= AUTOSAVE_TICKS)
         game_save(g, now);
     battle_story(g, in);
+    trial_tick(g);
     if (g->state != GS_BATTLE)
+        return;
+    if (trial_input(g, in))
         return;
     if (g->s.door_t > 0) {
         door_input(g, in);
@@ -243,6 +271,7 @@ int game_music_track(const Game *g)
 void game_tick(Game *g, Input *in, uint32_t now)
 {
     g->tick++;
+    g->now = now;
     g->mouse = in->mouse;
     g->mx = in->mx;
     g->my = in->my;
@@ -316,6 +345,10 @@ void game_render(Game *g)
         game_control_render(g);
         if (g->s.door_t > 0)
             render_doors(&g->s, &g->p);
+        if (g->trial.active)
+            trial_render_hud(g);
+        if (g->trial.result)
+            trial_render_result(g);
         break;
     case GS_MENU:         menu_render(g); break;
     }

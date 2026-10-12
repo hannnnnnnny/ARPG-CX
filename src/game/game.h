@@ -43,6 +43,16 @@ typedef struct {
 
 typedef struct { int fps, logic_us, render_us; } PerfStats;
 
+/* The daily trial (trial.h): running on a copy of the profile. */
+typedef struct {
+    bool active;                /* the ten minutes are running */
+    bool card;                  /* today's rules shown (GOALS page) */
+    bool result;                /* the result and share code shown over the battle */
+    uint32_t day;
+    int start, ticks, floors;
+    Profile backup;             /* the real profile, saved and restored */
+} TrialState;
+
 /* Enchanting shows two new rolls next to the current affix. */
 typedef struct { bool open; int slot, affix, pick; Affix opt[2]; } EnchantDialog;
 
@@ -96,6 +106,8 @@ typedef struct {
     int autosave_t;
     int hitstop_cool;           /* frames before the next hit stop may freeze the battle */
     OfflineReport off;
+    TrialState trial;
+    uint32_t now;               /* wall clock of the current tick (unix seconds) */
     char toast[112];
     uint16_t toast_color;
     int toast_t;

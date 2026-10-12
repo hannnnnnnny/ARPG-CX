@@ -216,6 +216,7 @@ static void write_body(Writer *w, const Profile *p)
     write_goals(w, p);
     w8(w, p->door_pref);
     for (i = 0; i < UNIQUE_BITS / 8; i++) w8(w, p->found_unique[i]);
+    w32(w, p->trial_day); w16(w, p->trial_best);
 }
 
 static void read_body(Reader *r, Profile *p)
@@ -250,6 +251,8 @@ static void read_body(Reader *r, Profile *p)
     if (r->version >= 10) {
         p->door_pref = r8(r);
         for (i = 0; i < UNIQUE_BITS / 8; i++) p->found_unique[i] = r8(r);
+        p->trial_day = r32(r);
+        p->trial_best = r16(r);
     } else {
         prog_found_worn_uniques(p); /* the codex starts with what the hero already has */
     }

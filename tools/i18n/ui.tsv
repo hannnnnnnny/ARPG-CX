@@ -425,3 +425,19 @@ UP/DOWN: BROWSE   ENTER: TRAVEL   ESC: BATTLE	上下：浏览   ENTER：前往  
 SKILL	技能	技能	スキル	기술
 EMBER	余烬	餘燼	残り火	잔불
 SETUP	选项	選項	設定	설정
+THE DAILY TRIAL BEGINS	每日试炼开始	每日試煉開始	デイリー試練開始	일일 시련 시작
+TRIAL %d:%02d   +%d FLOORS	试炼 %d:%02d   +%d层	試煉 %d:%02d   +%d層	試練 %d:%02d   +%d階	시련 %d:%02d   +%d층
+TODAY'S RULES	今日规则	今日規則	今日のルール	오늘의 규칙
+DAILY TRIAL	每日试炼	每日試煉	デイリー試練	일일 시련
+THE SAME FLOORS AND RULES FOR EVERYONE TODAY	今天所有人都是同样的楼层和规则	今天所有人都是同樣的樓層和規則	今日は全員が同じ階と同じルール	오늘은 모두 같은 층과 규칙
+START AT FLOOR %d. TEN MINUTES: GO AS DEEP AS YOU CAN.	从第%d层开始，十分钟内尽量往下冲。	從第%d層開始，十分鐘內盡量往下衝。	%d階から開始。10分間でできるだけ深く。	%d층에서 시작. 10분 동안 최대한 깊이.
+YOUR BEST TODAY: +%d FLOORS	今日最佳：+%d层	今日最佳：+%d層	今日の最高：+%d階	오늘 최고: +%d층
+NO RUN YET TODAY	今天还没挑战过	今天還沒挑戰過	今日はまだ挑戦していない	오늘은 아직 도전하지 않음
+NOTHING FOUND IN THE TRIAL IS KEPT, ONLY THE SCORE.	试炼中获得的东西不会保留，只记录成绩。	試煉中獲得的東西不會保留，只記錄成績。	試練で得た物は残らない。記録だけが残る。	시련에서 얻은 것은 남지 않고 기록만 남음.
+ENTER: START   ESC: CLOSE	ENTER：开始   ESC：关闭	ENTER：開始   ESC：關閉	ENTER：開始   ESC：閉じる	ENTER: 시작   ESC: 닫기
++%d FLOORS	+%d层	+%d層	+%d階	+%d층
+FROM FLOOR %d - %s	从第%d层出发 - %s	從第%d層出發 - %s	%d階から - %s	%d층부터 - %s
+BEST TODAY: +%d	今日最佳：+%d	今日最佳：+%d	今日の最高：+%d	오늘 최고: +%d
+SHARE CODE	分享码	分享碼	共有コード	공유 코드
+ENTER: CONTINUE	ENTER：继续	ENTER：繼續	ENTER：続ける	ENTER: 계속
+UP/DOWN: SCROLL   DEL: DAILY TRIAL   ESC: BATTLE	上下：滚动   DEL：每日试炼   ESC：战斗	上下：捲動   DEL：每日試煉   ESC：戰鬥	上下：スクロール   DEL：デイリー試練   ESC：戦闘	위아래: 스크롤   DEL: 일일 시련   ESC: 전투

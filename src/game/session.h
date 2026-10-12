@@ -20,9 +20,13 @@ typedef struct {
     Door doors[DOORS];  /* the choice before the current floor */
     int door_t;         /* ticks left to choose (world held still), 0 = no choice pending */
     int door_sel;       /* highlighted door; taken when time runs out */
+    Door rule;          /* daily trial: this curse and boon on every floor, no doors; 0 = normal play */
 } Session;
 
 void session_start(Session *s, Profile *p);
+/* Generates the hero's floor afresh; under a trial rule every floor comes
+ * from the profile seed alone, so all players see the same layouts. */
+void session_enter_floor(Session *s, Profile *p);
 void session_tick(Session *s, Profile *p);
 /* Profile changed outside the world (equip, forge, rebirth...). */
 void session_profile_changed(Session *s, const Profile *p);

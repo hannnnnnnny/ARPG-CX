@@ -234,6 +234,8 @@ typedef struct {
     uint8_t  music_vol;                /* 0..SOUND_VOLUMES-1, desktop music */
     uint8_t  door_pref;                /* DoorPref: which door the hero takes on its own */
     uint8_t  found_unique[UNIQUE_BITS / 8];   /* every unique / mythic ever found (the codex) */
+    uint32_t trial_day;                /* day (unix / 86400) of the best daily trial below */
+    uint16_t trial_best;               /* floors gone down in that day's trial */
     /* idle bookkeeping */
     uint32_t save_time;                /* unix seconds of last save */
     double   kpm;                      /* recent kills per minute (for offline gains) */

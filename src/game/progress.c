@@ -691,6 +691,8 @@ double prog_rebirth(Profile *p, int new_cls)
     p->sound_vol = keep.sound_vol;
     p->music_vol = keep.music_vol;
     p->door_pref = keep.door_pref;
+    p->trial_day = keep.trial_day;
+    p->trial_best = keep.trial_best;
     memcpy(p->found_unique, keep.found_unique, sizeof p->found_unique);
     p->low_power = keep.low_power;
     p->total_kills = keep.total_kills;

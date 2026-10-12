@@ -18,6 +18,7 @@
 #include "../src/game/session.h"
 #include "../src/game/doors.h"
 #include "../src/game/codex.h"
+#include "../src/game/trial.h"
 #include "../src/game/skills.h"
 #include "../src/game/build.h"
 #include "../src/game/story.h"
@@ -184,6 +185,45 @@ static void test_temper_and_masterwork(void)
     CHECK(crits == 3);                                     /* ranks 4, 8 and 12 */
     CHECK(item_affix_value(&it, 1) >= before * 1.6 - 1e-9);
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
+}
+
+/* ---------------------------------------------------------- daily trial */
+
+static void test_trial(void)
+{
+    static Game G;
+    const uint32_t now = 86400u * 20000u + 3600u;
+    char code[48];
+    double gold;
+    Door a = trial_rule(20000), b = trial_rule(20000);
+    unsigned day, check;
+    int start, floors, cls;
+    CHECK(a.curse == b.curse && a.reward == b.reward && a.reward != DR_NONE);   /* the same for everyone */
+    CHECK(trial_seed(20000) == trial_seed(20000) && trial_seed(20000) != trial_seed(20001));
+    memset(&G, 0, sizeof G);
+    prog_new(&G.p, 91, CLASS_DRUID);
+    G.p.best_floor = 60;
+    G.p.floor = 58;
+    gold = G.p.gold = 1234;
+    trial_begin(&G, now);
+    CHECK(G.trial.active && G.trial.day == 20000 && G.p.floor == 60 - TRIAL_BACK && G.s.rule.reward != DR_NONE);
+    CHECK(trial_saved_profile(&G) == &G.trial.backup && G.s.w.door.reward == G.s.rule.reward);
+    G.p.gold += 1e9;                                      /* whatever happens in the trial... */
+    G.p.floor += 7;
+    trial_tick(&G);
+    CHECK(G.trial.floors == 7);
+    trial_end(&G);
+    CHECK(!G.trial.active && G.trial.result && G.p.gold == gold && G.p.floor == 58);   /* ...is not kept */
+    CHECK(G.p.trial_day == 20000 && G.p.trial_best == 7 && G.s.rule.reward == DR_NONE);
+    CHECK(trial_saved_profile(&G) == &G.p);
+    trial_begin(&G, now);
+    G.p.floor += 3;
+    trial_end(&G);
+    CHECK(G.p.trial_best == 7);                           /* a weaker run keeps the best */
+    trial_code(code, sizeof code, 20000, 40, 7, CLASS_DRUID);
+    CHECK(sscanf(code, "AD-%X-%d-%d-%d-%X", &day, &start, &floors, &cls, &check) == 5);
+    CHECK(day == 20000 && start == 40 && floors == 7 && cls == CLASS_DRUID && trial_code_valid(day, start, floors, cls, check));
+    CHECK(!trial_code_valid(day, start, floors + 1, cls, check));   /* an edited score fails */
 }
 
 /* --------------------------------------------------------------- codex */
@@ -1557,6 +1597,7 @@ int main(void)
     printf("skill powers\n");  test_skill_powers();
     printf("dodge\n");         test_dodge();
     printf("codex\n");         test_codex();
+    printf("trial\n");         test_trial();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();

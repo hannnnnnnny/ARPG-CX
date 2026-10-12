@@ -4,6 +4,7 @@
  */
 #include "menu_int.h"
 #include "goals.h"
+#include "trial.h"
 #include "../gfx/font.h"
 #include "../core/bignum.h"
 #include "../i18n/i18n.h"
@@ -15,6 +16,18 @@
 
 void goals_tick(Game *g, Input *in)
 {
+    if (g->trial.card) {                         /* today's trial: start or close */
+        if (in_ok(in))
+            trial_begin(g, g->now);
+        else if (in_back(in))
+            g->trial.card = false;
+        input_block_held(in);
+        return;
+    }
+    if (in_alt(in)) {
+        g->trial.card = true;
+        return;
+    }
     menu_move(in, &g->sel[PG_GOALS], ACH_COUNT);
 }
 
@@ -84,5 +97,7 @@ void goals_render(Game *g)
     font_draw(6, ACH_Y - 12, "ACHIEVEMENTS", C_SEL, 1);
     for (i = top; i < ACH_COUNT && i < top + ACH_VISIBLE; i++)
         draw_achievement(&g->p, i, ACH_Y + (i - top) * 13, i == sel);
-    menu_footer(g, "UP/DOWN: SCROLL   ESC: BATTLE");
+    menu_footer(g, "UP/DOWN: SCROLL   DEL: DAILY TRIAL   ESC: BATTLE");
+    if (g->trial.card)
+        trial_render_card(g, g->now);
 }
