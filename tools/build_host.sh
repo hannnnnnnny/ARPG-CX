@@ -10,6 +10,9 @@ if [ -z "${CC:-}" ]; then
     else CC=gcc; fi
 fi
 CFLAGS="-std=c99 -O2 -Wall -Wextra -Wno-unused-parameter -g"
+# zig cc targets the build machine's CPU by default; a Zen build then emits
+# AMD-only SSE4a (insertq) and the shipped exe dies on Intel. Pin the baseline.
+case "$CC" in *ziglang*) CFLAGS="$CFLAGS -mcpu=baseline";; esac
 mkdir -p build
 CORE=$(find src -name '*.c' ! -name runner.c | sort)
 EXE=""

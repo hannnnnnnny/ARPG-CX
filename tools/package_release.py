@@ -22,7 +22,7 @@ GUIDE_PC = """ASHEN DEPTHS 灰烬深渊
 【电脑版】双击 AshenDepthsDesktop.exe 即可游玩，无需安装。
   - Windows 可能提示"已保护你的电脑"：点"更多信息" -> "仍要运行"。
   - 空格：自动挂机 / 亲自操作切换；WASD 移动；鼠标点怪攻击；1-6 技能；Q 喝药。
-  - 存档 AshenDepths1.sav ~ AshenDepths3.sav 保存在 exe 同一目录。
+  - 15 个存档位，存档文件保存在 exe 同一目录。
 
 """
 
