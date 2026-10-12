@@ -393,7 +393,9 @@ void render_world(const World *w, const Profile *p)
     render_event_object(w, cam_x, cam_y);
     draw_entities(w, p);
     draw_overlays(w);
+    render_ambient(w, cam_x, cam_y);
     render_myth_tint(w, VIEW_H);
     render_sig_flash(w, VIEW_H);
     render_floaters(w, cam_x, cam_y);
+    render_bloom();
 }

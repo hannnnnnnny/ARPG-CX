@@ -55,6 +55,11 @@ typedef struct { int16_t x, y, w, h; bool shown; } TextBox;
 void fx_stack_boxes(TextBox *boxes, int n, int min_y);
 void render_floaters(const World *w, int cam_x, int cam_y);
 
+/* render_post.c: desktop-only atmosphere (no-ops on the calculator):
+ * drifting particles per depth theme, then a soft glow around bright colours. */
+void render_ambient(const World *w, int cam_x, int cam_y);
+void render_bloom(void);
+
 /* Shared drawing helpers (render_fx.c). */
 int  fx_hash(int a, int b);
 int  fx_cx(int x, int r, int phase);
