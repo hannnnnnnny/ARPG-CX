@@ -375,12 +375,34 @@ ringed in red; the HUD shows the slot keys and AUTO or MANUAL.
 | Back | ESC | Esc or right click |
 | FPS overlay | F | F |
 
-### Sound (Windows)
+### Fullscreen, gamepad and key bindings (Windows)
+
+<p align="center">
+  <img src="docs/media/desktop_fullscreen_en.png" width="720" alt="Fullscreen at 1920x1080 with the map and build on the left, loot and the floor event on the right">
+</p>
+
+- **F11** or **Alt+Enter** switches to borderless fullscreen. On a wide screen
+  the bars beside the 4:3 view become side panels: the floor map, the build's
+  numbers (DPS, crit, attack speed), recent loot and the floor event.
+- **Xbox-style gamepads** work without setup: stick or d-pad to move, A to
+  confirm, B back, X Y LB RB LT RT for skill slots 1-6, View to page through
+  menus, left stick click for a potion, right stick click for auto battle.
+- **Rebind keys** in `settings.ini`, written next to the exe on first start
+  (one or more keys per action; the file lists the key names). It also keeps
+  the window's size, place and fullscreen state.
+- Hover an item in the **BAG** to compare it stat by stat with what it would
+  replace.
+- If the game ever crashes it writes **crash.txt** next to the exe (exception,
+  address, CPU, Windows build); please attach it to an issue.
+
+### Sound and music (Windows)
 
 Every effect (hits, crits, kills, each element's spells, loot by rarity,
 level ups, potions, goblins, shrines, chests, achievements, menu clicks) is
-synthesized when the game starts; nothing is loaded from files. OPTIONS >
-SOUND sets OFF / LOW / MEDIUM / HIGH.
+synthesized when the game starts, and the music is synthesized while it
+plays: a track for each depth theme, a battle track when a boss or the
+butcher is on the floor, and the title theme. Nothing is loaded from files.
+OPTIONS > SOUND and OPTIONS > MUSIC each set OFF / LOW / MEDIUM / HIGH.
 
 ### Text (Windows)
 

@@ -122,6 +122,23 @@ def shot(name, args, script, tick):
         .save(os.path.join(OUT, name + SUFFIX + '.png'))
 
 
+def fullscreen(name, args, script, tick):
+    """A 1920x1080 screen as fullscreen shows it: the 4:3 view at 2x in the
+    middle, the side panels (--side) at 2x either side."""
+    path = os.path.join(TMP, name + '.png')
+    run(args, script, ['--side', '--shot', f'{tick}:{path}'])
+    game = Image.open(path).convert('RGB')
+    side = Image.open(os.path.join(TMP, name + '_side.png')).convert('RGB')
+    screen = Image.new('RGB', (1920, 1080))
+    screen.paste(game.resize((1280, 960), Image.NEAREST), (320, 60))
+    screen.paste(side.crop((0, 0, 160, 480)).resize((320, 960), Image.NEAREST), (0, 60))
+    screen.paste(side.crop((160, 0, 320, 480)).resize((320, 960), Image.NEAREST), (1600, 60))
+    screen.save(os.path.join(OUT, name + SUFFIX + '.png'))
+
+
+FULLSCREEN = ('desktop_fullscreen', ['--new', '--class', '0', '--fast', '0.3'] + LANG, '-:600', 500)
+
+
 def main():
     only = sys.argv[sys.argv.index('--only') + 1].split(',') if '--only' in sys.argv else None
     shutil.rmtree(TMP, ignore_errors=True)
@@ -133,6 +150,8 @@ def main():
     for s in SHOTS:
         if only is None or s[0] in only:
             shot(*s)
+    if only is None or FULLSCREEN[0] in only:
+        fullscreen(*FULLSCREEN)
     shutil.rmtree(TMP, ignore_errors=True)
 
 
