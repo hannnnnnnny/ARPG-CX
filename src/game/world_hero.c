@@ -360,6 +360,8 @@ void hero_update(World *w, Profile *p)
     hero_drink_potion(w, false);
     if (w->cmd.active)
         w->ctl.manual_t = MANUAL_HOLD;
+    if (hero_dodge_update(w))
+        return;
     if (hero_manual(w, p)) {
         h->idle_ticks = 0;                    /* the player is in charge, no failsafe */
         control_update(w, p);

@@ -185,6 +185,71 @@ static void test_temper_and_masterwork(void)
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
 }
 
+/* ------------------------------------------------------------- dodging */
+
+static int find_boss(const World *w)
+{
+    int i;
+    for (i = 0; i < w->nmon; i++)
+        if (w->mon[i].alive && w->mon[i].boss)
+            return i;
+    return -1;
+}
+
+static void test_dodge(void)
+{
+    static World w;
+    Monster *m;
+    Hit h = { 0 };
+    double hp, hp_before, plain, weak;
+    int b, i;
+    prog_new(&P, 71, CLASS_BARBARIAN);
+    world_init_floor(&w, &P, 10);
+    b = find_boss(&w);
+    CHECK(b >= 0);
+    if (b < 0)
+        return;
+    m = &w.mon[b];
+    w.h.x = m->x - FX_FROM_INT(20);
+    w.h.y = m->y;
+    /* The slam winds up first: the boss stands still and a roll out is perfect. */
+    m->slam_cd = 1;
+    CHECK(boss_windup(&w, &P, m) && m->windup == SLAM_WINDUP);
+    w.cmd.dodge = true;
+    CHECK(hero_dodge_update(&w) && m->dodged && w.h.dodge_cd == DODGE_CD);
+    w.cmd.dodge = false;
+    hp = w.h.hp;
+    hurt_hero(&w, &P, 1e9, EL_PHYS, b);                       /* mid-roll: untouchable */
+    CHECK(w.h.hp == hp);
+    for (i = 0; i < SLAM_WINDUP; i++)
+        boss_windup(&w, &P, m);
+    CHECK(m->windup == 0 && m->weak_t == WEAK_TICKS && w.perfect_dodges == 1 && w.h.hp == hp);
+    /* An opened boss takes double damage. */
+    h.base = 100;
+    h.dot = true;
+    h.skill = NO_SKILL;
+    m->max_hp = m->hp = 1e15;
+    hp_before = m->hp;
+    deal_damage(&w, &P, b, &h);
+    weak = hp_before - m->hp;
+    m->weak_t = 0;
+    hp_before = m->hp;
+    deal_damage(&w, &P, b, &h);
+    plain = hp_before - m->hp;
+    CHECK(fabs(weak - plain * WEAK_MULT) < 1e-6 * weak);
+    /* Idle, standing in the ring: sidestepped or hit, never opened. */
+    while (w.h.dodge_t > 0)
+        hero_dodge_update(&w);
+    w.h.x = m->x - FX_FROM_INT(20);
+    w.h.y = m->y;
+    w.ctl.manual_t = 0;
+    m->slam_cd = 1;
+    boss_windup(&w, &P, m);
+    for (i = 0; i < SLAM_WINDUP; i++)
+        boss_windup(&w, &P, m);
+    CHECK(m->weak_t == 0 && w.perfect_dodges == 1);
+}
+
 /* ------------------------------------------------- powers that change play */
 
 /* A line of four foes beside the hero, every other monster gone. */
@@ -1454,6 +1519,7 @@ int main(void)
     printf("door floor\n");    test_door_floor();
     printf("finds\n");         test_finds();
     printf("skill powers\n");  test_skill_powers();
+    printf("dodge\n");         test_dodge();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();

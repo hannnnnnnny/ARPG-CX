@@ -24,6 +24,16 @@ bool smooth_waypoint(const World *w, const int16_t field[MAP_H][MAP_W], fx x, fx
 #define CHAIN_PER_SECOND 8   /* RF_CHAIN bursts allowed each second */
 #define ECHO_TICKS (TICK_HZ / 2)   /* RF_ECHO: the second cast follows half a second later */
 #define ECHO_MULT 0.6
+/* Dodging (world_dodge.c). */
+#define DODGE_TICKS 9              /* 0.3 s roll, no damage taken */
+#define DODGE_CD 45
+#define SLAM_WINDUP 24             /* 0.8 s to get out */
+#define SLAM_RADIUS 44
+#define WEAK_TICKS (3 * TICK_HZ)
+#define WEAK_MULT 2.0
+bool hero_dodge_update(World *w);           /* true while rolling (no other action) */
+bool boss_windup(World *w, Profile *p, Monster *m);   /* true while the boss stands winding up */
+void perfect_dodge(World *w, Monster *m);
 void floater(World *w, int x, int y, const char *text, uint16_t color);
 void floater_kind(World *w, int x, int y, const char *text, uint16_t color, FloatKind k);
 /* Returns the new effect (or NULL if the pool is full) so callers can set its vfx. */

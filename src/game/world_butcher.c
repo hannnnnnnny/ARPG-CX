@@ -67,6 +67,11 @@ static void hook(World *w, Profile *p, Monster *m)
     int i;
     fx tx = m->x + (w->h.x > m->x ? FX(10) : -FX(10)), ty = m->y;
     effect(w, FX_BOLT, FX_TO_INT(m->x), FX_TO_INT(m->y), FX_TO_INT(w->h.x), FX_TO_INT(w->h.y), 0, 8, C_CHAIN);
+    if (w->hook_dodged) {                            /* rolled clear: the chain bites air */
+        w->hook_dodged = false;
+        perfect_dodge(w, m);
+        return;
+    }
     if (dist_px(m->x, m->y, w->h.x, w->h.y) > HOOK_MAX + 20 || hero_has(w, BUFF_UNSTOP))
         return;
     for (i = 0; i < 16; i++) {                       /* drag along the line, stopping at walls */
@@ -105,6 +110,7 @@ void butcher_act(World *w, Profile *p, Monster *m)
     }
     if (hook_ready(w, m, dist)) {
         w->hook_t = HOOK_WINDUP;
+        w->hook_dodged = false;
         return;
     }
     if (dist <= 22) {

@@ -28,6 +28,7 @@ static const Action actions[] = {
     { "back", BTN_BACK, "ESC" },        { "next_page", BTN_TAB, "TAB,M" },
     { "salvage", BTN_ALT, "DELETE,X" }, { "lock", BTN_LOCK, "CTRL,L" },
     { "fps", BTN_DEBUG, "F,F3" },       { "potion", BTN_POTION, "Q" },
+    { "dodge", BTN_DODGE, "SHIFT" },
     { "skill1", BTN_SKILL1 << 0, "1" }, { "skill2", BTN_SKILL1 << 1, "2" },
     { "skill3", BTN_SKILL1 << 2, "3" }, { "skill4", BTN_SKILL1 << 3, "4" },
     { "skill5", BTN_SKILL1 << 4, "5" }, { "skill6", BTN_SKILL1 << 5, "6" },
@@ -162,14 +163,14 @@ static void load_xinput(void)
 }
 
 /* Xbox layout: stick or d-pad moves, A confirms, B goes back, X Y LB RB
- * LT RT are skill slots 1-6, View pages through menus, Menu confirms,
+ * LT RT are skill slots 1-6, B also rolls in battle, View pages through menus, Menu confirms,
  * left stick click drinks a potion, right stick click toggles auto battle. */
 static uint32_t pad_bits(const XINPUT_GAMEPAD *p)
 {
     static const struct { WORD mask; uint32_t bits; } map[] = {
         { XINPUT_GAMEPAD_DPAD_UP, BTN_UP }, { XINPUT_GAMEPAD_DPAD_DOWN, BTN_DOWN },
         { XINPUT_GAMEPAD_DPAD_LEFT, BTN_LEFT }, { XINPUT_GAMEPAD_DPAD_RIGHT, BTN_RIGHT },
-        { XINPUT_GAMEPAD_A, BTN_OK }, { XINPUT_GAMEPAD_B, BTN_BACK }, { XINPUT_GAMEPAD_START, BTN_OK },
+        { XINPUT_GAMEPAD_A, BTN_OK }, { XINPUT_GAMEPAD_B, BTN_BACK | BTN_DODGE }, { XINPUT_GAMEPAD_START, BTN_OK },
         { XINPUT_GAMEPAD_BACK, BTN_TAB }, { XINPUT_GAMEPAD_X, BTN_SKILL1 }, { XINPUT_GAMEPAD_Y, BTN_SKILL1 << 1 },
         { XINPUT_GAMEPAD_LEFT_SHOULDER, BTN_SKILL1 << 2 }, { XINPUT_GAMEPAD_RIGHT_SHOULDER, BTN_SKILL1 << 3 },
         { XINPUT_GAMEPAD_LEFT_THUMB, BTN_POTION }, { XINPUT_GAMEPAD_RIGHT_THUMB, BTN_OK | BTN_AUTO },

@@ -4,7 +4,7 @@
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
  *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE] [--side]
- *               [--mythic ID,ID...] [--butcher] [--event KIND] [--drop RARITY] [--away HOURS] [--doors] [--aspect ID]
+ *               [--mythic ID,ID...] [--butcher] [--event KIND] [--drop RARITY] [--away HOURS] [--doors] [--aspect ID] [--floor N]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
@@ -17,7 +17,8 @@
  * one of events_d4.c (FloorEventKind); --drop drops an item of that rarity
  * (3 legendary, 4 unique, 5 mythic) beside the hero; --away opens on the
  * offline report for HOURS away; --doors opens a door choice; --aspect wears
- * that legendary aspect on a fitting slot. All act after --fast.
+ * that legendary aspect on a fitting slot; --floor starts on floor N. All act
+ * after --fast.
  *
  * Script tokens BUTTONS:TICKS, letters L R U D O(ok) B(back) T(tab) A(alt)
  * K(lock) F(debug), l / r (mouse buttons), 1-6 (skill keys), q (potion),
@@ -90,7 +91,7 @@ bool plat_read_mouse(int *x, int *y)
 
 static uint32_t parse_buttons(const char *s, size_t n)
 {
-    static const char keys[] = "LRUDOBTAKFlr123456qz";
+    static const char keys[] = "LRUDOBTAKFlr123456qzwxg";   /* w x: wheel, g: dodge */
     uint32_t b = 0;
     size_t i;
     for (i = 0; i < n && s[i] != '@'; i++) {
@@ -253,7 +254,7 @@ int main(int argc, char **argv)
     int event = 0, drop = -1;
     double away = 0;
     bool doors = false;
-    int aspect = 0;
+    int aspect = 0, floor = 0;
     uint32_t now = 2000000000u;
     Input in;
 
@@ -271,6 +272,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--away") && i + 1 < argc) away = atof(argv[++i]);
         else if (!strcmp(argv[i], "--doors")) doors = true;
         else if (!strcmp(argv[i], "--aspect") && i + 1 < argc) aspect = atoi(argv[++i]);
+        else if (!strcmp(argv[i], "--floor") && i + 1 < argc) floor = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--mythic") && i + 1 < argc) mythics = argv[++i];
         else if (!strcmp(argv[i], "--class") && i + 1 < argc) cls = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--lang") && i + 1 < argc) lang = atoi(argv[++i]);
@@ -315,6 +317,10 @@ int main(int argc, char **argv)
     }
     if (drop >= RAR_LEGEND && drop < RAR_COUNT)
         demo_drop(&g_game.s.w, &g_game.p, (Rarity)drop);
+    if (floor > 0) {                               /* e.g. a guardian floor for boss clips */
+        g_game.p.floor = floor;
+        session_start(&g_game.s, &g_game.p);
+    }
     if (aspect > 0)
         wear_aspect(&g_game.s.w, &g_game.p, aspect);
     if (doors) {                                   /* as if a floor had just been cleared at the controls */

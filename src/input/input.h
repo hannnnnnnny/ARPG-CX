@@ -27,7 +27,8 @@ enum {
     BTN_POTION  = 1u << 18, /* Q */
     BTN_AUTO    = 1u << 19, /* space: auto battle on/off */
     BTN_WHEEL_UP   = 1u << 20,
-    BTN_WHEEL_DOWN = 1u << 21
+    BTN_WHEEL_DOWN = 1u << 21,
+    BTN_DODGE   = 1u << 22  /* shift / pad B in battle: dodge roll */
 };
 
 typedef struct {

@@ -179,9 +179,10 @@ void game_hero_command(Game *g, const Input *in)
     c->mx = (int8_t)(in_held(in, BTN_RIGHT) - in_held(in, BTN_LEFT));
     c->my = (int8_t)(in_held(in, BTN_DOWN) - in_held(in, BTN_UP));
     c->potion = in_pressed(in, BTN_POTION);
+    c->dodge = in_pressed(in, BTN_DODGE);
     c->cast = key_cast(in);
     mouse_command(in, c);
-    c->active = c->mx || c->my || c->click || c->hold || c->cast >= 0 || c->potion;
+    c->active = c->mx || c->my || c->click || c->hold || c->cast >= 0 || c->potion || c->dodge;
 }
 
 /* ---------------------------------------------------------------- sound */

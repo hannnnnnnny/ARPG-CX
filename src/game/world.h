@@ -67,6 +67,9 @@ typedef struct {
     fx      px, py;      /* position at the previous tick (render interpolation) */
     double  hp, max_hp, dmg;
     int16_t atk_cd, flash, anim, slam_cd;
+    int16_t windup;      /* boss slam wind-up ticks left (a ring fills on the ground) */
+    int16_t weak_t;      /* opened by a perfect dodge: takes WEAK_MULT damage */
+    uint8_t dodged;      /* the hero rolled out of this wind-up */
     int16_t freeze, stun, chill, immob, vuln;          /* status timers (ticks) */
     int16_t dot_t[DOT_KINDS];
     double  dot_dps[DOT_KINDS];
@@ -177,6 +180,7 @@ typedef struct {
     fx tx, ty;            /* cursor in world pixels */
     int8_t cast;          /* skill bar slot to cast, -1 none */
     bool potion;
+    bool dodge;
 } HeroCommand;
 
 /* The door the hero came through (doors.h): a curse and a reward on this floor; 0 = none. */
@@ -249,6 +253,8 @@ typedef struct {
     int echo_t;              /* RF_ECHO: ticks until the skill casts again */
     uint8_t echo_skill;
     bool echoing;            /* the current cast is an echo (weaker, never echoes) */
+    int dodge_t, dodge_cd;   /* roll ticks left (no damage taken), cooldown */
+    fx dodge_vx, dodge_vy;
     int potions, potion_cd;
     int stacks, stacks_t; /* ferocity / berserker stacks */
     int target_kind, target_idx;
@@ -305,6 +311,8 @@ typedef struct {
     uint8_t core_skill;        /* the preset's core skill: mythic hits carry its numbers */
     int butcher_t;             /* ticks until the butcher walks in (0 = not this floor) */
     int16_t hook_t, hook_cd;   /* his chain: wind-up left, then cooldown */
+    bool hook_dodged;          /* the hero rolled while the hook wound up */
+    uint8_t perfect_dodges;    /* this floor: a boss felled after one drops an extra legendary */
     HeroCommand cmd;
     ControlRT ctl;
     Door door;

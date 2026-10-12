@@ -217,7 +217,7 @@ static double compute(World *w, const Monster *m, const Hit *h, HitLog *l)
     l->base = h->base;
     l->stat = st->stat_mult;
     l->add = 1.0 + additive(w, m, h) / 100.0;
-    l->mult = multipliers(w, m, h);
+    l->mult = multipliers(w, m, h) * (m->weak_t > 0 ? WEAK_MULT : 1.0);
     l->is_vuln = m->vuln > 0;
     l->vuln = l->is_vuln ? 1.2 + st->vuln_dmg : 1.0;
     l->is_crit = !h->dot && roll(w, crit_chance(w, m, h));
@@ -368,7 +368,7 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
     const Stats *st = &w->st;
     double d = raw * (1.0 - st->dr) / MAX(w->sig.res, 1.0), armor = stats_damage_reduction(st, w->floor);
     char buf[16];
-    if (w->h.dead_t > 0)
+    if (w->h.dead_t > 0 || w->h.dodge_t > 0)  /* mid-roll: untouchable */
         return;
     armor = 1.0 - (1.0 - armor) / (1.0 - st->dr);          /* armor part only */
     d *= element == EL_PHYS ? 1.0 - armor : (1.0 - stats_resist(st, (Element)element)) * (1.0 - armor * 0.5);
@@ -606,6 +606,10 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     p->souls += m->boss ? 5 : m->elite ? 1 : 0;   /* forgotten souls for the blacksmith */
     drop_item(w, p, m);
     drop_gem(w, p, m);
+    if ((m->boss || m->special == MS_BUTCHER) && w->perfect_dodges > 0) {   /* fought by hand */
+        world_drop_item(w, p, m->x, m->y, RAR_LEGEND, 4);
+        world_message(w, "DODGED AND DEFEATED: AN EXTRA LEGENDARY", RGB565(255, 200, 90));
+    }
     if (w->door.curse != DC_NO_ORBS && rng_range(&w->rng, 0, 99) < (m->boss ? 100 : m->elite ? 30 : 4))
         orb_drop(w, m->x, m->y);
     if (m->elite && w->door.reward == DR_MYTHIC)

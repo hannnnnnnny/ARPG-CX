@@ -29,16 +29,6 @@ static void enemy_shot(World *w, const Monster *m)
     pj->vfx = VX_ENEMY;
 }
 
-static void boss_slam(World *w, Profile *p, Monster *m)
-{
-    if (--m->slam_cd > 0)
-        return;
-    m->slam_cd = 120;
-    effect(w, FX_NOVA, FX_TO_INT(m->x), FX_TO_INT(m->y), 0, 0, 44, 14, RGB565(255, 90, 60));
-    if (dist_px(m->x, m->y, w->h.x, w->h.y) <= 44)
-        hurt_hero(w, p, m->dmg * 1.5, EL_PHYS, (int)(m - w->mon));
-}
-
 void monster_move(World *w, Monster *m, fx speed)
 {
     fx dx, dy, wx = w->h.x, wy = w->h.y;
@@ -73,8 +63,8 @@ static void monster_act(World *w, Profile *p, Monster *m)
         speed /= 2;
     if (m->atk_cd > 0)
         m->atk_cd -= m->chill > 0 && (w->tick & 1) ? 0 : 1;
-    if (m->boss)
-        boss_slam(w, p, m);
+    if (m->boss && boss_windup(w, p, m))
+        return;
     if ((d->ranged && dist < 100 && los) || dist <= reach) {
         if (m->atk_cd <= 0) {
             m->atk_cd = (int16_t)(m->champ & CH_FRENZIED ? d->atk_ticks * 3 / 5 : d->atk_ticks);
@@ -120,6 +110,7 @@ static void tick_statuses(World *w, Profile *p, int i)
     if (m->chill > 0) m->chill--;
     if (m->immob > 0) m->immob--;
     if (m->vuln > 0) m->vuln--;
+    if (m->weak_t > 0) m->weak_t--;
     tick_dots(w, p, i);
 }
 

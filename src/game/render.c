@@ -183,6 +183,16 @@ static void status_marks(const World *w, const Monster *m, int x, int top)
         }
 }
 
+/* A boss winding up its slam: the ring it will hit, filling toward its edge. */
+static void draw_windup(const Monster *m, int x, int y)
+{
+    int fill = SLAM_RADIUS * (SLAM_WINDUP - m->windup) / SLAM_WINDUP, r;
+    for (r = 4; r <= fill; r += 4)
+        fx_ellipse(x, y + 4, r, RGB565(140, 30, 24));
+    fx_ellipse(x, y + 4, SLAM_RADIUS, RGB565(255, 70, 50));
+    fx_ellipse(x, y + 4, SLAM_RADIUS - 1, RGB565(255, 70, 50));
+}
+
 static void draw_monster(const World *w, const Monster *m)
 {
     int x = ipx(m->px, m->x) - cam_x, y = ipx(m->py, m->y) - cam_y;
@@ -195,6 +205,10 @@ static void draw_monster(const World *w, const Monster *m)
     if (m->special == MS_BUTCHER)                    /* a pool of blood follows him */
         fx_ellipse(x, y + 6, 14 + ((w->tick >> 3) & 1), m->hp < m->max_hp * 0.4 ? RGB565(255, 40, 30)
                    : RGB565(150, 20, 20));
+    if (m->windup > 0)
+        draw_windup(m, x, y);
+    if (m->weak_t > 0 && (w->tick & 4))                /* opened by a perfect dodge */
+        fx_ellipse(x, y + 6, 18, RGB565(255, 200, 60));
     gfx_blit(spr_mon(m->type, frame, big), x - size / 2, top, flags);
     if (m->freeze)
         gfx_rect(x - size / 2, top, size, size, RGB565(140, 210, 255));

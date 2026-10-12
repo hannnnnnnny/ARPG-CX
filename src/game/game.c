@@ -157,7 +157,7 @@ static void battle_story(Game *g, Input *in)
 static void toggle_auto(Game *g)
 {
     g->p.auto_battle = !g->p.auto_battle;
-    game_toast(g, g->p.auto_battle ? "AUTO BATTLE: ON" : "AUTO BATTLE: OFF  (WASD / MOUSE / 1-6)",
+    game_toast(g, g->p.auto_battle ? "AUTO BATTLE: ON" : "AUTO BATTLE: OFF  (WASD / MOUSE / 1-6, SHIFT ROLLS)",
                RGB565(120, 200, 255));
     game_sfx(g, SND_UI_OK);
 }
@@ -214,7 +214,7 @@ static void battle_tick(Game *g, Input *in, uint32_t now)
         g->state = GS_MENU;
         g->page = PG_HERO;
         input_block_held(in);
-    } else if (in_back(in)) {
+    } else if (in_back(in) && !in_pressed(in, BTN_DODGE)) {   /* pad B dodges in battle */
         g->state = GS_MENU;
         g->page = PG_OPTIONS;
         input_block_held(in);
