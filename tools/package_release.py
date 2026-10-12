@@ -22,6 +22,10 @@ GUIDE_PC = """ASHEN DEPTHS 灰烬深渊
 【电脑版】双击 AshenDepthsDesktop.exe 即可游玩，无需安装。
   - Windows 可能提示"已保护你的电脑"：点"更多信息" -> "仍要运行"。
   - 空格：自动挂机 / 亲自操作切换；WASD 移动；鼠标点怪攻击；1-6 技能；Q 喝药。
+  - F11 或 Alt+Enter：全屏（宽屏两侧显示小地图、流派、战利品和本层事件）。
+  - 支持 Xbox 手柄；改键请编辑 exe 旁边自动生成的 settings.ini。
+  - 选项里可以分别调节音效和背景音乐的音量。
+  - 如果游戏崩溃，exe 旁边会生成 crash.txt，请把它附在 GitHub issue 里。
   - 15 个存档位，存档文件保存在 exe 同一目录。
   - 请先解压到普通文件夹（如桌面）再运行；不要直接在压缩包里双击，也不要放进 Program Files，否则存档可能保存失败。
   - 需要 Windows 10/11（Windows 7/8.1 需先安装微软 UCRT 运行库更新 KB2999226）。
@@ -33,6 +37,8 @@ GUIDE_CALC = """【计算器版】TI-Nspire CX / CX CAS（需先安装 Ndless）
   在"我的文档"里打开即可。存档 AshenDepths1.sav.tns 等会出现在同一目录。
 
 Desktop: double-click AshenDepthsDesktop.exe (Space toggles auto battle).
+  F11 / Alt+Enter: fullscreen with side panels. Xbox gamepads work; rebind
+  keys in settings.ini next to the exe. Crashes leave a crash.txt to report.
 Calculator: copy AshenDepths.tns into the ndless folder (Ndless required).
 Fonts: Fusion Pixel / Boutique Bitmap / Galmuri etc., licenses in fonts/.
 """
