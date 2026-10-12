@@ -47,6 +47,7 @@ void prog_new(Profile *p, uint32_t seed, int cls)
     p->lang = (uint8_t)lang_get();
     p->auto_battle = 1;
     p->sound_vol = 2;
+    p->music_vol = 2;
     p->seed = seed ? seed : 0xA5E1u;
     memset(p->bar, NO_SKILL, sizeof p->bar);
     prog_default_look(&p->look, p->cls, p->seed);
@@ -688,6 +689,7 @@ double prog_rebirth(Profile *p, int new_cls)
     p->show_fps = keep.show_fps;
     p->auto_battle = keep.auto_battle;
     p->sound_vol = keep.sound_vol;
+    p->music_vol = keep.music_vol;
     p->low_power = keep.low_power;
     p->total_kills = keep.total_kills;
     p->play_seconds = keep.play_seconds;

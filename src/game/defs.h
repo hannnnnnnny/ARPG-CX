@@ -229,6 +229,7 @@ typedef struct {
     uint8_t  lang;                     /* Lang (i18n.h) */
     uint8_t  auto_battle;              /* the hero fights on its own when not steered */
     uint8_t  sound_vol;                /* 0..SOUND_VOLUMES-1 (sound.h) */
+    uint8_t  music_vol;                /* 0..SOUND_VOLUMES-1, desktop music */
     /* idle bookkeeping */
     uint32_t save_time;                /* unix seconds of last save */
     double   kpm;                      /* recent kills per minute (for offline gains) */

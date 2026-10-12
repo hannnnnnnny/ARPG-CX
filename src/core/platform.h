@@ -31,6 +31,9 @@ bool        plat_read_mouse(int *x, int *y);
 /* Play a sound effect (sound.h) at volume 0..SOUND_VOLUMES-1; platforms
  * without audio ignore it. */
 void        plat_sound(int id, int volume);
+/* Wanted background track (MusicId, sound.h), set every tick; the platform
+ * crossfades when it changes. volume: 0..SOUND_VOLUMES-1. */
+void        plat_music(int track, int volume);
 
 /* Desktop only (GFX_HD builds that run the game loop): true when the window
  * is wide enough for side panels; plat_present_side hands over this frame's

@@ -28,6 +28,7 @@
 #include "../src/gfx/sprites.h"
 #include "../src/gfx/tiles.h"
 #include "../src/game/render_fx.h"
+#include "../src/core/sound.h"
 #include "../src/data/art.h"
 #include "../src/data/icons.h"
 #include "../src/gfx/font.h"
@@ -53,6 +54,7 @@ const char *plat_clock_desc(void) { return "TEST"; }
 const char *const *plat_control_lines(void) { return NULL; }
 bool plat_read_mouse(int *x, int *y) { (void)x; (void)y; return false; }
 void plat_sound(int id, int volume) { (void)id; (void)volume; }
+void plat_music(int track, int volume) { (void)track; (void)volume; }
 
 static Profile P, Q;
 static Session S;
@@ -1027,6 +1029,26 @@ static void test_text_stack(void)
     CHECK(b[0].shown && !b[1].shown);
 }
 
+static void test_music(void)
+{
+    static Game g;
+    static Profile Q;
+    memset(&g, 0, sizeof g);
+    g.state = GS_TITLE;
+    CHECK(game_music_track(&g) == MUS_TITLE);
+    g.state = GS_BATTLE;
+    g.s.w.theme = 2;
+    CHECK(game_music_track(&g) == MUS_HELLFORGE);
+    g.s.w.mon[3].alive = 1;
+    g.s.w.mon[3].special = MS_BUTCHER;                       /* the butcher walks in */
+    CHECK(game_music_track(&g) == MUS_BOSS);
+    prog_new(&P, 1, CLASS_ROGUE);                            /* the music volume is saved (v9) */
+    P.music_vol = 3;
+    CHECK(save_write(&P, "build/music.sav") == SAVE_OK);
+    CHECK(save_load(&Q, "build/music.sav") == SAVE_OK && Q.music_vol == 3);
+    remove("build/music.sav");
+}
+
 static void test_stat_compare(void)
 {
     StatDelta d[STAT_DELTAS];
@@ -1169,6 +1191,7 @@ int main(void)
     printf("text stack\n");    test_text_stack();
     printf("loot log\n");      test_loot_log();
     printf("stat compare\n");  test_stat_compare();
+    printf("music\n");         test_music();
     printf("dungeon\n");       test_dungeon_connectivity();
     test_d4(&g_checks, &g_fail);
     printf("idle sim\n");      test_idle_simulation();

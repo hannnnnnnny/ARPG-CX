@@ -67,6 +67,7 @@ const char *const *plat_control_lines(void) { return NULL; }
 static FILE *g_sound_log;   /* --sounds: one "tick id volume" line per effect, for video soundtracks */
 static int g_tick;
 
+void plat_music(int track, int volume) { (void)track; (void)volume; }
 void plat_sound(int id, int volume)
 {
     if (g_sound_log && fprintf(g_sound_log, "%d %d %d\n", g_tick, id, volume) < 0) {

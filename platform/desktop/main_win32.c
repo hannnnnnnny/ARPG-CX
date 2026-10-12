@@ -19,6 +19,7 @@
 #include "../../src/gfx/gfx.h"
 #include "audio_win32.h"
 #include "crash_win32.h"
+#include "music_win32.h"
 
 static HWND      g_wnd;
 static int       g_view_scale = 1, g_view_x, g_view_y;  /* where the frame sits in the window */
@@ -201,6 +202,7 @@ bool plat_read_mouse(int *x, int *y)
 }
 
 void plat_sound(int id, int volume) { audio_play(id, volume); }
+void plat_music(int track, int volume) { music_set(track, volume); }
 
 /* RGB565 -> 32-bit for GDI, the first 'cols' columns of each row. */
 static void to_rgb32(const uint16_t *fb, uint32_t *out, int cols)

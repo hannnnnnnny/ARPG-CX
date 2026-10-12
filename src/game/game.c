@@ -198,6 +198,25 @@ static void battle_tick(Game *g, Input *in, uint32_t now)
     }
 }
 
+/* A boss or the butcher on the floor brings the battle track. */
+static bool floor_threat(const World *w)
+{
+    int i;
+    for (i = 0; i < MAX_MON; i++)
+        if (w->mon[i].alive && (w->mon[i].boss || w->mon[i].special == MS_BUTCHER))
+            return true;
+    return false;
+}
+
+int game_music_track(const Game *g)
+{
+    if (g->state != GS_BATTLE && g->state != GS_MENU && g->state != GS_OFFLINE)
+        return MUS_TITLE;
+    if (floor_threat(&g->s.w))
+        return MUS_BOSS;
+    return MUS_CRYPT + ((g->s.w.theme % 5) + 5) % 5;
+}
+
 void game_tick(Game *g, Input *in, uint32_t now)
 {
     g->tick++;
@@ -229,6 +248,7 @@ void game_tick(Game *g, Input *in, uint32_t now)
         menu_tick(g, in, now);
         break;
     }
+    plat_music(game_music_track(g), g->p.music_vol);
 }
 
 static void render_perf(const Game *g)

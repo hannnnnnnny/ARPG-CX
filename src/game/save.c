@@ -17,7 +17,7 @@
  * and the event counters.
  * v7: glyph progress, 64 lost pages (chapters XI-XV, Torment tiers).
  * v8: auto battle and sound volume (keyboard and mouse play, desktop). */
-#define SAVE_VERSION 8
+#define SAVE_VERSION 9
 
 uint32_t save_crc32(const uint8_t *data, size_t n)
 {
@@ -208,7 +208,7 @@ static void write_body(Writer *w, const Profile *p)
     w8(w, p->auto_equip); w8(w, p->salvage_upto); w8(w, p->mode); w8(w, p->auto_skills);
     w8(w, p->auto_paragon); w8(w, p->auto_craft); w8(w, p->dmg_numbers); w8(w, p->story_pause);
     w8(w, p->show_fps); w8(w, p->low_power); w8(w, p->lang);
-    w8(w, p->auto_battle); w8(w, p->sound_vol);
+    w8(w, p->auto_battle); w8(w, p->sound_vol); w8(w, p->music_vol);
     for (i = 0; i < GLYPH_COUNT; i++) w16(w, p->glyph_xp[i]);
     w32(w, p->save_time); wf(w, p->kpm); wf(w, p->total_kills); wf(w, p->play_seconds); w32(w, p->seed);
     write_goals(w, p);
@@ -237,6 +237,7 @@ static void read_body(Reader *r, Profile *p)
     p->lang = r->version >= 5 ? r8(r) : (uint8_t)lang_get();
     p->auto_battle = r->version >= 8 ? r8(r) : 1;
     p->sound_vol = r->version >= 8 ? r8(r) : 2;
+    p->music_vol = r->version >= 9 ? r8(r) : 2;
     for (i = 0; i < GLYPH_COUNT; i++)
         p->glyph_xp[i] = r->version >= 7 ? r16(r) : 0;
     p->save_time = r32(r); p->kpm = rf(r); p->total_kills = rf(r); p->play_seconds = rf(r); p->seed = r32(r);
@@ -269,7 +270,7 @@ static bool profile_sane(const Profile *p)
         return false;
     if (p->best_floor < p->floor || p->gold < 0 || p->xp < 0 || p->embers < 0 || p->paragon_level < 0)
         return false;
-    if (p->lang >= LANG_COUNT || p->auto_battle > 1 || p->sound_vol >= SOUND_VOLUMES)
+    if (p->lang >= LANG_COUNT || p->auto_battle > 1 || p->sound_vol >= SOUND_VOLUMES || p->music_vol >= SOUND_VOLUMES)
         return false;
     for (i = 0; i < BOUNTY_SLOTS; i++)
         if (!bounty_sane(&p->bounty[i]))

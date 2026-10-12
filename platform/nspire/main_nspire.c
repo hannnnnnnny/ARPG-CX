@@ -180,6 +180,7 @@ const char *const *plat_control_lines(void) { return NULL; }
 /* No pointer and no speaker: keyboard play and silence. */
 bool plat_read_mouse(int *x, int *y) { (void)x; (void)y; return false; }
 void plat_sound(int id, int volume) { (void)id; (void)volume; }
+void plat_music(int track, int volume) { (void)track; (void)volume; }
 
 const char *plat_name(void) { return "TI-NSPIRE CX (NDLESS)"; }
 

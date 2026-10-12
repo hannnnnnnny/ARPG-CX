@@ -21,4 +21,11 @@ typedef enum {
 
 #define SOUND_VOLUMES 4              /* 0 off, 1 low, 2 medium, 3 high */
 
+/* Background music: one track per depth theme, a battle track for bosses
+ * and the butcher, and the title. Platforms without audio ignore it. */
+typedef enum {
+    MUS_NONE, MUS_TITLE, MUS_CRYPT, MUS_CATACOMBS, MUS_HELLFORGE, MUS_FROZEN, MUS_VOID, MUS_BOSS,
+    MUS_COUNT
+} MusicId;
+
 #endif

@@ -13,6 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 #include "audio_win32.h"
+#include "music_win32.h"
 #include "../../src/core/sound.h"
 
 #define RATE      22050
@@ -156,6 +157,7 @@ static void mix(int16_t *out)
     }
     g_clock += BUF_LEN;
     LeaveCriticalSection(&g_lock);
+    music_render(acc, BUF_LEN);
     for (i = 0; i < BUF_LEN; i++)
         out[i] = (int16_t)MAX(-32767.0f, MIN(32767.0f, acc[i]));
 }
