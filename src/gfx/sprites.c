@@ -478,6 +478,39 @@ static void compose_hero(const HeroLook *l, int frame, Grid *g)
         grid_stamp(g, art_helm[(l->helm - 1) & 3], 7, bob);
 }
 
+/* Scale a colour by num/256 and add 'add' (in 8-bit units), clamped. */
+static uint16_t tone(uint16_t c, int num, int add)
+{
+    int r = ((c >> 11) & 31) * 8 * num / 256 + add, g = ((c >> 5) & 63) * 4 * num / 256 + add;
+    int b = (c & 31) * 8 * num / 256 + add;
+    return RGB565(CLAMP(r, 0, 255), CLAMP(g, 0, 255), CLAMP(b, 0, 255));
+}
+
+static bool open_cell(const Grid *g, int x, int y)
+{
+    char c = cell_at(g, x, y);
+    return c == '.' || c == 'k';
+}
+
+/* The same top-left light the monsters are drawn with: edges facing the
+ * light brighten, edges facing away darken. Hero parts are recoloured per
+ * gear, so this works on the final colours instead of ramp letters. */
+static void light_hero(const Grid *g, uint16_t *px)
+{
+    int x, y;
+    for (y = 0; y < HERO_H; y++)
+        for (x = 0; x < HERO_W; x++) {
+            char c = g->cell[y][x];
+            bool lit, dark;
+            if (c == '.' || c == 'k' || c == '5')       /* outline and eyes stay as drawn */
+                continue;
+            lit = open_cell(g, x, y - 1) || open_cell(g, x - 1, y);
+            dark = open_cell(g, x, y + 1) || open_cell(g, x + 1, y);
+            if (lit != dark)
+                px[y * HERO_W + x] = lit ? tone(px[y * HERO_W + x], 307, 12) : tone(px[y * HERO_W + x], 180, 0);
+        }
+}
+
 static void paint_hero(const HeroLook *l, const Grid *g, uint16_t *px)
 {
     ColorMap m;
@@ -489,6 +522,7 @@ static void paint_hero(const HeroLook *l, const Grid *g, uint16_t *px)
             uint16_t col;
             px[y * HERO_W + x] = gear_role(l, c, &col) ? col : map_color(&m, c);
         }
+    light_hero(g, px);
 }
 
 const Sprite *spr_hero_look(const HeroLook *l, int frame)
