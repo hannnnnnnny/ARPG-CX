@@ -441,3 +441,45 @@ BEST TODAY: +%d	今日最佳：+%d	今日最佳：+%d	今日の最高：+%d	오�
 SHARE CODE	分享码	分享碼	共有コード	공유 코드
 ENTER: CONTINUE	ENTER：继续	ENTER：繼續	ENTER：続ける	ENTER: 계속
 UP/DOWN: SCROLL   DEL: DAILY TRIAL   ESC: BATTLE	上下：滚动   DEL：每日试炼   ESC：战斗	上下：捲動   DEL：每日試煉   ESC：戰鬥	上下：スクロール   DEL：デイリー試練   ESC：戦闘	위아래: 스크롤   DEL: 일일 시련   ESC: 전투
+RUNESMITH	符文匠	符文匠	ルーン鍛冶	룬 장인
+BIND TWO RUNES INTO A RUNEWORD	把两颗符文结成符文之语	把兩顆符文結成符文之語	2つのルーンでルーンワードを作る	룬 두 개로 룬워드를 만든다
+RAGE	怒	怒	怒り	분노
+SWIFT	迅	迅	迅速	신속
+FROST	霜	霜	霜	서리
+THUNDER	雷	雷	雷	천둥
+EVERY 5TH CRITICAL HIT	每第5次暴击	每第5次暴擊	5回目のクリティカルごと	치명타 5번마다
+ON A KILL	击杀时	擊殺時	撃破時	처치 시
+WHEN YOU ARE HIT	受到攻击时	受到攻擊時	被弾時	피격 시
+EVERY 3 SECONDS IN BATTLE	战斗中每3秒	戰鬥中每3秒	戦闘中3秒ごと	전투 중 3초마다
+A FROST NOVA THAT FREEZES (120%)	冰霜新星并冻结（120%）	冰霜新星並凍結（120%）	凍らせるフロストノヴァ（120%）	빙결 서리 고리 (120%)
+A FIRE BURST THAT BURNS (200%)	灼烧的火焰爆发（200%）	灼燒的火焰爆發（200%）	燃やす炎の炸裂（200%）	불태우는 화염 폭발 (200%)
+LIGHTNING STRIKES 3 FOES (150% EACH)	闪电打击3个敌人（各150%）	閃電打擊3個敵人（各150%）	稲妻が3体を撃つ（各150%）	번개가 적 3명 타격 (각 150%)
+A BONE BARRIER (10% LIFE) AND NOVA (80%)	白骨屏障（10%生命）与新星（80%）	白骨屏障（10%生命）與新星（80%）	骨の障壁（ライフ10%）とノヴァ（80%）	뼈 보호막 (생명력 10%)과 고리 (80%)
+FROSTRAGE	霜暴	霜暴	霜怒	서리분노
+WILDFIRE	狂焰	狂焰	野火	들불
+STORMFURY	雷怒	雷怒	嵐の怒り	폭풍분노
+BONECRACK	骨裂	骨裂	骨砕き	뼈부수기
+COLD HARVEST	寒收	寒收	冷たき収穫	차가운 수확
+PYRE	焚尸	焚屍	火葬	화장
+BLOOD THUNDER	血雷	血雷	血雷	피의 천둥
+OSSUARY	骨冢	骨冢	納骨堂	납골당
+RIME SHELL	霜壳	霜殼	霧氷の殻	서리 껍질
+SPITE	怨火	怨火	怨嗟	원한
+RETRIBUTION	雷罚	雷罰	報復	응징
+MARROW WARD	髓卫	髓衛	骨髄の守り	골수 수호
+WINTER STEP	冬步	冬步	冬の歩み	겨울 걸음
+EMBER TRAIL	余烬路	餘燼路	残り火の道	잔불 길
+STATIC	静电	靜電	静電	정전기
+BONE RHYTHM	骨律	骨律	骨の律動	뼈의 율동
+RUNE OF %s	%s之符文	%s之符文	%sのルーン	%s의 룬
+RUNEWORD BOUND: %s	符文之语已结成：%s	符文之語已結成：%s	ルーンワード完成：%s	룬워드 완성: %s
+YOU NEED ONE RUNE OF EACH	每种符文各需要一颗	每種符文各需要一顆	それぞれのルーンが1つ必要	각 룬이 하나씩 필요함
+RUNEWORDS FOUND %d/%d	已发现符文之语 %d/%d	已發現符文之語 %d/%d	発見したルーンワード %d/%d	발견한 룬워드 %d/%d
+WHEN	何时	何時	条件	조건
+THEN	效果	效果	効果	효과
+= %s	= %s	= %s	= %s	= %s
+= ??? (BIND IT TO DISCOVER ITS NAME)	= ???（结成后才知道名字）	= ???（結成後才知道名字）	= ???（作ると名前が分かる）	= ??? (만들어야 이름을 알 수 있음)
+ACTIVE: %s	生效中：%s	生效中：%s	発動中：%s	활성: %s
+NO RUNEWORD BOUND. RUNES DROP FROM ELITES AND GUARDIANS.	尚未结成符文之语。符文从精英和守护者身上掉落。	尚未結成符文之語。符文從精英和守護者身上掉落。	ルーンワードなし。ルーンはエリートと守護者が落とす。	룬워드 없음. 룬은 정예와 수호자가 떨어뜨림.
+UP/DOWN: TRIGGER OR EFFECT  LEFT/RIGHT: RUNE  ENTER: BIND  ESC: TOWN	上下：条件或效果  左右：符文  ENTER：结成  ESC：城镇	上下：條件或效果  左右：符文  ENTER：結成  ESC：城鎮	上下：条件/効果  左右：ルーン  ENTER：作る  ESC：町	위아래: 조건/효과  좌우: 룬  ENTER: 만들기  ESC: 마을
+ARROWS: PICK RUNES   ENTER: BIND   ESC: TOWN	方向键：挑选符文   ENTER：结成   ESC：城镇	方向鍵：挑選符文   ENTER：結成   ESC：城鎮	矢印：ルーン選択   ENTER：作る   ESC：町	방향키: 룬 선택   ENTER: 만들기   ESC: 마을

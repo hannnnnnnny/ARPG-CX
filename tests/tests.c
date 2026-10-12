@@ -19,6 +19,7 @@
 #include "../src/game/doors.h"
 #include "../src/game/codex.h"
 #include "../src/game/trial.h"
+#include "../src/game/runes.h"
 #include "../src/game/skills.h"
 #include "../src/game/build.h"
 #include "../src/game/story.h"
@@ -185,6 +186,58 @@ static void test_temper_and_masterwork(void)
     CHECK(crits == 3);                                     /* ranks 4, 8 and 12 */
     CHECK(item_affix_value(&it, 1) >= before * 1.6 - 1e-9);
     CHECK(item_mw_mult(&it) > 1.59 && item_mw_mult(&it) < 1.61);
+}
+
+/* -------------------------------------------------------------- runes */
+
+static void line_up(World *w);          /* below, with the skill powers */
+
+static void test_runes(void)
+{
+    static World w;
+    int t, e, i, frozen = 0;
+    /* Sixteen named runewords, one per trigger and effect. */
+    for (t = RN_RAGE; t <= RN_SWIFT; t++)
+        for (e = RN_FROST; e <= RN_BONE; e++) {
+            int k = runeword_index(t, e), j;
+            CHECK(k >= 0 && k < RUNEWORDS && runeword_name(t, e)[0]);
+            for (j = 0; j < k; j++)
+                CHECK(strcmp(runeword_name(RN_RAGE + j / RUNE_EFFECTS, RN_FROST + j % RUNE_EFFECTS), runeword_name(t, e)));
+        }
+    CHECK(runeword_index(RN_FROST, RN_RAGE) < 0 && runeword_index(RN_RAGE, RN_SWIFT) < 0);
+    /* Binding spends one of each and is remembered. */
+    prog_new(&P, 81, CLASS_SORCERER);
+    CHECK(!prog_bind_runeword(&P, RN_BLOOD, RN_FROST));            /* no runes yet */
+    P.runes[RN_BLOOD] = P.runes[RN_FROST] = 1;
+    CHECK(prog_bind_runeword(&P, RN_BLOOD, RN_FROST) && P.runes[RN_BLOOD] == 0 && P.runes[RN_FROST] == 0);
+    CHECK(P.rune_trig == RN_BLOOD && P.rune_eff == RN_FROST && runeword_found(&P, RN_BLOOD, RN_FROST)
+          && runewords_found(&P) == 1);
+    /* Cold Harvest: a kill freezes the foes around the hero, then rests 1 s. */
+    world_init_floor(&w, &P, 14);
+    line_up(&w);
+    w.mon[0].hp = 0.5;
+    w.mon[0].max_hp = 1;
+    w.rune_cd = 0;
+    {
+        Hit h = { 0 };
+        h.base = 10;
+        h.skill = NO_SKILL;
+        deal_damage(&w, &P, 0, &h);
+    }
+    for (i = 1; i < 4; i++)
+        frozen += w.mon[i].freeze > 0;
+    CHECK(!w.mon[0].alive && frozen > 0 && w.rune_cd == RUNE_COOLDOWN);
+    for (i = 0; i < RUNE_COOLDOWN; i++)
+        runes_tick(&w, &P);
+    CHECK(w.rune_cd == 0);
+    /* Rage counts five crits; rune hits never count. */
+    P.rune_trig = RN_RAGE;
+    w.rune_crits = 0;
+    for (i = 0; i < RUNE_RAGE_CRITS - 1; i++)
+        runes_on_crit(&w, &P, 1);
+    CHECK(w.rune_crits == RUNE_RAGE_CRITS - 1 && w.rune_cd == 0);
+    runes_on_crit(&w, &P, 1);
+    CHECK(w.rune_crits == 0 && w.rune_cd == RUNE_COOLDOWN);
 }
 
 /* ---------------------------------------------------------- daily trial */
@@ -881,6 +934,10 @@ static void test_save(void)
     P.bounty[1].have = 1;
     P.door_pref = DP_GOLD;
     prog_mark_found(&P, 5);
+    P.runes[RN_FROST] = 7;
+    P.rune_trig = RN_BLOOD;
+    P.rune_eff = RN_FIRE;
+    P.rune_found = 0x8001;
     n = save_serialize(&P, buf, sizeof buf);
     CHECK(n > 1000 && n < SAVE_MAX_BYTES);
     CHECK(save_deserialize(&Q, buf, n) == SAVE_OK);
@@ -889,6 +946,7 @@ static void test_save(void)
     CHECK(Q.lang == LANG_KO && Q.ach == P.ach && Q.lore == P.lore && Q.story_seen == P.story_seen);
     CHECK(Q.n_goblins == 3 && !memcmp(Q.bounty, P.bounty, sizeof P.bounty));
     CHECK(Q.door_pref == DP_GOLD && prog_found(&Q, 5) && !prog_found(&Q, 6));
+    CHECK(Q.runes[RN_FROST] == 7 && Q.rune_trig == RN_BLOOD && Q.rune_eff == RN_FIRE && Q.rune_found == 0x8001);
     CHECK(Q.paragon_level == P.paragon_level && !memcmp(Q.para, P.para, sizeof P.para));
     for (i = 0; i < n; i += 13) { /* any flipped byte is caught */
         buf[i] ^= 0x41;
@@ -1598,6 +1656,7 @@ int main(void)
     printf("dodge\n");         test_dodge();
     printf("codex\n");         test_codex();
     printf("trial\n");         test_trial();
+    printf("runes\n");         test_runes();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
     printf("skill tree\n");    test_skill_tree();
     printf("build mods\n");    test_build_mods();

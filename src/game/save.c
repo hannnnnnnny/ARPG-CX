@@ -217,6 +217,8 @@ static void write_body(Writer *w, const Profile *p)
     w8(w, p->door_pref);
     for (i = 0; i < UNIQUE_BITS / 8; i++) w8(w, p->found_unique[i]);
     w32(w, p->trial_day); w16(w, p->trial_best);
+    for (i = 0; i < RUNE_SLOTS; i++) w16(w, p->runes[i]);
+    w8(w, p->rune_trig); w8(w, p->rune_eff); w16(w, p->rune_found);
 }
 
 static void read_body(Reader *r, Profile *p)
@@ -253,6 +255,8 @@ static void read_body(Reader *r, Profile *p)
         for (i = 0; i < UNIQUE_BITS / 8; i++) p->found_unique[i] = r8(r);
         p->trial_day = r32(r);
         p->trial_best = r16(r);
+        for (i = 0; i < RUNE_SLOTS; i++) p->runes[i] = r16(r);
+        p->rune_trig = r8(r); p->rune_eff = r8(r); p->rune_found = r16(r);
     } else {
         prog_found_worn_uniques(p); /* the codex starts with what the hero already has */
     }
@@ -284,7 +288,7 @@ static bool profile_sane(const Profile *p)
     if (p->best_floor < p->floor || p->gold < 0 || p->xp < 0 || p->embers < 0 || p->paragon_level < 0)
         return false;
     if (p->lang >= LANG_COUNT || p->auto_battle > 1 || p->sound_vol >= SOUND_VOLUMES || p->music_vol >= SOUND_VOLUMES
-        || p->door_pref >= DP_COUNT)
+        || p->door_pref >= DP_COUNT || p->rune_trig >= RUNE_SLOTS || p->rune_eff >= RUNE_SLOTS)
         return false;
     for (i = 0; i < BOUNTY_SLOTS; i++)
         if (!bounty_sane(&p->bounty[i]))

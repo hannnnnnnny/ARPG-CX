@@ -26,7 +26,7 @@ typedef enum {
     CF_NONE, CF_NEW_GAME, CF_REBIRTH, CF_SALVAGE_ALL, CF_RESET_SKILLS, CF_SWITCH_PRESET, CF_RESET_PARAGON,
     CF_DELETE_SLOT
 } ConfirmKind;
-typedef enum { TOWN_LIST, TOWN_SMITH, TOWN_OCCULT, TOWN_JEWEL, TOWN_ALCHEMY, TOWN_GAMBLE, TOWN_COUNT } TownScreen;
+typedef enum { TOWN_LIST, TOWN_SMITH, TOWN_OCCULT, TOWN_JEWEL, TOWN_ALCHEMY, TOWN_GAMBLE, TOWN_RUNES, TOWN_COUNT } TownScreen;
 
 #define SAVE_SLOTS 15
 #define SLOT_ROWS  4      /* slot screen rows visible at once (the list scrolls) */
@@ -82,6 +82,7 @@ typedef struct {
     TownScreen town;
     int town_sel, town_opt;  /* row and the left/right choice (recipe, gem, aspect) */
     int town_mode;           /* occultist: 0 enchant, 1 imprint */
+    int rune_pick[2];        /* runesmith: trigger and effect being looked at (RuneKind) */
     Item gamble_last;
     EnchantDialog ench;
     Rng craft_rng;

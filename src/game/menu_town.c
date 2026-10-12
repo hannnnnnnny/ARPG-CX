@@ -12,6 +12,7 @@
 #include "balance.h"
 #include "items.h"
 #include "stats.h"
+#include "runes.h"
 #include "../gfx/font.h"
 #include "../gfx/sprites.h"
 #include "../core/bignum.h"
@@ -19,9 +20,11 @@
 #include <stdio.h>
 #include <string.h>
 
-static const char *const town_names[TOWN_COUNT] = { "", "BLACKSMITH", "OCCULTIST", "JEWELER", "ALCHEMIST", "GAMBLER" };
+static const char *const town_names[TOWN_COUNT] = { "", "BLACKSMITH", "OCCULTIST", "JEWELER", "ALCHEMIST", "GAMBLER",
+                                                    "RUNESMITH" };
 static const char *const town_desc[TOWN_COUNT] = { "", "MASTERWORK AND TEMPER YOUR GEAR", "ENCHANT AFFIXES, IMPRINT ASPECTS",
-                                                   "GEMS AND SOCKETS", "POTIONS AND ELIXIRS", "BUY UNKNOWN GEAR" };
+                                                   "GEMS AND SOCKETS", "POTIONS AND ELIXIRS", "BUY UNKNOWN GEAR",
+                                                   "BIND TWO RUNES INTO A RUNEWORD" };
 static const char *const elixir_names[ELIX_COUNT] = { "", "ELIXIR OF FORTITUDE", "ELIXIR OF PRECISION",
                                                       "ELIXIR OF ADVANTAGE", "ELIXIR OF IRON BARBS",
                                                       "ELIXIR OF WISDOM" };
@@ -263,6 +266,82 @@ static void enchant_dialog(const Game *g)
     }
 }
 
+/* -------------------------------------------------------------- runesmith */
+
+/* The rune looked at in row 0 (triggers) or row 1 (effects). */
+static int rune_pick(const Game *g, int row)
+{
+    int first = row == 0 ? RN_RAGE : RN_FROST, n = row == 0 ? RUNE_TRIGGERS : RUNE_EFFECTS;
+    int k = g->rune_pick[row];
+    return first + ((k % n) + n) % n;
+}
+
+static void runes_tick_menu(Game *g, Input *in)
+{
+    int row = CLAMP(g->town_sel, 0, 1);
+    if (in_left(in) || in_right(in))
+        g->rune_pick[row] += in_left(in) ? -1 : 1;
+    if (!in_ok(in))
+        return;
+    if (prog_bind_runeword(&g->p, rune_pick(g, 0), rune_pick(g, 1))) {
+        char buf[96];
+        snprintf(buf, sizeof buf, T("RUNEWORD BOUND: %s"), T(runeword_name(rune_pick(g, 0), rune_pick(g, 1))));
+        game_profile_changed(g);
+        game_toast(g, buf, C_GOOD);
+    } else {
+        game_toast(g, "YOU NEED ONE RUNE OF EACH", C_BAD);
+    }
+}
+
+static void rune_stone(int x, int y, int r, int count)
+{
+    char n[8];
+    gfx_rect(x, y, 72, 12, rune_color(r));
+    font_draw_fit(x + 3, y + 3, rune_name(r), 44, rune_color(r));
+    snprintf(n, sizeof n, "x%d", count);
+    font_draw(x + 69 - font_text_width(n, 1), y + 3, n, count ? C_TEXT : C_DIM, 1);
+}
+
+static void runeword_grid(const Game *g, int x, int y)
+{
+    char buf[48];
+    int t, e;
+    snprintf(buf, sizeof buf, T("RUNEWORDS FOUND %d/%d"), runewords_found(&g->p), RUNEWORDS);
+    font_draw(x, y, buf, C_SEL, 1);
+    for (t = RN_RAGE; t <= RN_SWIFT; t++)
+        for (e = RN_FROST; e <= RN_BONE; e++) {
+            bool known = runeword_found(&g->p, t, e), on = g->p.rune_trig == t && g->p.rune_eff == e;
+            font_draw_fit(x + (e - RN_FROST) * 77, y + 12 + (t - RN_RAGE) * 10, known ? runeword_name(t, e) : "???",
+                          74, on ? C_GOOD : known ? C_TEXT : C_DIM);
+        }
+}
+
+static void runes_render_menu(Game *g)
+{
+    char buf[96];
+    int r, row, t = rune_pick(g, 0), e = rune_pick(g, 1);
+    font_draw(8, 18, "RUNESMITH", C_SEL, 1);
+    for (r = RN_RAGE; r < RUNE_KINDS; r++)
+        rune_stone(8 + ((r - 1) % 4) * 76, 28 + (r - 1) / 4 * 14, r, g->p.runes[r]);
+    for (row = 0; row < 2; row++) {
+        int y = 60 + row * 16, k = rune_pick(g, row);
+        menu_row_highlight(y, 15, g->town_sel == row);
+        snprintf(buf, sizeof buf, "%s  < %s >  %s", T(row == 0 ? "WHEN" : "THEN"), T(rune_name(k)), T(rune_text(k)));
+        font_draw_fit(8, y + 3, buf, 304, row == 0 ? C_TEXT : rune_color(k));
+    }
+    if (runeword_found(&g->p, t, e))
+        snprintf(buf, sizeof buf, T("= %s"), T(runeword_name(t, e)));
+    else
+        snprintf(buf, sizeof buf, "%s", T("= ??? (BIND IT TO DISCOVER ITS NAME)"));
+    font_draw(8, 96, buf, C_SEL, 1);
+    if (rune_is_trigger(g->p.rune_trig))
+        snprintf(buf, sizeof buf, T("ACTIVE: %s"), T(runeword_name(g->p.rune_trig, g->p.rune_eff)));
+    else
+        snprintf(buf, sizeof buf, "%s", T("NO RUNEWORD BOUND. RUNES DROP FROM ELITES AND GUARDIANS."));
+    font_draw_fit(8, 108, buf, 304, C_DIM);
+    runeword_grid(g, 8, 124);
+}
+
 /* --------------------------------------------------------------- jeweler */
 
 static int best_gem_of(const Profile *p, int kind)
@@ -356,6 +435,7 @@ static int town_rows(const Game *g)
     switch (g->town) {
     case TOWN_ALCHEMY: return ELIX_COUNT;
     case TOWN_GAMBLE:  return 9;
+    case TOWN_RUNES:   return 2;
     case TOWN_LIST:    return TOWN_COUNT - 1;
     default:           return SLOT_COUNT;
     }
@@ -390,6 +470,7 @@ void town_tick(Game *g, Input *in)
     case TOWN_OCCULT:  occult_tick(g, in); break;
     case TOWN_JEWEL:   jewel_tick(g, in); break;
     case TOWN_ALCHEMY: alchemy_tick(g, in); break;
+    case TOWN_RUNES:   runes_tick_menu(g, in); break;
     default:           gamble_tick(g, in); break;
     }
 }
@@ -422,11 +503,11 @@ static void list_render(const Game *g)
 {
     int i;
     for (i = 1; i < TOWN_COUNT; i++) {
-        int y = 22 + (i - 1) * 38;
+        int y = 20 + (i - 1) * 32;
         bool on = g->sel[PG_TOWN] == i - 1;
-        menu_row_highlight(y, 34, on);
+        menu_row_highlight(y, 30, on);
         font_draw(12, y + 2, town_names[i], on ? C_SEL : C_TEXT, 2);
-        font_draw(14, y + 20, town_desc[i], C_DIM, 1);
+        font_draw(14, y + 19, town_desc[i], C_DIM, 1);
     }
 }
 
@@ -458,6 +539,11 @@ void town_render(Game *g)
     if (g->town == TOWN_LIST) {
         list_render(g);
         menu_footer(g, "ENTER: VISIT   TAB: PAGE   ESC: BATTLE");
+        return;
+    }
+    if (g->town == TOWN_RUNES) {
+        runes_render_menu(g);
+        menu_footer(g, "ARROWS: PICK RUNES   ENTER: BIND   ESC: TOWN");
         return;
     }
     font_draw(g->town == TOWN_ALCHEMY || g->town == TOWN_GAMBLE ? 8 : 150, 18, town_names[g->town], C_SEL, 1);

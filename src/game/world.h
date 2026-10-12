@@ -90,6 +90,7 @@ typedef struct {
     uint32_t flags;       /* RF_VULN ... */
     bool     dot, minion;
     uint8_t  sig;         /* thrown by a signature power: never triggers another */
+    uint8_t  rune;        /* a runeword effect: never feeds a rune trigger */
     double   crit_add, op_add, lucky;
 } Hit;
 
@@ -317,6 +318,7 @@ typedef struct {
     ControlRT ctl;
     Door door;
     int16_t chain_left;        /* RF_CHAIN bursts left this second (keeps chain reactions sane) */
+    int16_t rune_cd, rune_crits, rune_swift;   /* runeword inner cooldown and trigger counters */
     /* Carried across floors: the shrine blessing, the remarks, recent loot. */
     LootLog loot;
     uint8_t shrine;            /* ShrineKind of the active blessing */

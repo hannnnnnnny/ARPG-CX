@@ -120,6 +120,7 @@ typedef struct {
 
 #define BAG_SIZE 36
 #define UNIQUE_BITS 256      /* unique ids are a byte (Item.power) */
+#define RUNE_SLOTS 9         /* RUNE_KINDS in runes.h */
 
 /* ------------------------------------------------------------ skills */
 
@@ -236,6 +237,9 @@ typedef struct {
     uint8_t  found_unique[UNIQUE_BITS / 8];   /* every unique / mythic ever found (the codex) */
     uint32_t trial_day;                /* day (unix / 86400) of the best daily trial below */
     uint16_t trial_best;               /* floors gone down in that day's trial */
+    uint16_t runes[RUNE_SLOTS];        /* runes held, by RuneKind (runes.h) */
+    uint8_t  rune_trig, rune_eff;      /* the bound runeword, RN_NONE = none */
+    uint16_t rune_found;               /* runewords ever bound (one bit each) */
     /* idle bookkeeping */
     uint32_t save_time;                /* unix seconds of last save */
     double   kpm;                      /* recent kills per minute (for offline gains) */

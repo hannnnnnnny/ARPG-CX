@@ -6,6 +6,7 @@
 #include "doors.h"
 #include "mythic.h"
 #include "codex.h"
+#include "runes.h"
 #include "story.h"
 #include "balance.h"
 #include "progress.h"
@@ -332,6 +333,8 @@ void deal_damage(World *w, Profile *p, int i, const Hit *h)
         damage_floater(w, m, dmg, l.is_crit, l.is_vuln, l.is_op, h);
     if (w->st.b.sig && h->skill < CLASS_SKILLS)
         sig_on_hit(w, p, i, h, l.is_crit);
+    if (l.is_crit && !h->dot && !h->rune && !h->minion && m->alive)
+        runes_on_crit(w, p, i);
     if (w->st.b.myth_any && m->alive)
         myth_on_hit(w, p, i, h, l.is_crit);
     if ((h->flags & RF_PULL) && !h->dot && m->alive)
@@ -387,6 +390,8 @@ void hurt_hero(World *w, Profile *p, double raw, int element, int attacker)
         d -= a;
     }
     w->h.hp -= d;
+    if (attacker >= 0)
+        runes_on_hurt(w, p);
     if (d >= st->max_hp * 0.05)
         w->h.flash = 2; /* small chip damage doesn't strobe the hero */
     if (d > 0 && w->dmg_numbers != DMGNUM_OFF) {
@@ -607,6 +612,8 @@ void kill_rewards(World *w, Profile *p, Monster *m)
     p->souls += m->boss ? 5 : m->elite ? 1 : 0;   /* forgotten souls for the blacksmith */
     drop_item(w, p, m);
     drop_gem(w, p, m);
+    runes_drop(w, p, m);
+    runes_on_kill(w, p, m);
     if (m->boss && !m->special && rng_range(&w->rng, 0, 99) < GUARDIAN_UNIQUE_PCT) {   /* its own uniques */
         int u = codex_pick(w->theme, p->cls, &w->rng);
         if (u)

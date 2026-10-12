@@ -1,5 +1,6 @@
 #include "world_int.h"
 #include "doors.h"
+#include "runes.h"
 #include "balance.h"
 #include "progress.h"
 #include "skills.h"
@@ -298,6 +299,7 @@ void world_tick(World *w, Profile *p)
     if (w->tick % 10 == 1)
         bfs_field(w, w->fh, px_to_cell(w->h.x), px_to_cell(w->h.y));
     hero_update(w, p);
+    runes_tick(w, p);
     allies_update(w, p);
     monsters_update(w, p);
     projectiles_update(w, p);
