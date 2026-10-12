@@ -18,6 +18,7 @@
 
 #include "../../src/gfx/gfx.h"
 #include "audio_win32.h"
+#include "crash_win32.h"
 
 static HWND      g_wnd;
 static int       g_view_scale = 1, g_view_x, g_view_y;  /* where the frame sits in the window */
@@ -253,6 +254,7 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show)
      * scaling and the pixel art turns blurry. */
     SetProcessDPIAware();
     init_save_path();
+    crash_install();            /* after init_save_path, so crash.txt lands next to the exe */
     if (!plat_init()) {
         MessageBoxA(NULL, "Could not create the game window.", "Ashen Depths", MB_ICONERROR);
         return 1;
