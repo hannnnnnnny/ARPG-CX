@@ -118,6 +118,9 @@ typedef struct { uint8_t alive; fx x, y; int16_t t; Item item; } Drop;
 typedef enum { FL_TEXT, FL_DMG, FL_BIG, FL_MEGA } FloatKind;   /* FL_MEGA: signature hits */
 typedef struct { uint8_t alive, kind; int16_t x, y, t; uint16_t color; char text[32]; } Floater;
 
+#define LOOT_LOG 8
+typedef struct { char name[LOOT_LOG][40]; uint16_t color[LOOT_LOG]; uint8_t n; } LootLog;
+
 typedef enum { FX_SLASH, FX_BOOM, FX_NOVA, FX_BOLT, FX_WHIRL, FX_WARN, FX_METEOR, FX_PUFF, FX_HEAL, FX_LEVEL,
                FX_DASH, FX_RAISE, FX_SKYBOLT, FX_SHARDS, FX_FIRERING, FX_FALL,
                FX_STAR, FX_CRESCENT, FX_VORTEX, FX_REAP, FX_SPARK, FX_GIB } FxKind;
@@ -297,7 +300,8 @@ typedef struct {
     int16_t hook_t, hook_cd;   /* his chain: wind-up left, then cooldown */
     HeroCommand cmd;
     ControlRT ctl;
-    /* Carried across floors: the shrine blessing and the remarks. */
+    /* Carried across floors: the shrine blessing, the remarks, recent loot. */
+    LootLog loot;
     uint8_t shrine;            /* ShrineKind of the active blessing */
     int shrine_t;              /* ticks left, 0 = none */
     BarkState bark;
@@ -313,6 +317,8 @@ void world_init_floor(World *w, const Profile *p, int floor);
 void world_tick(World *w, Profile *p);
 void world_refresh_stats(World *w, const Profile *p);
 void world_message(World *w, const char *text, uint16_t color);
+/* Remember a notable pickup (newest first, LOOT_LOG kept) for the side panel. */
+void world_log_loot(World *w, const char *name, uint16_t color);
 void world_banner(World *w, const char *text, uint16_t color);
 static inline void world_sound(World *w, int id) { w->snd |= (uint64_t)1 << id; }
 static inline bool world_shrine(const World *w, int kind) { return w->shrine_t > 0 && w->shrine == kind; }

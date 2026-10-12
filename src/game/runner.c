@@ -58,6 +58,22 @@ static int run_ticks(Input *in, uint32_t *acc)
     return steps;
 }
 
+#ifdef GFX_HD
+/* Side panels render into their own buffer, then the battle view is rebound. */
+static void present_side_panels(void)
+{
+    static uint16_t side[FB_W * FB_H];
+    if (!plat_side_panels())
+        return;
+    gfx_bind(side);
+    game_render_side(&g_game);
+    gfx_bind(g_fb);
+    plat_present_side(side);
+}
+#else
+static void present_side_panels(void) {}
+#endif
+
 int run_game(void)
 {
     Input in;
@@ -92,6 +108,7 @@ int run_game(void)
         render_set_alpha(game_low_power(&g_game) ? 256 : (int)(acc / (US_PER_SEC / 256)));
         t_logic = plat_time_us();
         game_render(&g_game);
+        present_side_panels();
         plat_present(g_fb);
         t_render = plat_time_us();
         perf_frame(&perf, t_render, t_logic - now, t_render - t_logic, pending);

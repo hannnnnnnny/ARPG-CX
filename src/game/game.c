@@ -250,6 +250,12 @@ static void render_toast(const Game *g)
     font_draw((SCREEN_W - w) / 2, 188, g->toast, g->toast_color, 1);
 }
 
+void game_render_side(Game *g)
+{
+    bool run = g->state == GS_BATTLE || g->state == GS_MENU;
+    render_side(run ? &g->s.w : NULL, run ? &g->p : NULL);
+}
+
 void game_render(Game *g)
 {
     game_ui_frame();

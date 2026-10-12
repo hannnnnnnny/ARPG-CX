@@ -28,8 +28,37 @@ static uint32_t  g_rgb[FB_W * FB_H];
 static bool      g_quit;
 static LARGE_INTEGER g_freq, g_t0;
 static char      g_save_path[MAX_PATH];
+static uint32_t  g_side_rgb[FB_W * FB_H];
+static bool      g_side_ready;                          /* side panels arrived for this frame */
+static bool      g_fullscreen;
+static WINDOWPLACEMENT g_windowed;
+
+#define SIDE_W 160                                      /* one side panel, in framebuffer pixels */
 
 static int window_zoom(void);
+
+/* Borderless fullscreen on the window's monitor, and back to the old place. */
+static void toggle_fullscreen(void)
+{
+    DWORD style = (DWORD)GetWindowLongA(g_wnd, GWL_STYLE);
+    MONITORINFO mi;
+    mi.cbSize = sizeof mi;
+    g_windowed.length = sizeof g_windowed;
+    if (!g_fullscreen) {
+        if (!GetWindowPlacement(g_wnd, &g_windowed)
+            || !GetMonitorInfoA(MonitorFromWindow(g_wnd, MONITOR_DEFAULTTOPRIMARY), &mi))
+            return;
+        SetWindowLongA(g_wnd, GWL_STYLE, (LONG)(style & ~WS_OVERLAPPEDWINDOW));
+        SetWindowPos(g_wnd, HWND_TOP, mi.rcMonitor.left, mi.rcMonitor.top, mi.rcMonitor.right - mi.rcMonitor.left,
+                     mi.rcMonitor.bottom - mi.rcMonitor.top, SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+    } else {
+        SetWindowLongA(g_wnd, GWL_STYLE, (LONG)(style | WS_OVERLAPPEDWINDOW));
+        SetWindowPlacement(g_wnd, &g_windowed);
+        SetWindowPos(g_wnd, NULL, 0, 0, 0, 0,
+                     SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
+    }
+    g_fullscreen = !g_fullscreen;
+}
 
 static LRESULT CALLBACK wnd_proc(HWND h, UINT msg, WPARAM wp, LPARAM lp)
 {
@@ -42,6 +71,17 @@ static LRESULT CALLBACK wnd_proc(HWND h, UINT msg, WPARAM wp, LPARAM lp)
     case WM_MOUSEWHEEL:
         g_wheel += GET_WHEEL_DELTA_WPARAM(wp);
         return 0;
+    case WM_KEYDOWN:
+        if (wp == VK_F11 && !(lp & (1 << 30)))       /* bit 30: auto-repeat */
+            toggle_fullscreen();
+        return 0;
+    case WM_SYSKEYDOWN:                               /* Alt+Enter, without the system beep */
+        if (wp == VK_RETURN) {
+            if (!(lp & (1 << 30)))
+                toggle_fullscreen();
+            return 0;
+        }
+        return DefWindowProcA(h, msg, wp, lp);
     default:
         return DefWindowProcA(h, msg, wp, lp);
     }
@@ -130,7 +170,7 @@ uint32_t plat_read_buttons(void)
     if (key(VK_RIGHT) || key('D'))             b |= BTN_RIGHT;
     if (key(VK_UP) || key('W'))                b |= BTN_UP;
     if (key(VK_DOWN) || key('S'))              b |= BTN_DOWN;
-    if (key(VK_RETURN))                        b |= BTN_OK;
+    if (key(VK_RETURN) && !key(VK_MENU))       b |= BTN_OK;   /* Alt+Enter is fullscreen */
     if (key(VK_SPACE))                         b |= BTN_OK | BTN_AUTO;
     if (key(VK_ESCAPE))                        b |= BTN_BACK;
     if (key(VK_TAB) || key('M'))               b |= BTN_TAB;
@@ -162,17 +202,58 @@ bool plat_read_mouse(int *x, int *y)
 
 void plat_sound(int id, int volume) { audio_play(id, volume); }
 
+/* RGB565 -> 32-bit for GDI, the first 'cols' columns of each row. */
+static void to_rgb32(const uint16_t *fb, uint32_t *out, int cols)
+{
+    int x, y;
+    for (y = 0; y < FB_H; y++)
+        for (x = 0; x < cols; x++) {
+            uint16_t c = fb[y * FB_W + x];
+            uint32_t r = (c >> 11) & 31, g = (c >> 5) & 63, b = c & 31;
+            out[y * FB_W + x] = ((r * 255 / 31) << 16) | ((g * 255 / 63) << 8) | (b * 255 / 31);
+        }
+}
+
+/* Largest integer scale that fits keeps pixels crisp; the frame is centred. */
+static void layout(int cw, int ch, int *scale, int *ox, int *oy)
+{
+    *scale = MAX(1, MIN(cw / FB_W, ch / FB_H));
+    *ox = (cw - FB_W * *scale) / 2;
+    *oy = (ch - FB_H * *scale) / 2;
+}
+
+bool plat_side_panels(void)
+{
+    RECT rc;
+    int scale, ox, oy;
+    GetClientRect(g_wnd, &rc);
+    layout(rc.right, rc.bottom, &scale, &ox, &oy);
+    return ox >= SIDE_W;
+}
+
+void plat_present_side(const uint16_t *fb)
+{
+    to_rgb32(fb, g_side_rgb, SIDE_W * 2);
+    g_side_ready = true;
+}
+
+/* Each panel takes the widest whole scale that fits beside the frame. */
+static void blit_side(HDC dc, const BITMAPINFO *bi, int ox, int oy, int scale, int cw)
+{
+    int ps = MIN(scale, ox / SIDE_W), ph = FB_H * ps, py = oy + (FB_H * scale - ph) / 2;
+    StretchDIBits(dc, ox - SIDE_W * ps, py, SIDE_W * ps, ph, 0, 0, SIDE_W, FB_H,
+                  g_side_rgb, bi, DIB_RGB_COLORS, SRCCOPY);
+    StretchDIBits(dc, cw - ox, py, SIDE_W * ps, ph, SIDE_W, 0, SIDE_W, FB_H,
+                  g_side_rgb, bi, DIB_RGB_COLORS, SRCCOPY);
+}
+
 void plat_present(const uint16_t *fb)
 {
     BITMAPINFO bi;
     RECT rc;
     HDC dc;
-    int i, cw, ch, scale, ox, oy;
-    for (i = 0; i < FB_W * FB_H; i++) {
-        uint16_t c = fb[i];
-        uint32_t r = (c >> 11) & 31, g = (c >> 5) & 63, b = c & 31;
-        g_rgb[i] = ((r * 255 / 31) << 16) | ((g * 255 / 63) << 8) | (b * 255 / 31);
-    }
+    int cw, ch, scale, ox, oy;
+    to_rgb32(fb, g_rgb, FB_W);
     memset(&bi, 0, sizeof bi);
     bi.bmiHeader.biSize = sizeof bi.bmiHeader;
     bi.bmiHeader.biWidth = FB_W;
@@ -183,10 +264,7 @@ void plat_present(const uint16_t *fb)
     GetClientRect(g_wnd, &rc);
     cw = rc.right;
     ch = rc.bottom;
-    /* Largest integer scale that fits keeps pixels crisp. */
-    scale = MAX(1, MIN(cw / FB_W, ch / FB_H));
-    ox = (cw - FB_W * scale) / 2;
-    oy = (ch - FB_H * scale) / 2;
+    layout(cw, ch, &scale, &ox, &oy);
     g_view_scale = scale;
     g_view_x = ox;
     g_view_y = oy;
@@ -195,8 +273,10 @@ void plat_present(const uint16_t *fb)
     PatBlt(dc, 0, oy + FB_H * scale, cw, ch, BLACKNESS);
     PatBlt(dc, 0, 0, ox, ch, BLACKNESS);
     PatBlt(dc, ox + FB_W * scale, 0, cw, ch, BLACKNESS);
-    StretchDIBits(dc, ox, oy, FB_W * scale, FB_H * scale, 0, 0, FB_W, FB_H,
-                  g_rgb, &bi, DIB_RGB_COLORS, SRCCOPY);
+    StretchDIBits(dc, ox, oy, FB_W * scale, FB_H * scale, 0, 0, FB_W, FB_H, g_rgb, &bi, DIB_RGB_COLORS, SRCCOPY);
+    if (g_side_ready && ox >= SIDE_W)
+        blit_side(dc, &bi, ox, oy, scale, cw);
+    g_side_ready = false;
     ReleaseDC(g_wnd, dc);
     pump_messages();
 }

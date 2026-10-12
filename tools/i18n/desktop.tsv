@@ -9,3 +9,15 @@ AUTO BATTLE: OFF  (WASD / MOUSE / 1-6)	自动战斗：关（WASD/鼠标/1-6 操�
 AUTO	自动	自動	オート	자동
 MANUAL	手动	手動	手動	수동
 SLAY %d MORE TO OPEN THE STAIRS	还需击杀%d个才能打开楼梯	還需擊殺%d個才能打開樓梯	あと%d体倒すと階段が開く	계단을 열려면 %d마리 더 처치
+// Desktop side panels (wide windows / fullscreen).
+MAP	地图	地圖	マップ	지도
+SLAIN %d/%d	击杀 %d/%d	擊殺 %d/%d	撃破 %d/%d	처치 %d/%d
+BUILD	流派	流派	ビルド	빌드
+DPS %s	秒伤 %s	秒傷 %s	DPS %s	DPS %s
+CRIT %d%%	暴击 %d%%	暴擊 %d%%	会心 %d%%	극대화 %d%%
+APS %.2f	攻速 %.2f	攻速 %.2f	攻速 %.2f	공속 %.2f
+MYTHICS %d	神话 %d	神話 %d	神話 %d	신화 %d
+LOOT	战利品	戰利品	戦利品	전리품
+NOTHING YET	暂无	暫無	まだない	아직 없음
+FLOOR EVENT	本层事件	本層事件	階層イベント	층 이벤트
+NONE ON THIS FLOOR	本层没有	本層沒有	この階にはない	이 층에는 없음

@@ -32,4 +32,11 @@ bool        plat_read_mouse(int *x, int *y);
  * without audio ignore it. */
 void        plat_sound(int id, int volume);
 
+/* Desktop only (GFX_HD builds that run the game loop): true when the window
+ * is wide enough for side panels; plat_present_side hands over this frame's
+ * panels (left half / right half of an FB_W x FB_H buffer) before
+ * plat_present draws everything. */
+bool        plat_side_panels(void);
+void        plat_present_side(const uint16_t *fb);
+
 #endif

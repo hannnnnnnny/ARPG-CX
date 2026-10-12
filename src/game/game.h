@@ -112,6 +112,8 @@ typedef struct {
 void game_init(Game *g, const char *save_path, uint32_t now);
 void game_tick(Game *g, Input *in, uint32_t now);
 void game_render(Game *g);
+/* Desktop only: the side panels for wide windows (see render_side). */
+void game_render_side(Game *g);
 void game_save(Game *g, uint32_t now);
 static inline bool game_should_quit(const Game *g) { return g->quit; }
 static inline bool game_low_power(const Game *g) { return g->p.low_power != 0; }

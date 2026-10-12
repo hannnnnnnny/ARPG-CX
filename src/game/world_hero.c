@@ -246,6 +246,8 @@ void hero_pick_up(World *w, Profile *p, int di)
     tjoin(buf, sizeof buf, r == LOOT_EQUIPPED ? "EQUIPPED" : r == LOOT_BAGGED ? "" : "SALVAGED", name);
     if (r != LOOT_SALVAGED || d->item.rarity >= RAR_RARE)
         world_message(w, buf, rarity_color((Rarity)d->item.rarity));
+    if (d->item.rarity >= RAR_RARE)
+        world_log_loot(w, name, rarity_color((Rarity)d->item.rarity));
     if (learned)
         floater(w, hx(w), hy(w) - 26, "NEW ASPECT IN CODEX", RGB565(255, 140, 30));
     if (r == LOOT_EQUIPPED)

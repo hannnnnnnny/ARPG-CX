@@ -106,6 +106,7 @@ void world_init_floor(World *w, const Profile *p, int floor)
     char msg[sizeof w->msg];
     uint16_t msg_color = w->msg_color;
     BarkState bark = w->bark;
+    LootLog loot = w->loot;
     uint64_t snd = w->snd;            /* e.g. the stairs sound of the floor just left */
     uint8_t shrine = w->shrine;
     int shrine_t = w->shrine_t;
@@ -133,6 +134,7 @@ void world_init_floor(World *w, const Profile *p, int floor)
     w->msg_color = msg_color;
     w->msg_t = msg_t;
     w->bark = bark;
+    w->loot = loot;
     w->snd = snd;
     w->shrine = shrine;
     w->shrine_t = shrine_t;
@@ -147,6 +149,19 @@ void world_message(World *w, const char *text, uint16_t color)
     snprintf(w->msg, sizeof w->msg, "%s", text);
     w->msg_color = color;
     w->msg_t = 4 * TICK_HZ;
+}
+
+void world_log_loot(World *w, const char *name, uint16_t color)
+{
+    LootLog *l = &w->loot;
+    int i;
+    for (i = MIN(l->n, LOOT_LOG - 1); i > 0; i--) {
+        memcpy(l->name[i], l->name[i - 1], sizeof l->name[i]);
+        l->color[i] = l->color[i - 1];
+    }
+    snprintf(l->name[0], sizeof l->name[0], "%s", name);
+    l->color[0] = color;
+    l->n = (uint8_t)MIN(l->n + 1, LOOT_LOG);
 }
 
 void world_banner(World *w, const char *text, uint16_t color)

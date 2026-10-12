@@ -3,11 +3,13 @@
  *
  *   ad_headless [--script "O:2 -:300 T:2"] [--shot TICK:file.png]...
  *               [--new] [--class 0-5] [--preset 0-2] [--save file] [--trace N] [--fast HOURS]
- *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE]
+ *               [--lang 0-4] [--sig] [--record START:COUNT:EVERY:PREFIX] [--sounds FILE] [--side]
  *               [--mythic ID,ID...] [--butcher] [--event KIND]
  *
  * --record writes COUNT frames, one every EVERY ticks from tick START, as
  * PREFIX0000.png, PREFIX0001.png ... (README clips are made from these).
+ * --side also writes the desktop side panels (map, build, loot, event) of
+ * every --shot as NAME_side.png.
  * --sounds logs every sound effect the game asks for as "tick id volume"
  * lines, so a video can be scored with the game's own effects.
  * --mythic wears the listed mythic powers (mythic.h ids) and --butcher
@@ -45,6 +47,7 @@ typedef struct { int start, count, every; const char *prefix; } Record;
 
 static uint16_t g_fb[FB_W * FB_H];
 static Game g_game;
+static bool g_side_shots;          /* --side: every --shot also writes NAME_side.png */
 static uint32_t g_buttons;
 static bool g_mouse;
 static int g_mx, g_my;
@@ -134,6 +137,20 @@ static void parse_record(const char *arg, Record *r)
 }
 
 /* One frame of the recording, if this tick is one of them. */
+/* The desktop side panels for the same frame, as "<shot>_side.png". */
+static void write_side_shot(const char *shot)
+{
+    static uint16_t side[FB_W * FB_H];
+    char path[512];
+    const char *dot = strrchr(shot, '.');
+    int stem = dot ? (int)(dot - shot) : (int)strlen(shot);
+    gfx_bind(side);
+    game_render_side(&g_game);
+    gfx_bind(g_fb);
+    snprintf(path, sizeof path, "%.*s_side.png", stem, shot);
+    png_write_rgb565(path, side, FB_W, FB_H);
+}
+
 static void record_frame(const Record *r, int tick)
 {
     char path[400];
@@ -212,6 +229,7 @@ int main(int argc, char **argv)
         else if (!strcmp(argv[i], "--trace") && i + 1 < argc) trace = atoi(argv[++i]);
         else if (!strcmp(argv[i], "--fast") && i + 1 < argc) fast = atof(argv[++i]);
         else if (!strcmp(argv[i], "--new")) fresh = true;
+        else if (!strcmp(argv[i], "--side")) g_side_shots = true;
         else if (!strcmp(argv[i], "--sig")) sig = true;
         else if (!strcmp(argv[i], "--butcher")) butcher = true;
         else if (!strcmp(argv[i], "--event") && i + 1 < argc) event = atoi(argv[++i]);
@@ -273,6 +291,8 @@ int main(int argc, char **argv)
                 if (shots[k].tick == tick) {
                     game_render(&g_game);
                     png_write_rgb565(shots[k].path, g_fb, FB_W, FB_H);
+                    if (g_side_shots)
+                        write_side_shot(shots[k].path);
                 }
             input_feed(&in, g_buttons);
             in.mouse = plat_read_mouse(&in.mx, &in.my);

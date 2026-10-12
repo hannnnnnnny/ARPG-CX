@@ -1027,6 +1027,21 @@ static void test_text_stack(void)
     CHECK(b[0].shown && !b[1].shown);
 }
 
+static void test_loot_log(void)
+{
+    static World w;
+    char name[16];
+    int i;
+    memset(&w, 0, sizeof w);
+    for (i = 0; i < LOOT_LOG + 3; i++) {
+        snprintf(name, sizeof name, "ITEM %d", i);
+        world_log_loot(&w, name, (uint16_t)i);
+    }
+    CHECK(w.loot.n == LOOT_LOG);                          /* capped */
+    CHECK(!strcmp(w.loot.name[0], "ITEM 10") && w.loot.color[0] == 10);   /* newest first */
+    CHECK(!strcmp(w.loot.name[LOOT_LOG - 1], "ITEM 3"));
+}
+
 static int brightness(const uint16_t *px)
 {
     int i, sum = 0;
@@ -1137,6 +1152,7 @@ int main(void)
     printf("monster art\n");   test_monster_art();
     printf("tiles\n");         test_tiles();
     printf("text stack\n");    test_text_stack();
+    printf("loot log\n");      test_loot_log();
     printf("dungeon\n");       test_dungeon_connectivity();
     test_d4(&g_checks, &g_fail);
     printf("idle sim\n");      test_idle_simulation();
