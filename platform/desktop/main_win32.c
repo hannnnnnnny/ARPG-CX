@@ -20,6 +20,7 @@
 #include "audio_win32.h"
 #include "crash_win32.h"
 #include "music_win32.h"
+#include "input_win32.h"
 
 static HWND      g_wnd;
 static int       g_view_scale = 1, g_view_x, g_view_y;  /* where the frame sits in the window */
@@ -59,6 +60,32 @@ static void toggle_fullscreen(void)
                      SWP_NOMOVE | SWP_NOSIZE | SWP_NOZORDER | SWP_NOOWNERZORDER | SWP_FRAMECHANGED);
     }
     g_fullscreen = !g_fullscreen;
+    input_set_setting("window", "fullscreen", g_fullscreen);
+}
+
+/* Where the window was when the game last closed (windowed size and place). */
+static void restore_window(void)
+{
+    int w = input_setting("window", "width", 0), h = input_setting("window", "height", 0);
+    if (w >= 320 && h >= 240)
+        SetWindowPos(g_wnd, NULL, input_setting("window", "x", 0), input_setting("window", "y", 0), w, h,
+                     SWP_NOZORDER | SWP_NOOWNERZORDER);
+    if (input_setting("window", "fullscreen", 0))
+        toggle_fullscreen();
+}
+
+static void remember_window(void)
+{
+    WINDOWPLACEMENT wp;
+    const RECT *r;
+    wp.length = sizeof wp;
+    if (!GetWindowPlacement(g_wnd, &wp))
+        return;
+    r = g_fullscreen ? &g_windowed.rcNormalPosition : &wp.rcNormalPosition;
+    input_set_setting("window", "x", r->left);
+    input_set_setting("window", "y", r->top);
+    input_set_setting("window", "width", r->right - r->left);
+    input_set_setting("window", "height", r->bottom - r->top);
 }
 
 static LRESULT CALLBACK wnd_proc(HWND h, UINT msg, WPARAM wp, LPARAM lp)
@@ -117,6 +144,7 @@ bool plat_init(void)
                           NULL, NULL, wc.hInstance, NULL);
     if (!g_wnd)
         return false;
+    restore_window();
     ShowWindow(g_wnd, SW_SHOW);
     QueryPerformanceFrequency(&g_freq);
     QueryPerformanceCounter(&g_t0);
@@ -127,6 +155,8 @@ bool plat_init(void)
 
 void plat_shutdown(void)
 {
+    if (g_wnd)
+        remember_window();
     audio_shutdown();
     timeEndPeriod(1);
     if (g_wnd)
@@ -162,28 +192,10 @@ static uint32_t mouse_bits(void)
 
 uint32_t plat_read_buttons(void)
 {
-    uint32_t b = 0;
-    int s;
     pump_messages();
     if (GetForegroundWindow() != g_wnd)
         return g_last_buttons = 0;
-    if (key(VK_LEFT) || key('A'))              b |= BTN_LEFT;
-    if (key(VK_RIGHT) || key('D'))             b |= BTN_RIGHT;
-    if (key(VK_UP) || key('W'))                b |= BTN_UP;
-    if (key(VK_DOWN) || key('S'))              b |= BTN_DOWN;
-    if (key(VK_RETURN) && !key(VK_MENU))       b |= BTN_OK;   /* Alt+Enter is fullscreen */
-    if (key(VK_SPACE))                         b |= BTN_OK | BTN_AUTO;
-    if (key(VK_ESCAPE))                        b |= BTN_BACK;
-    if (key(VK_TAB) || key('M'))               b |= BTN_TAB;
-    if (key(VK_DELETE) || key('X'))            b |= BTN_ALT;
-    if (key(VK_CONTROL) || key('L'))           b |= BTN_LOCK;
-    if (key('F') || key(VK_F3))                b |= BTN_DEBUG;
-    if (key('Q'))                              b |= BTN_POTION;
-    for (s = 0; s < 6; s++)
-        if (key('1' + s))
-            b |= BTN_SKILL1 << s;
-    b |= mouse_bits();
-    return g_last_buttons = b;
+    return g_last_buttons = input_keys() | input_pad() | mouse_bits();   /* settings.ini bindings, gamepad */
 }
 
 bool plat_read_mouse(int *x, int *y)
@@ -336,7 +348,8 @@ int WINAPI WinMain(HINSTANCE inst, HINSTANCE prev, LPSTR cmd, int show)
      * scaling and the pixel art turns blurry. */
     SetProcessDPIAware();
     init_save_path();
-    crash_install();            /* after init_save_path, so crash.txt lands next to the exe */
+    crash_install();
+    input_load_settings();      /* settings.ini next to the exe: key bindings, window */            /* after init_save_path, so crash.txt lands next to the exe */
     if (!plat_init()) {
         MessageBoxA(NULL, "Could not create the game window.", "Ashen Depths", MB_ICONERROR);
         return 1;
