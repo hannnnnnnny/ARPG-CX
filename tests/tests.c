@@ -583,6 +583,12 @@ static void test_door_floor(void)
     CHECK(P.floor == 8 && S.door_t == DOOR_WAIT && S.w.door.reward == DR_NONE);
     session_take_door(&S, &P, 2);
     CHECK(S.door_t == 0 && S.w.door.reward == S.doors[2].reward);
+    /* Travelling (codex, trial) keeps story pages still waiting to be shown. */
+    S.story_pending = 3;
+    S.story_queue[0] = 4;
+    S.story_count = 1;
+    session_travel(&S, &P, 30);
+    CHECK(P.floor == 30 && S.w.floor == 30 && S.story_pending == 3 && S.story_count == 1 && S.door_t == 0);
 }
 
 static void test_finds(void)

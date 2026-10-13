@@ -75,10 +75,9 @@ void trial_begin(Game *g, uint32_t now)
     t->active = true;
     t->card = t->result = false;
     g->p.seed = trial_seed(t->day);
-    g->p.floor = t->start;
     g->p.mode = MODE_PUSH;
     g->s.rule = trial_rule(t->day);
-    session_start(&g->s, &g->p);
+    session_travel(&g->s, &g->p, t->start);
     g->state = GS_BATTLE;
     world_banner(&g->s.w, "THE DAILY TRIAL BEGINS", C_TITLE);
 }
@@ -107,7 +106,7 @@ void trial_end(Game *g)
     t->active = false;
     t->result = true;
     memset(&g->s.rule, 0, sizeof g->s.rule);
-    session_start(&g->s, &g->p);
+    session_travel(&g->s, &g->p, g->p.floor);
 }
 
 /* ------------------------------------------------------------- drawing */
@@ -135,6 +134,13 @@ static int rule_lines(const Door *d, int x, int y, int w)
     return font_draw_wrapped(x, y, door_reward_text(d->reward), w, C_BOON);
 }
 
+/* Everyone shares one trial a day (UTC), so say when the next one comes. */
+static void trial_countdown(char *out, size_t cap, uint32_t now)
+{
+    uint32_t left = 86400u - now % 86400u;
+    snprintf(out, cap, T("NEXT TRIAL IN %uH %02uM"), (unsigned)(left / 3600), (unsigned)(left / 60 % 60));
+}
+
 void trial_render_card(const Game *g, uint32_t now)
 {
     char buf[96];
@@ -143,7 +149,7 @@ void trial_render_card(const Game *g, uint32_t now)
     int y;
     panel(30, 40, 260, 150, C_TITLE);
     font_draw_centered(48, "DAILY TRIAL", C_TITLE, RGB565(0, 0, 0), 1);
-    font_draw_centered(60, "THE SAME FLOORS AND RULES FOR EVERYONE TODAY", C_LOW, RGB565(0, 0, 0), 1);
+    font_draw_centered(60, "SAME FLOORS AND RULES FOR ALL TODAY", C_LOW, RGB565(0, 0, 0), 1);
     snprintf(buf, sizeof buf, T("START AT FLOOR %d. TEN MINUTES: GO AS DEEP AS YOU CAN."), trial_start_floor(&g->p));
     y = font_draw_wrapped(40, 76, buf, 240, C_TXT) + 4;
     y = rule_lines(&d, 40, y, 240) + 4;
@@ -152,7 +158,9 @@ void trial_render_card(const Game *g, uint32_t now)
     else
         snprintf(buf, sizeof buf, "%s", T("NO RUN YET TODAY"));
     font_draw(40, y, buf, C_TITLE, 1);
-    font_draw(40, y + 11, "NOTHING FOUND IN THE TRIAL IS KEPT, ONLY THE SCORE.", C_LOW, 1);
+    y = font_draw_wrapped(40, y + 11, "NOTHING FOUND IN THE TRIAL IS KEPT, ONLY THE SCORE.", 240, C_LOW);
+    trial_countdown(buf, sizeof buf, now);
+    font_draw(40, y, buf, C_LOW, 1);
     font_draw_centered(176, "ENTER: START   ESC: CLOSE", C_TXT, RGB565(0, 0, 0), 1);
 }
 

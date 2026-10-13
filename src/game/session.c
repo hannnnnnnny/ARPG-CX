@@ -66,6 +66,16 @@ void session_enter_floor(Session *s, Profile *p)
         world_apply_door(&s->w, p, s->rule);
 }
 
+static void announce_floor(World *w, const Profile *p);
+
+void session_travel(Session *s, Profile *p, int floor)
+{
+    p->floor = MAX(floor, 1);
+    s->door_t = 0;
+    session_enter_floor(s, p);
+    announce_floor(&s->w, p);
+}
+
 void session_start(Session *s, Profile *p)
 {
     s->story_pending = -1;

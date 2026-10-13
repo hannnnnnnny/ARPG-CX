@@ -33,8 +33,7 @@ static void travel(Game *g, int unique)
         game_toast(g, "NOT REACHED YET", C_BAD);
         return;
     }
-    g->p.floor = f;
-    session_start(&g->s, &g->p);
+    session_travel(&g->s, &g->p, f);
     g->state = GS_BATTLE;
     snprintf(buf, sizeof buf, T("TRAVELLED TO FLOOR %d"), f);
     game_toast(g, buf, C_GOOD);

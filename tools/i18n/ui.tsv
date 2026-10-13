@@ -483,3 +483,5 @@ ACTIVE: %s	生效中：%s	生效中：%s	発動中：%s	활성: %s
 NO RUNEWORD BOUND. RUNES DROP FROM ELITES AND GUARDIANS.	尚未结成符文之语。符文从精英和守护者身上掉落。	尚未結成符文之語。符文從精英和守護者身上掉落。	ルーンワードなし。ルーンはエリートと守護者が落とす。	룬워드 없음. 룬은 정예와 수호자가 떨어뜨림.
 UP/DOWN: TRIGGER OR EFFECT  LEFT/RIGHT: RUNE  ENTER: BIND  ESC: TOWN	上下：条件或效果  左右：符文  ENTER：结成  ESC：城镇	上下：條件或效果  左右：符文  ENTER：結成  ESC：城鎮	上下：条件/効果  左右：ルーン  ENTER：作る  ESC：町	위아래: 조건/효과  좌우: 룬  ENTER: 만들기  ESC: 마을
 ARROWS: PICK RUNES   ENTER: BIND   ESC: TOWN	方向键：挑选符文   ENTER：结成   ESC：城镇	方向鍵：挑選符文   ENTER：結成   ESC：城鎮	矢印：ルーン選択   ENTER：作る   ESC：町	방향키: 룬 선택   ENTER: 만들기   ESC: 마을
+NEXT TRIAL IN %uH %02uM	下一次试炼：%u小时%02u分后	下一次試煉：%u小時%02u分後	次の試練まで %u時間%02u分	다음 시련까지 %u시간 %02u분
+SAME FLOORS AND RULES FOR ALL TODAY	今天所有人都是同样的楼层和规则	今天所有人都是同樣的樓層和規則	今日は全員が同じ階と同じルール	오늘은 모두 같은 층과 규칙
