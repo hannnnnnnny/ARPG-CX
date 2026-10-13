@@ -524,7 +524,8 @@ static void drop_gem(World *w, Profile *p, const Monster *m)
     if (rng_range(&w->rng, 0, 99) >= chance)
         return;
     kind = rng_range(&w->rng, 0, GEM_KINDS - 1);
-    tier = CLAMP(w->floor / 12 - rng_range(&w->rng, 0, 1), 0, GEM_TIERS - 1);
+    tier = w->floor / 12 - rng_range(&w->rng, 0, 1);   /* roll once: CLAMP evaluates its value up to 3 times */
+    tier = CLAMP(tier, 0, GEM_TIERS - 1);
     p->gems[kind][tier]++;
     snprintf(buf, sizeof buf, "+%s", gem_name(gem_id(kind, tier)));
     floater(w, FX_TO_INT(m->x), FX_TO_INT(m->y) - 24, buf, gem_color(kind));

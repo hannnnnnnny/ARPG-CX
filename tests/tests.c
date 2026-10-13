@@ -281,6 +281,31 @@ static void test_trial(void)
 
 /* --------------------------------------------------------------- codex */
 
+/* Regression: a gem's tier was rolled inside CLAMP, which re-rolled it,
+ * so floors below 12 could write gems[kind][-1] (a free top gem, or past
+ * the array). Every gem from a shallow boss must be the lowest tier. */
+static void test_gem_tiers(void)
+{
+    static World w;
+    int k, kind, tier, low = 0, other = 0;
+    prog_new(&P, 63, CLASS_BARBARIAN);
+    memset(P.gems, 0, sizeof P.gems);
+    world_init_floor(&w, &P, 3);
+    for (k = 0; k < 400; k++) {
+        Monster *m = &w.mon[0];
+        memset(m, 0, sizeof *m);
+        m->alive = 1;
+        m->boss = 1;                                     /* a boss always drops a gem */
+        m->x = w.h.x;
+        m->y = w.h.y;
+        kill_rewards(&w, &P, m);
+    }
+    for (kind = 0; kind < GEM_KINDS; kind++)
+        for (tier = 0; tier < GEM_TIERS; tier++)
+            *(tier == 0 ? &low : &other) += P.gems[kind][tier];
+    CHECK(low >= 400 && other == 0);
+}
+
 static void test_codex(void)
 {
     int ids[UNIQUE_BITS], n = codex_entries(ids, UNIQUE_BITS), i, t, mythic_done = 0, per[GUARDIANS] = { 0 };
@@ -1655,6 +1680,7 @@ int main(void)
     printf("skill powers\n");  test_skill_powers();
     printf("dodge\n");         test_dodge();
     printf("codex\n");         test_codex();
+    printf("gem tiers\n");     test_gem_tiers();
     printf("trial\n");         test_trial();
     printf("runes\n");         test_runes();
     printf("enchant/gems\n");  test_enchant_imprint_gems();
