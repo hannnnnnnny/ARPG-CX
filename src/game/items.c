@@ -231,8 +231,8 @@ static bool add_affix(Item *it, Rng *r, double mult, int cls)
 
 static Rarity roll_rarity(Rng *r, int ilvl, int luck, Rarity min_rarity)
 {
-    /* Per 1000000: mythic 2 (torment), unique 3000, legendary 25000, rare 120000, magic 300000.
-     * With guardians and the Fleshrender a mythic comes about once per 30 hours of play. */
+    /* Per 1000000: mythic 2 (torment), unique 3000, legendary 25000, rare 120000, magic 300000,
+     * each scaled by luck. Bosses roll their own mythic chance (mythic.h). */
     int roll = (int)(rng_next(r) % 1000000u);
     double boost = 1.0 + 0.10 * luck;
     int my = ilvl > 50 ? (int)(2 * boost) : 0, un = ilvl >= 5 ? (int)(3000 * boost) : 0;

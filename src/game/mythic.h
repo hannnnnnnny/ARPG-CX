@@ -11,8 +11,7 @@
 #include "world.h"
 #include "myth_ids.h"
 
-/* Odds per 100000 of a mythic on a guardian / Fleshrender kill. Together with
- * torment drops a mythic comes about once per 30 hours of play (ad_sim). */
+/* Odds per 100000 of a mythic on a guardian / act boss / Fleshrender kill. */
 #define MYTHIC_ODDS_ACT_BOSS  250
 #define MYTHIC_ODDS_GUARDIAN  30
 #define MYTHIC_ODDS_BUTCHER   500

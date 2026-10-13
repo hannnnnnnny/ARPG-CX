@@ -31,9 +31,12 @@ All releases: [Releases](https://github.com/hannnnnnnny/ARPG-CX/releases).
 
 ## New in 1.4.0
 
-- **Shako-rare mythics**: about one per 30 hours of play. When one drops the
-  world holds its breath: a purple flash, its own sound, a beam to the top
-  of the screen and its name in large type.
+- **Rarer mythics**: each item that drops from floor 51 on has a 0.0002%
+  (2 in 1,000,000) base chance to be a mythic, raised by luck (Fortune,
+  torment tier, bosses). A guardian kill also rolls 0.03%, an act boss
+  0.25%, the Fleshrender 0.5%, and each elite behind the Abyss door 0.025%.
+  When one drops the world holds its breath: a purple flash, its own sound,
+  a beam to the top of the screen and its name in large type.
 - **Affix ranges**: every affix shows the range it rolled in (`[8.0-15]`) or
   `[PERFECT]`; tempering shows the roll you are rerolling for.
 - **Doors between floors**: three doors, each a curse paired with a reward
