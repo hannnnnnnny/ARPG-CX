@@ -5,7 +5,7 @@
 
 #define GAME_VERSION_MAJOR 1
 #define GAME_VERSION_MINOR 4
-#define GAME_VERSION_PATCH 0
-#define GAME_VERSION_STR "1.4.0"
+#define GAME_VERSION_PATCH 1
+#define GAME_VERSION_STR "1.4.1"
 
 #endif
