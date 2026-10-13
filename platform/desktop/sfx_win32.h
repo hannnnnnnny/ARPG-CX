@@ -1,6 +1,5 @@
-/* sfx_win32.h - the combat sounds that are more than a recipe: soft,
- * pitched only (never hiss), and kills that climb a pentatonic scale
- * while a streak lasts. */
+/* sfx_win32.h - every sound effect: soft, pitched only (never hiss), all
+ * on one pentatonic scale, kills climbing it while a streak lasts. */
 #ifndef AD_SFX_WIN32_H
 #define AD_SFX_WIN32_H
 
@@ -11,7 +10,7 @@
 
 /* Renders one sound into a new float buffer (22050 Hz, about -1..1).
  * id: SoundId; note: kill streak step (SND_KILL only). Returns the length,
- * 0 for ids it does not make (they keep their recipe). The caller frees. */
+ * 0 on failure (the recipe plays instead). The caller frees. */
 int sfx_render(int id, int note, float **out);
 
 #endif

@@ -8,5 +8,7 @@
 void music_set(int track, int volume);
 /* Mixer thread: add n samples of music into acc. */
 void music_render(float *acc, int n);
+/* A big sound is playing: the music dips for a breath. */
+void music_duck(void);
 
 #endif

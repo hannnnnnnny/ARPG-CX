@@ -6,9 +6,15 @@
  * chords (sevenths and ninths), a marimba plucks a few notes over it, a
  * soft flute sings a long-note tune whose phrase repeats every four bars,
  * and a warm bass holds the root. Percussion is pitched and soft, never
- * hiss: a woodblock on two and four; fights add a gentle kick. Warm major and
- * lydian keys, a small room reverb. Tracks crossfade over two seconds.
- * Runs on the mixer thread; the game only sets the wanted track.
+ * hiss: a woodblock on two and four; fights add a gentle kick.
+ *
+ * Every track is a mode of D major - the notes of the effects' pentatonic
+ * scale - so music and sounds never clash. Made to be heard for hours: a
+ * 32-bar form (intro, A, A', a B section with its own chords and a higher
+ * tune, a breakdown) whose tune keeps its hook but varies every pass.
+ * Big moments (levels, rare loot, bosses) duck the music for a breath.
+ * A small room reverb. Tracks crossfade over two seconds. Runs on the
+ * mixer thread; the game only sets the wanted track.
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -37,28 +43,60 @@ static const ToneDef tone_defs[] = {
 typedef struct {
     float root;                      /* tonic in Hz */
     int8_t scale[7];                 /* semitones above the tonic */
-    int8_t prog[4];                  /* chord degrees, one bar each */
+    int8_t prog[4];                  /* chord degrees, one bar each: the A sections */
+    int8_t prog_b[4];                /* the B section */
     uint8_t bpm;
     uint8_t pluck;                   /* ToneKind of the plucked line */
     uint8_t fight;                   /* gentle kick and brush */
     float lead_oct;
 } Track;
 
-#define MAJOR  { 0, 2, 4, 5, 7, 9, 11 }
-#define LYDIAN { 0, 2, 4, 6, 7, 9, 11 }
-#define MIXO   { 0, 2, 4, 5, 7, 9, 10 }
-#define DORIAN { 0, 2, 3, 5, 7, 9, 10 }
-#define MINOR  { 0, 2, 3, 5, 7, 8, 10 }
+/* The modes of D major, each from its own tonic. */
+#define MAJOR  { 0, 2, 4, 5, 7, 9, 11 }    /* D ionian */
+#define DORIAN { 0, 2, 3, 5, 7, 9, 10 }    /* E */
+#define LYDIAN { 0, 2, 4, 6, 7, 9, 11 }    /* G */
+#define MIXO   { 0, 2, 4, 5, 7, 9, 10 }    /* A */
+#define MINOR  { 0, 2, 3, 5, 7, 8, 10 }    /* B aeolian */
+#define D3 146.83f
+#define E3 164.81f
+#define G3 196.00f
+#define A3 220.00f
+#define B2 123.47f
 
 static const Track tracks[MUS_COUNT] = {
-    [MUS_TITLE]     = { 174.61f, MAJOR,  { 0, 5, 3, 4 }, 76,  TONE_MARIMBA, 0, 2.0f },
-    [MUS_CRYPT]     = { 146.83f, DORIAN, { 0, 3, 0, 3 }, 80,  TONE_MARIMBA, 0, 2.0f },
-    [MUS_CATACOMBS] = { 146.83f, MIXO,   { 0, 6, 3, 0 }, 72,  TONE_MARIMBA, 0, 2.0f },
-    [MUS_HELLFORGE] = { 196.00f, DORIAN, { 0, 3, 6, 4 }, 88,  TONE_MARIMBA, 0, 1.0f },
-    [MUS_FROZEN]    = { 164.81f, LYDIAN, { 0, 1, 0, 4 }, 66,  TONE_GLASS,   0, 2.0f },
-    [MUS_VOID]      = { 116.54f, LYDIAN, { 0, 1, 5, 4 }, 70,  TONE_GLASS,   0, 4.0f },
-    [MUS_BOSS]      = { 220.00f, MINOR,  { 0, 5, 6, 4 }, 112, TONE_MARIMBA, 1, 1.0f },
+    [MUS_TITLE]     = { D3, MAJOR,  { 0, 4, 5, 3 }, { 3, 4, 2, 5 }, 76,  TONE_MARIMBA, 0, 2.0f },
+    [MUS_CRYPT]     = { E3, DORIAN, { 0, 3, 0, 3 }, { 2, 3, 6, 0 }, 80,  TONE_MARIMBA, 0, 2.0f },
+    [MUS_CATACOMBS] = { A3, MIXO,   { 0, 6, 3, 0 }, { 3, 4, 6, 0 }, 76,  TONE_MARIMBA, 0, 2.0f },
+    [MUS_HELLFORGE] = { B2, MINOR,  { 0, 5, 2, 6 }, { 3, 0, 5, 6 }, 88,  TONE_MARIMBA, 0, 4.0f },
+    [MUS_FROZEN]    = { G3, LYDIAN, { 0, 1, 0, 4 }, { 5, 1, 2, 4 }, 66,  TONE_GLASS,   0, 2.0f },
+    [MUS_VOID]      = { D3, MAJOR,  { 0, 2, 5, 4 }, { 3, 0, 3, 4 }, 64,  TONE_GLASS,   0, 2.0f },
+    [MUS_BOSS]      = { B2, MINOR,  { 0, 5, 6, 4 }, { 2, 6, 5, 6 }, 112, TONE_MARIMBA, 1, 4.0f },
 };
+
+/* The 32-bar form. */
+enum { SEC_INTRO, SEC_A, SEC_A2, SEC_B, SEC_BREAK };
+#define FORM_BARS 32
+
+static int section(int bar)
+{
+    int b = bar % FORM_BARS;
+    return b < 4 ? SEC_INTRO : b < 12 ? SEC_A : b < 20 ? SEC_A2 : b < 28 ? SEC_B : SEC_BREAK;
+}
+
+static int chord_at(const Track *k, int bar)
+{
+    return section(bar) == SEC_B ? k->prog_b[bar % 4] : k->prog[bar % 4];
+}
+
+/* Which tune a bar sings: the A hook is the same every pass; A' answers it
+ * differently each pass from its fifth bar; B is new each pass. */
+static int phrase_seed(int bar)
+{
+    int b = bar % FORM_BARS, pass = bar / FORM_BARS, sec = section(bar);
+    if (sec == SEC_A || (sec == SEC_A2 && b < 16))
+        return b % 4;
+    return sec == SEC_A2 ? 10 + pass * 7 + b % 4 : 40 + pass * 7 + b % 4;
+}
 
 typedef struct { float car, mod, f, amp, decay; uint8_t tone; } Voice;
 
@@ -87,6 +125,8 @@ typedef struct {
 static Player g_cur, g_next;
 static int g_fade;                   /* samples into a crossfade, 0 = none */
 static volatile LONG g_want = MUS_NONE, g_vol = 2;
+static volatile LONG g_duck_req;     /* set by music_duck(), taken by the mixer */
+static float g_duck;                 /* how far the music is ducked, 0..1 */
 
 static uint32_t hash3(int a, int b, int c)
 {
@@ -138,7 +178,7 @@ static float voices(Player *pl)
  * notes on the off-beats, a ninth now and then. */
 static void piano_step(Player *pl, const Track *k, int bar, int step)
 {
-    int chord = k->prog[bar % 4];
+    int chord = chord_at(k, bar);
     uint32_t h = hash3(bar % 4, step, pl->track + 50);
     if (step == 0)
         play(pl, k, TONE_PIANO, chord, .5f, .55f);
@@ -152,10 +192,11 @@ static void piano_step(Player *pl, const Track *k, int bar, int step)
 static void pluck_step(Player *pl, const Track *k, int bar, int step)
 {
     static const int8_t notes[4] = { 4, 7, 9, 11 };
-    uint32_t h = hash3(bar % 4 + (bar / 8 % 2) * 4, step, pl->track + 90);
-    if (step % 2 || (h & 255) > 70)
+    uint32_t h = hash3(phrase_seed(bar), step, pl->track + 90);
+    int sec = section(bar);
+    if (sec == SEC_INTRO || step % 2 || (h & 255) > (uint32_t)(sec == SEC_B || sec == SEC_BREAK ? 110 : 70))
         return;
-    play(pl, k, k->pluck, k->prog[bar % 4] + notes[(h >> 8) % 4], 2.0f, .35f);
+    play(pl, k, k->pluck, chord_at(k, bar) + notes[(h >> 8) % 4], 2.0f, .35f);
 }
 
 /* ---------------------------------------------------------------- lead */
@@ -166,8 +207,13 @@ static void lead_step(Player *pl, const Track *k, int bar, int eighth)
 {
     static const int8_t lens[8] = { 2, 4, 2, 6, 3, 2, 8, 4 };
     static const int8_t walk[8] = { 1, -1, 2, -1, 1, -2, 0, 1 };
-    uint32_t h = hash3(bar % 4 + (bar / 8 % 2) * 8, eighth, pl->track);
-    int chord = k->prog[bar % 4];
+    uint32_t h = hash3(phrase_seed(bar), eighth, pl->track);
+    int chord = chord_at(k, bar), sec = section(bar);
+    if (sec == SEC_INTRO || sec == SEC_BREAK) {             /* the piano alone */
+        pl->lead_gate = 0;
+        pl->lead_left = 0;
+        return;
+    }
     if (--pl->lead_left > 0)
         return;
     if ((bar % 4 == 3 && eighth >= 4) || (h % 5 == 0 && eighth != 0)) {   /* breathe */
@@ -176,7 +222,7 @@ static void lead_step(Player *pl, const Track *k, int bar, int eighth)
         return;
     }
     pl->lead_deg = eighth == 0 ? chord + (int)((h >> 3) % 3) * 2 : pl->lead_deg + walk[(h >> 5) % 8];
-    pl->lead_deg = CLAMP(pl->lead_deg, chord - 2, chord + 7);
+    pl->lead_deg = CLAMP(pl->lead_deg, chord - 2, chord + 7) + (sec == SEC_B && eighth == 0 ? 2 : 0);   /* B sings higher */
     pl->lead_left = lens[(h >> 9) % 8];
     pl->lead_target = degree_hz(k, pl->lead_deg, k->lead_oct);
     if (pl->lead_gate < .5f)
@@ -204,7 +250,7 @@ static void bass_step(Player *pl, const Track *k, int bar, int step)
 {
     if (step != 0 && step != 8)
         return;
-    pl->bass_f = degree_hz(k, k->prog[bar % 4] + (step == 8 ? 4 : 0), .5f);   /* audible on laptop speakers */
+    pl->bass_f = degree_hz(k, chord_at(k, bar) + (step == 8 ? 4 : 0), .5f);   /* audible on laptop speakers */
     pl->bass_env = 1.0f;
 }
 
@@ -218,8 +264,10 @@ static float bass(Player *pl)
 
 /* Pitched percussion only (no noise, no hiss): a soft woodblock on two
  * and four, and in fights a gentle kick. */
-static void perc_step(Player *pl, const Track *k, int step)
+static void perc_step(Player *pl, const Track *k, int bar, int step)
 {
+    if (section(bar) == SEC_INTRO)
+        return;
     if (step == 4 || step == 12) {
         pl->tick_env = .45f;
         pl->tick_ph = 0;
@@ -274,7 +322,7 @@ static void on_step(Player *pl, const Track *k, int bar, int step)
     piano_step(pl, k, bar, step);
     pluck_step(pl, k, bar, step);
     bass_step(pl, k, bar, step);
-    perc_step(pl, k, step);
+    perc_step(pl, k, bar, step);
 }
 
 static float sample(Player *pl)
@@ -299,6 +347,20 @@ static void start(Player *pl, int track)
     pl->track = track;
 }
 
+/* Big moments: the music steps back for a breath, then returns. */
+void music_duck(void)
+{
+    InterlockedExchange(&g_duck_req, 1);
+}
+
+static float duck_gain(void)
+{
+    if (InterlockedExchange(&g_duck_req, 0))
+        g_duck = 1.0f;
+    g_duck *= .99996f;                       /* about 1.2 s back to full */
+    return 1.0f - .45f * g_duck;
+}
+
 /* Called by the mixer for each buffer: adds the music into 'acc'. */
 void music_render(float *acc, int n)
 {
@@ -319,7 +381,7 @@ void music_render(float *acc, int n)
                 g_fade = 0;
             }
         }
-        acc[i] += mix * gain;
+        acc[i] += mix * gain * duck_gain();
     }
 }
 

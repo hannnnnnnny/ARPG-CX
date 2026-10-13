@@ -431,9 +431,14 @@ synthesized when the game starts, and the music is synthesized while it
 plays: a track for each depth theme, a battle track when a boss or the
 butcher is on the floor, and the title theme. Nothing is loaded from files.
 The music is slow and cosy (electric piano, marimba or music box, a soft
-flute tune, warm bass, no hiss), and combat stays soft and pitched: kills
-pop, and a quick streak of kills climbs a pentatonic scale, so clearing a
-pack plays a little tune.
+flute tune, warm bass, no hiss), each track a 32-bar song (intro, A, A', a
+B section, a breakdown) whose tune varies every pass, so hours of idling
+stay pleasant; it dips for a breath under big moments (levels, rare loot,
+bosses). Every effect is pitched and on the same scale as the music, so
+nothing clashes: kills pop, and a quick streak of kills climbs the scale,
+so clearing a pack plays a little tune; loot rings longer the rarer it
+is. Only skill casts sound like their element: lightning cracks and
+rumbles, fire roars and crackles, ice shatters.
 OPTIONS > SOUND and OPTIONS > MUSIC each set OFF / LOW / MEDIUM / HIGH.
 
 ### Text (Windows)

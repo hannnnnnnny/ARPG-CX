@@ -4,9 +4,9 @@
  * Every effect is synthesized at start-up from a short recipe (square,
  * triangle, saw, sine or noise layers with pitch sweeps or arpeggios), so
  * there are no audio files to ship and nothing borrowed from other games.
- * Hits, crits and kills come from sfx_win32.c instead (soft, pitched, kills
- * climbing a scale during a streak). A small mixer thread streams 16-bit
- * mono at 22050 Hz through waveOut.
+ * The sounds actually played come from sfx_win32.c (soft and pitched, one
+ * scale, kills climbing it during a streak); the recipes are the fallback.
+ * A small mixer thread streams 16-bit mono at 22050 Hz through waveOut.
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -221,17 +221,17 @@ static bool clip_from(float *x, int len, Clip *c)
     return c->pcm != NULL;
 }
 
-/* Combat sounds come from sfx_win32.c; a recipe stays as the fallback. */
-static void build_combat_clips(void)
+/* Every sound comes from sfx_win32.c; its recipe stays as the fallback
+ * (and is what the promo video tool scores with). */
+static void build_sfx_clips(void)
 {
-    static const int ids[] = { SND_HIT, SND_CRIT, SND_ELITE_DIE, SND_BOSS_DIE };
     float *x;
     Clip c;
     int i, len;
-    for (i = 0; i < (int)(sizeof ids / sizeof ids[0]); i++)
-        if ((len = sfx_render(ids[i], 0, &x)) > 0 && clip_from(x, len, &c)) {
-            free(g_clips[ids[i]].pcm);
-            g_clips[ids[i]] = c;
+    for (i = 0; i < SND_COUNT; i++)
+        if ((len = sfx_render(i, 0, &x)) > 0 && clip_from(x, len, &c)) {
+            free(g_clips[i].pcm);
+            g_clips[i] = c;
         }
     for (i = 0; i < KILL_STREAK_NOTES; i++)
         if ((len = sfx_render(SND_KILL, i, &x)) > 0)
@@ -243,7 +243,7 @@ bool audio_init(void)
     int i;
     for (i = 0; i < SND_COUNT; i++)
         build_clip(&recipes[i], &g_clips[i]);
-    build_combat_clips();
+    build_sfx_clips();
     InitializeCriticalSection(&g_lock);
     g_event = CreateEventA(NULL, FALSE, FALSE, NULL);
     if (!g_event || !open_device())
@@ -268,6 +268,13 @@ void audio_shutdown(void)
     CloseHandle(g_thread);
     CloseHandle(g_event);
     g_ready = false;
+}
+
+/* Sounds the music makes room for. */
+static bool big_moment(int id)
+{
+    return id == SND_LEVEL || id == SND_DROP_LEGEND || id == SND_DROP_UNIQUE || id == SND_DROP_MYTHIC
+        || id == SND_ELITE_DIE || id == SND_BOSS_DIE || id == SND_ACHIEVE;
 }
 
 /* Kills close together climb the scale; a pause starts it again. */
@@ -297,6 +304,8 @@ void audio_play(int id, int volume)
             g_voices[slot].pos = 0;
             g_voices[slot].gain = gains[MIN(volume, SOUND_VOLUMES - 1)];
             g_last_start[id] = g_clock ? g_clock : 1;
+            if (big_moment(id))
+                music_duck();
         }
     }
     LeaveCriticalSection(&g_lock);
