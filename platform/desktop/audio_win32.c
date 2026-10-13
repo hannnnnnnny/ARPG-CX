@@ -4,7 +4,9 @@
  * Every effect is synthesized at start-up from a short recipe (square,
  * triangle, saw, sine or noise layers with pitch sweeps or arpeggios), so
  * there are no audio files to ship and nothing borrowed from other games.
- * A small mixer thread streams 16-bit mono at 22050 Hz through waveOut.
+ * Hits, crits and kills come from sfx_win32.c instead (soft, pitched, kills
+ * climbing a scale during a streak). A small mixer thread streams 16-bit
+ * mono at 22050 Hz through waveOut.
  */
 #define WIN32_LEAN_AND_MEAN
 #include <windows.h>
@@ -14,6 +16,7 @@
 #include <string.h>
 #include "audio_win32.h"
 #include "music_win32.h"
+#include "sfx_win32.h"
 #include "../../src/core/sound.h"
 
 #define RATE      22050
@@ -68,6 +71,9 @@ typedef struct { int16_t *pcm; int len; } Clip;
 typedef struct { const Clip *clip; int pos; float gain; } Voice;
 
 static Clip      g_clips[SND_COUNT];
+static Clip      g_kill[KILL_STREAK_NOTES];   /* the kill pop, one per step up the scale */
+static uint32_t  g_last_kill;
+static int       g_kill_note;
 static Voice     g_voices[VOICES];
 static uint32_t  g_last_start[SND_COUNT];
 static uint32_t  g_clock;                 /* samples mixed so far */
@@ -202,11 +208,42 @@ static bool open_device(void)
     return true;
 }
 
+/* Float samples (about -1..1) into a clip; takes ownership of 'x'. */
+static bool clip_from(float *x, int len, Clip *c)
+{
+    int i;
+    c->pcm = x ? (int16_t *)malloc((size_t)len * sizeof *c->pcm) : NULL;
+    if (c->pcm)
+        for (i = 0; i < len; i++)
+            c->pcm[i] = (int16_t)(MAX(-1.0f, MIN(1.0f, x[i])) * 32000.0f);
+    c->len = c->pcm ? len : 0;
+    free(x);
+    return c->pcm != NULL;
+}
+
+/* Combat sounds come from sfx_win32.c; a recipe stays as the fallback. */
+static void build_combat_clips(void)
+{
+    static const int ids[] = { SND_HIT, SND_CRIT, SND_ELITE_DIE, SND_BOSS_DIE };
+    float *x;
+    Clip c;
+    int i, len;
+    for (i = 0; i < (int)(sizeof ids / sizeof ids[0]); i++)
+        if ((len = sfx_render(ids[i], 0, &x)) > 0 && clip_from(x, len, &c)) {
+            free(g_clips[ids[i]].pcm);
+            g_clips[ids[i]] = c;
+        }
+    for (i = 0; i < KILL_STREAK_NOTES; i++)
+        if ((len = sfx_render(SND_KILL, i, &x)) > 0)
+            clip_from(x, len, &g_kill[i]);
+}
+
 bool audio_init(void)
 {
     int i;
     for (i = 0; i < SND_COUNT; i++)
         build_clip(&recipes[i], &g_clips[i]);
+    build_combat_clips();
     InitializeCriticalSection(&g_lock);
     g_event = CreateEventA(NULL, FALSE, FALSE, NULL);
     if (!g_event || !open_device())
@@ -233,6 +270,17 @@ void audio_shutdown(void)
     g_ready = false;
 }
 
+/* Kills close together climb the scale; a pause starts it again. */
+static const Clip *kill_clip(void)
+{
+    if (g_last_kill && g_clock - g_last_kill < (uint32_t)(RATE * KILL_STREAK_GAP_MS / 1000))
+        g_kill_note = MIN(g_kill_note + 1, KILL_STREAK_NOTES - 1);
+    else
+        g_kill_note = 0;
+    g_last_kill = g_clock ? g_clock : 1;
+    return g_kill[g_kill_note].pcm ? &g_kill[g_kill_note] : &g_clips[SND_KILL];
+}
+
 void audio_play(int id, int volume)
 {
     static const float gains[SOUND_VOLUMES] = { 0.0f, 0.3f, 0.6f, 1.0f };
@@ -245,7 +293,7 @@ void audio_play(int id, int volume)
             if (!g_voices[v].clip)
                 slot = v;
         if (slot >= 0) {
-            g_voices[slot].clip = &g_clips[id];
+            g_voices[slot].clip = id == SND_KILL ? kill_clip() : &g_clips[id];
             g_voices[slot].pos = 0;
             g_voices[slot].gain = gains[MIN(volume, SOUND_VOLUMES - 1)];
             g_last_start[id] = g_clock ? g_clock : 1;

@@ -430,6 +430,10 @@ level ups, potions, goblins, shrines, chests, achievements, menu clicks) is
 synthesized when the game starts, and the music is synthesized while it
 plays: a track for each depth theme, a battle track when a boss or the
 butcher is on the floor, and the title theme. Nothing is loaded from files.
+The music is slow and cosy (electric piano, marimba or music box, a soft
+flute tune, warm bass, no hiss), and combat stays soft and pitched: kills
+pop, and a quick streak of kills climbs a pentatonic scale, so clearing a
+pack plays a little tune.
 OPTIONS > SOUND and OPTIONS > MUSIC each set OFF / LOW / MEDIUM / HIGH.
 
 ### Text (Windows)
